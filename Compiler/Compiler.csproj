@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{A8C59AC0-C168-4FA5-AC9C-DF0F0C0D84B5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Compiler</RootNamespace>
+    <AssemblyName>Compiler</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="src\domain\Errors\DeclarationError.cs" />
+    <Compile Include="src\domain\Errors\DivisionByZeroError.cs" />
+    <Compile Include="src\domain\Errors\Error.cs" />
+    <Compile Include="src\domain\Errors\ErrorConstants.cs" />
+    <Compile Include="src\domain\Errors\IllegalAssignmentError.cs" />
+    <Compile Include="src\domain\Errors\IllegalTypeError.cs" />
+    <Compile Include="src\domain\Errors\IntegerOverflowError.cs" />
+    <Compile Include="src\domain\Errors\InvalidIdentifierError.cs" />
+    <Compile Include="src\domain\Errors\NullPointerError.cs" />
+    <Compile Include="src\domain\Errors\RuntimeException.cs" />
+    <Compile Include="src\domain\Errors\SemanticError.cs" />
+    <Compile Include="src\domain\Errors\StringLiteralError.cs" />
+    <Compile Include="src\domain\Errors\SyntaxError.cs" />
+    <Compile Include="src\domain\Errors\TokenError.cs" />
+    <Compile Include="src\domain\Errors\UnexpectedTokenException.cs" />
+    <Compile Include="src\domain\Errors\UninitializedVariableError.cs" />
+    <Compile Include="src\domain\Token\Token.cs" />
+    <Compile Include="src\domain\Token\TokenType.cs" />
+    <Compile Include="src\services\IErrorAggregator.cs" />
+    <Compile Include="src\services\IO\ConsolePrinter.cs" />
+    <Compile Include="src\services\IO\ConsoleReader.cs" />
+    <Compile Include="src\services\IO\IPrinter.cs" />
+    <Compile Include="src\services\IO\IReader.cs" />
+    <Compile Include="src\services\IO\SourceBuffer.cs" />
+    <Compile Include="src\services\analyzers\Scanner.cs" />
+    <Compile Include="src\services\analyzers\ScannerConstants.cs" />
+    <Compile Include="src\domain\ISemanticCheckValue.cs" />
+    <Compile Include="src\domain\SyntaxTree\AssertNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\AssignNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\BinOpNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\BoolValueNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\DeclarationNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\IExpressionContainer.cs" />
+    <Compile Include="src\domain\SyntaxTree\IExpressionNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\IIdentifierContainer.cs" />
+    <Compile Include="src\domain\SyntaxTree\IOPrintNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\IOReadNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\IStatementsContainer.cs" />
+    <Compile Include="src\domain\SyntaxTree\ISyntaxTreeNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\IntValueNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\RootNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\StatementsNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\StringValueNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\SyntaxTree.cs" />
+    <Compile Include="src\domain\SyntaxTree\UnOpNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\VariableIdNode.cs" />
+    <Compile Include="src\domain\Values\BooleanProperty.cs" />
+    <Compile Include="src\domain\Values\ErrorProperty.cs" />
+    <Compile Include="src\domain\Values\IProperty.cs" />
+    <Compile Include="src\domain\Values\IntegerProperty.cs" />
+    <Compile Include="src\domain\Values\StringProperty.cs" />
+    <Compile Include="src\domain\Values\VoidProperty.cs" />
+    <Compile Include="src\domain\Visitors\EvaluationVisitor.cs" />
+    <Compile Include="src\domain\Visitors\ExecutionVisitor.cs" />
+    <Compile Include="src\domain\Visitors\INodeVisitor.cs" />
+    <Compile Include="src\domain\Visitors\StatementCheckVisitor.cs" />
+    <Compile Include="src\domain\Visitors\TypeCheckingVisitor.cs" />
+    <Compile Include="src\services\CompilerFrontend.cs" />
+    <Compile Include="src\services\NodeBuilder.cs" />
+    <Compile Include="src\services\StringFormatter.cs" />
+    <Compile Include="src\services\StringFormattingConstants.cs" />
+    <Compile Include="src\services\analyzers\Parser.cs" />
+    <Compile Include="src\services\analyzers\ParserConstants.cs" />
+    <Compile Include="src\services\analyzers\SemanticAnalysisConstants.cs" />
+    <Compile Include="src\services\analyzers\SemanticAnalyzer.cs" />
+    <Compile Include="src\utils\NumericUtils.cs" />
+    <Compile Include="src\utils\StringUtils.cs" />
+  </ItemGroup>
+</Project>
