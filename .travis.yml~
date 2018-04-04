@@ -1,0 +1,9 @@
+language: csharp
+solution: MiniPLInterpreter.sln
+install:
+  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
+  - nuget restore MiniPLInterpreter.sln
+script:
+  - msbuild /p:Configuration=Release MiniPLInterpreter.sln
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./MiniPLInterpreterTests/bin/Release/MiniPLInterpreterTests.dll
+

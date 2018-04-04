@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Compiler
 {
 	/// <summary>
-	/// A recursive-descent parser for Mini-PL programming language
+	/// A recursive-descent parser for Mini-Pascal programming language
 	/// Performs the syntactical analysis on a source code.
 	/// Also, builds an AST and a global symbol table for the
 	/// semantical analyzer.
@@ -23,7 +23,7 @@ namespace Compiler
 		{}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="MiniPLInterpreter.Parser"/> class.
+		/// Initializes a new instance of the <see cref="Compiler.Parser"/> class.
 		/// </summary>
 		/// <param name="symbolTable">The universal symbol table provided by the compiler frontend</param>
 		/// <param name="scanner">The scanner that works for this parser</param>

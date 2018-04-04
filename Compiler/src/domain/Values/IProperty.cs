@@ -4,7 +4,7 @@ namespace Compiler
 {
 	/// <summary>
 	/// Defines the methods for storing and retrieving data during 
-	/// compilation and interpretation of a Mini-PL program
+	/// compilation and interpretation of a Mini-Pascal program
 	/// 
 	/// Implements the ISemanticCheckValue interface so anything
 	/// implementing this interface can also be used as Visitors'

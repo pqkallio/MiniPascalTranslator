@@ -1,0 +1,9 @@
+language: csharp
+solution: MiniPascalTranslator.sln
+install:
+  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
+  - nuget restore MiniPascalTranslator.sln
+script:
+  - msbuild /p:Configuration=Release MiniPascalTranslator.sln
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./CompilerTests/bin/Release/CompilerTests.dll
+

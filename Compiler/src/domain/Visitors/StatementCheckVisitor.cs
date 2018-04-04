@@ -13,7 +13,7 @@ namespace Compiler
 		private VoidProperty voidProperty;			
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="MiniPLInterpreter.StatementCheckVisitor"/> class.
+		/// Initializes a new instance of the <see cref="Compiler.StatementCheckVisitor"/> class.
 		/// </summary>
 		/// <param name="analyzer">Analyzer.</param>
 		public StatementCheckVisitor (SemanticAnalyzer analyzer)

@@ -14,7 +14,7 @@ namespace Compiler
 		private TokenType tokenType;	// an enumerated type
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="MiniPLInterpreter.Token"/> class.
+		/// Initializes a new instance of the <see cref="Compiler.Token"/> class.
 		/// </summary>
 		/// <param name="row">Row.</param>
 		/// <param name="column">Column.</param>
@@ -23,7 +23,7 @@ namespace Compiler
 		{ }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="MiniPLInterpreter.Token"/> class.
+		/// Initializes a new instance of the <see cref="Compiler.Token"/> class.
 		/// </summary>
 		/// <param name="row">Row.</param>
 		/// <param name="column">Column.</param>
@@ -33,7 +33,7 @@ namespace Compiler
 		{ }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="MiniPLInterpreter.Token"/> class.
+		/// Initializes a new instance of the <see cref="Compiler.Token"/> class.
 		/// </summary>
 		/// <param name="row">Row.</param>
 		/// <param name="column">Column.</param>

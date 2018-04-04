@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Compiler
 {
 	/// <summary>
-	/// A lexical analyzer for Mini-PL programming language
+	/// A lexical analyzer for Mini-Pascal programming language
 	/// Provides tokenizing service for the parser
 	/// </summary>
 	public class Scanner : IErrorAggregator
@@ -18,7 +18,7 @@ namespace Compiler
 		private bool endOfStream = false; // true if the source has been read in full
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="MiniPLInterpreter.Scanner"/> class.
+		/// Initializes a new instance of the <see cref="Compiler.Scanner"/> class.
 		/// </summary>
 		/// <param name="sourceLines">The source code's lines as an array of strings.</param>
 		public Scanner (string[] sourceLines)

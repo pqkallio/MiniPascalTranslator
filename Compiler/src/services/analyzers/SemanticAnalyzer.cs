@@ -14,7 +14,7 @@ namespace Compiler
 		private SyntaxTree syntaxTree;				// the earlier built AST
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="MiniPLInterpreter.SemanticAnalyzer"/> class.
+		/// Initializes a new instance of the <see cref="Compiler.SemanticAnalyzer"/> class.
 		/// </summary>
 		/// <param name="syntaxTree">Syntax tree.</param>
 		/// <param name="symbolTable">Symbol table.</param>
