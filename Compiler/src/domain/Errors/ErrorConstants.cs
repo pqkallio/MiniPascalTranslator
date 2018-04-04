@@ -31,6 +31,7 @@ namespace Compiler
 		public static readonly string DIVISION_BY_ZERO_MESSAGE = "division by zero";
 		public static readonly string INVALID_IDENTIFIER_MESSAGE = "the identifiers must begin with a letter followed by zero or more numbers, letters and underscores";
 		public static readonly string INVALID_ID_MESSAGE = "reserved keyword used as variable identifier";
+		public static readonly string INVALID_REAL_NUM_MESSAGE = "a real number's exponent part must be one of the following forms: e<digits>, e+<digits> or e-<digits>";
 	}
 }
 

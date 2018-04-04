@@ -105,8 +105,189 @@ namespace CompilerTests
 		public void TestInvalidStringNeverEnds ()
 		{
 			tokenizeInput (ScannerTestInputs.invalidStringNeverEnds);
-			checkErrorCount (1, true);
+			checkErrorCount (2, true);
 			Assert.AreEqual (scanner.getErrors () [0].GetType ().Name, "StringLiteralError");
+			Assert.AreEqual (scanner.getErrors () [1].GetType ().Name, "StringLiteralError");
+		}
+
+		[Test]
+		public void TestValidInteger1 ()
+		{
+			tokenizeInput (ScannerTestInputs.validInteger1);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.INTEGER_VAL);
+		}
+
+		[Test]
+		public void TestValidInteger2 ()
+		{
+			tokenizeInput (ScannerTestInputs.validInteger2);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.INTEGER_VAL);
+		}
+
+		[Test]
+		public void TestValidInteger3 ()
+		{
+			tokenizeInput (ScannerTestInputs.validInteger3);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.INTEGER_VAL);
+		}
+
+		[Test]
+		public void TestSignAndInteger1 ()
+		{
+			tokenizeInput (ScannerTestInputs.signAndInteger1);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 3);
+			Assert.AreEqual (tokens [0].Type, TokenType.SIGN_PLUS);
+			Assert.AreEqual (tokens [1].Type, TokenType.INTEGER_VAL);
+		}
+
+		[Test]
+		public void TestSignAndInteger2 ()
+		{
+			tokenizeInput (ScannerTestInputs.signAndInteger2);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 3);
+			Assert.AreEqual (tokens [0].Type, TokenType.SIGN_MINUS);
+			Assert.AreEqual (tokens [1].Type, TokenType.INTEGER_VAL);
+		}
+
+		[Test]
+		public void TestValidReal1 ()
+		{
+			tokenizeInput (ScannerTestInputs.validReal1);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.REAL_VAL);
+		}
+
+		[Test]
+		public void TestValidReal2 ()
+		{
+			tokenizeInput (ScannerTestInputs.validReal2);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.REAL_VAL);
+		}
+
+		[Test]
+		public void TestValidReal3 ()
+		{
+			tokenizeInput (ScannerTestInputs.validReal3);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.REAL_VAL);
+		}
+
+		[Test]
+		public void TestValidReal4 ()
+		{
+			tokenizeInput (ScannerTestInputs.validReal4);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.REAL_VAL);
+		}
+
+		[Test]
+		public void TestValidReal5 ()
+		{
+			tokenizeInput (ScannerTestInputs.validReal5);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.REAL_VAL);
+		}
+
+		[Test]
+		public void TestInvalidReal1 ()
+		{
+			tokenizeInput (ScannerTestInputs.invalidReal1);
+			checkErrorCount (1);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.ERROR);
+			Assert.AreEqual (scanner.getErrors () [0].GetType ().Name, "InvalidRealNumberError");
+		}
+
+		[Test]
+		public void TestInvalidReal2 ()
+		{
+			tokenizeInput (ScannerTestInputs.invalidReal2);
+			checkErrorCount (1);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.ERROR);
+			Assert.AreEqual (scanner.getErrors () [0].GetType ().Name, "InvalidRealNumberError");
+		}
+
+		[Test]
+		public void TestInvalidReal3 ()
+		{
+			tokenizeInput (ScannerTestInputs.invalidReal3);
+			checkErrorCount (1);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.ERROR);
+			Assert.AreEqual (scanner.getErrors () [0].GetType ().Name, "InvalidRealNumberError");
+		}
+
+		[Test]
+		public void TestSignAndReal1 ()
+		{
+			tokenizeInput (ScannerTestInputs.signAndReal1);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 3);
+			Assert.AreEqual (tokens [0].Type, TokenType.SIGN_PLUS);
+			Assert.AreEqual (tokens [1].Type, TokenType.REAL_VAL);
+		}
+
+		[Test]
+		public void TestSignAndReal2 ()
+		{
+			tokenizeInput (ScannerTestInputs.signAndReal2);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 3);
+			Assert.AreEqual (tokens [0].Type, TokenType.SIGN_MINUS);
+			Assert.AreEqual (tokens [1].Type, TokenType.REAL_VAL);
+		}
+
+		[Test]
+		public void TestValidId1 ()
+		{
+			tokenizeInput (ScannerTestInputs.validId1);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.ID);
+		}
+
+		[Test]
+		public void TestValidId2 ()
+		{
+			tokenizeInput (ScannerTestInputs.validId2);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.ID);
+		}
+
+		[Test]
+		public void TestInvalidId1 ()
+		{
+			tokenizeInput (ScannerTestInputs.invalidId);
+			checkErrorCount (1);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.ERROR);
+			Assert.AreEqual (scanner.getErrors () [0].GetType ().Name, "InvalidIdentifierError");
+		}
+
+		[Test]
+		public void TestErrorToken ()
+		{
+			tokenizeInput (ScannerTestInputs.errorToken);
+			checkErrorCount (1);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.ERROR);
+			Assert.AreEqual (scanner.getErrors () [0].GetType ().Name, "InvalidIdentifierError");
 		}
 
 		[Test]

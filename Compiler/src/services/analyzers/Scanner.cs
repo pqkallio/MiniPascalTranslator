@@ -260,7 +260,7 @@ namespace Compiler
 
 			if (peekStream () == ScannerConstants.DOT) {
 				token.Type = TokenType.REAL_VAL;
-				token.Value = readAReal (sb);
+				token.Value = readAReal (sb, token);
 			}
 		}
 
@@ -270,7 +270,7 @@ namespace Compiler
 		/// </summary>
 		/// <returns>A real number as a string.</returns>
 		/// <param name="sb">A StringBuilder buffering the input</param>
-		private string readAReal (StringBuilder sb)
+		private string readAReal (StringBuilder sb, Token token)
 		{
 			sb.Append (readStream ());		// the next char is the decimal point
 
@@ -295,8 +295,15 @@ namespace Compiler
 					sb.Append(readStream ());
 				}
 
+				int bufferLengthBeforeExponentNumerals = sb.ToString ().Length;
 				// after which we read the exponent
 				readNumeralsToStringBuffer (sb);
+
+				// if no numerals were added, the form's not right, report an error
+				if (bufferLengthBeforeExponentNumerals == sb.ToString ().Length) {
+					token.Type = TokenType.ERROR;
+					notifyError(new InvalidRealNumberError(token));
+				}
 			}
 
 			return sb.ToString ();

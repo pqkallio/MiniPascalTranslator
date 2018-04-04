@@ -1,35 +1,32 @@
-﻿<Properties StartupItem="Compiler/Compiler.csproj">
+﻿<Properties StartupItem="Translator/Translator.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/src/services/analyzers/Scanner.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Translator/Program.cs">
     <Files>
       <File FileName="Compiler/src/services/analyzers/ScannerConstants.cs" Line="110" Column="3" />
-      <File FileName="CompilerTests/test/services/analyzers/ScannerTest.cs" Line="103" Column="3" />
+      <File FileName="CompilerTests/test/services/analyzers/ScannerTest.cs" Line="114" Column="4" />
+      <File FileName="Translator/Program.cs" Line="12" Column="12" />
       <File FileName="Compiler/src/domain/Token/TokenType.cs" Line="47" Column="14" NotebookId="1" />
-      <File FileName="Compiler/src/services/analyzers/Scanner.cs" Line="355" Column="35" NotebookId="1" />
+      <File FileName="Compiler/src/services/analyzers/Scanner.cs" Line="21" Column="60" NotebookId="1" />
       <File FileName="Compiler/src/domain/Visitors/TypeCheckingVisitor.cs" Line="9" Column="46" NotebookId="1" />
       <File FileName="Compiler/src/domain/Visitors/INodeVisitor.cs" Line="10" Column="66" NotebookId="1" />
       <File FileName="Compiler/src/domain/Visitors/EvaluationVisitor.cs" Line="75" Column="4" NotebookId="1" />
       <File FileName="Compiler/src/domain/Visitors/ExecutionVisitor.cs" Line="206" Column="4" NotebookId="1" />
-      <File FileName="Compiler/src/domain/Visitors/StatementCheckVisitor.cs" Line="248" Column="3" NotebookId="1" />
+      <File FileName="Compiler/src/domain/Visitors/StatementCheckVisitor.cs" Line="16" Column="60" NotebookId="1" />
       <File FileName="Compiler/src/services/NodeBuilder.cs" Line="75" Column="4" NotebookId="1" />
-      <File FileName="Compiler/src/services/analyzers/Parser.cs" Line="195" Column="17" NotebookId="1" />
+      <File FileName="Compiler/src/services/analyzers/Parser.cs" Line="26" Column="52" NotebookId="1" />
       <File FileName="Compiler/src/services/StringFormattingConstants.cs" Line="17" Column="29" NotebookId="1" />
       <File FileName="Compiler/src/services/analyzers/SemanticAnalysisConstants.cs" Line="14" Column="9" NotebookId="1" />
-      <File FileName="CompilerTests/test/services/analyzers/ScannerTestInputs.cs" Line="80" Column="17" NotebookId="1" />
+      <File FileName="CompilerTests/test/services/analyzers/ScannerTestInputs.cs" Line="206" Column="1" NotebookId="1" />
+      <File FileName="Compiler/src/domain/Values/IProperty.cs" Line="7" Column="53" NotebookId="1" />
+      <File FileName="Compiler/src/services/analyzers/SemanticAnalyzer.cs" Line="17" Column="60" NotebookId="1" />
+      <File FileName="Compiler/src/domain/Token/Token.cs" Line="36" Column="60" NotebookId="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
-          <Node name="MiniPascalTranslator" expanded="True" selected="True">
+          <Node name="MiniPascalTranslator" expanded="True">
             <Node name="Compiler" expanded="True">
-              <Node name="src" expanded="True">
-                <Node name="domain" expanded="True">
-                  <Node name="Visitors" expanded="True" />
-                </Node>
-                <Node name="services" expanded="True">
-                  <Node name="analyzers" expanded="True" />
-                </Node>
-              </Node>
+              <Node name="src" expanded="True" />
             </Node>
             <Node name="CompilerTests" expanded="True">
               <Node name="test" expanded="True">
@@ -37,6 +34,9 @@
                   <Node name="analyzers" expanded="True" />
                 </Node>
               </Node>
+            </Node>
+            <Node name="Translator" expanded="True">
+              <Node name="References" expanded="True" selected="True" />
             </Node>
           </Node>
         </State>
@@ -52,4 +52,20 @@
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.Translator>
+    <MonoDevelop.Ide.CustomExecutionModes>
+      <Data Name="test.txt" Id="d6ba4a7d-aae6-4ec4-a170-ad9770561f5e" ModeId="Default">
+        <CommandData>
+          <Item Key="MonoDevelop.Ide.Execution.CustomArgsCustomizer">
+            <Value Arguments="test.txt" WorkingDirectory="/home/pqkallio" ctype="CustomArgsExecutionModeData">
+              <EnvironmentVariables />
+            </Value>
+          </Item>
+          <Item Key="MonoDevelop.Ide.Execution.MonoExecutionCustomizer">
+            <Value ctype="MonoExecutionParameters" />
+          </Item>
+        </CommandData>
+      </Data>
+    </MonoDevelop.Ide.CustomExecutionModes>
+  </MonoDevelop.Ide.ItemProperties.Translator>
 </Properties>

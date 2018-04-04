@@ -5,12 +5,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compiler", "Compiler\Compil
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompilerTests", "CompilerTests\CompilerTests.csproj", "{77C2C063-CC0E-4199-A38D-3CF22E0E163A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Translator", "Translator\Translator.csproj", "{7551A2E7-C92E-4C06-B87D-3901A473FA03}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6BFAAEBD-1741-40D4-ADFC-FFD8831D36AC}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7551A2E7-C92E-4C06-B87D-3901A473FA03}.Debug|x86.ActiveCfg = Debug|x86
+		{7551A2E7-C92E-4C06-B87D-3901A473FA03}.Debug|x86.Build.0 = Debug|x86
+		{7551A2E7-C92E-4C06-B87D-3901A473FA03}.Release|x86.ActiveCfg = Release|x86
+		{7551A2E7-C92E-4C06-B87D-3901A473FA03}.Release|x86.Build.0 = Release|x86
 		{77C2C063-CC0E-4199-A38D-3CF22E0E163A}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{77C2C063-CC0E-4199-A38D-3CF22E0E163A}.Debug|x86.Build.0 = Debug|Any CPU
 		{77C2C063-CC0E-4199-A38D-3CF22E0E163A}.Release|x86.ActiveCfg = Release|Any CPU
@@ -19,5 +30,7 @@ Global
 		{A8C59AC0-C168-4FA5-AC9C-DF0F0C0D84B5}.Debug|x86.Build.0 = Debug|x86
 		{A8C59AC0-C168-4FA5-AC9C-DF0F0C0D84B5}.Release|x86.ActiveCfg = Release|x86
 		{A8C59AC0-C168-4FA5-AC9C-DF0F0C0D84B5}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 EndGlobal

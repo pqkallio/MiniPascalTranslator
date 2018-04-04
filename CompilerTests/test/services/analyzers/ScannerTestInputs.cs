@@ -80,6 +80,82 @@ namespace CompilerTests
 			"\"bamboozle"
 		};
 
+		public static readonly string[] validInteger1 = {
+			"0"
+		};
+
+		public static readonly string[] validInteger2 = {
+			"123"
+		};
+
+		public static readonly string[] validInteger3 = {
+			"00000000123"
+		};
+
+		public static readonly string[] signAndInteger1 = {
+			"+123"
+		};
+
+		public static readonly string[] signAndInteger2 = {
+			"-123"
+		};
+
+		public static readonly string[] validReal1 = {
+			"0.0"
+		};
+
+		public static readonly string[] validReal2 = {
+			"001.05"
+		};
+
+		public static readonly string[] validReal3 = {
+			"0.00001e0"
+		};
+
+		public static readonly string[] validReal4 = {
+			"001.05e-001"
+		};
+
+		public static readonly string[] validReal5 = {
+			"678.05e+016001"
+		};
+
+		public static readonly string[] invalidReal1 = {
+			"0.0e"
+		};
+
+		public static readonly string[] invalidReal2 = {
+			"001.05e+"
+		};
+
+		public static readonly string[] invalidReal3 = {
+			"0.00001e-"
+		};
+
+		public static readonly string[] signAndReal1 = {
+			"+123.05"
+		};
+
+		public static readonly string[] signAndReal2 = {
+			"-123.432e-45"
+		};
+
+		public static readonly string[] validId1 = {
+			"a"
+		};
+
+		public static readonly string[] validId2 = {
+			"a4_RTY_ZzA___190288764"
+		};
+
+		public static readonly string[] invalidId = {
+			"_i_is_n0t_v4l1d"
+		};
+
+		public static readonly string[] errorToken = {
+			"?var"
+		};
+
 		public static readonly string[] gcd = {
 			"program gcd;\n",
 			"\n",

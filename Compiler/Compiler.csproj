@@ -98,5 +98,6 @@
     <Compile Include="src\services\analyzers\SemanticAnalyzer.cs" />
     <Compile Include="src\utils\NumericUtils.cs" />
     <Compile Include="src\utils\StringUtils.cs" />
+    <Compile Include="src\domain\Errors\InvalidRealNumberError.cs" />
   </ItemGroup>
 </Project>
