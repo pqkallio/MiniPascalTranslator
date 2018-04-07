@@ -89,7 +89,6 @@
     <Compile Include="src\domain\Visitors\StatementCheckVisitor.cs" />
     <Compile Include="src\domain\Visitors\TypeCheckingVisitor.cs" />
     <Compile Include="src\services\CompilerFrontend.cs" />
-    <Compile Include="src\services\NodeBuilder.cs" />
     <Compile Include="src\services\StringFormatter.cs" />
     <Compile Include="src\services\StringFormattingConstants.cs" />
     <Compile Include="src\services\analyzers\Parser.cs" />
@@ -99,5 +98,11 @@
     <Compile Include="src\utils\NumericUtils.cs" />
     <Compile Include="src\utils\StringUtils.cs" />
     <Compile Include="src\domain\Errors\InvalidRealNumberError.cs" />
+    <Compile Include="src\domain\SyntaxTree\FunctionNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\ProgramNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\BlockNode.cs" />
+    <Compile Include="src\services\NodeFactory.cs" />
+    <Compile Include="src\domain\SyntaxTree\ParametersNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\Parameter.cs" />
   </ItemGroup>
 </Project>

@@ -5,9 +5,9 @@ namespace Compiler
 {
 	public class SyntaxTree
 	{
-		private IStatementsContainer root;
+		private ProgramNode root;
 
-		public SyntaxTree (IStatementsContainer root)
+		public SyntaxTree (ProgramNode root=null)
 		{
 			this.root = root;
 		}
@@ -16,7 +16,7 @@ namespace Compiler
 			: this (null)
 		{}
 
-		public IStatementsContainer Root {
+		public ProgramNode Root {
 			get { return root; }
 			set { root = value; }
 		}

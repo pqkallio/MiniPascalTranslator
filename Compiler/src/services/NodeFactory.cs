@@ -3,13 +3,28 @@ using System.Collections.Generic;
 
 namespace Compiler
 {
-	public class NodeBuilder
+	public class NodeFactory
 	{
 		private Dictionary<string, IProperty> symbolTable;
 
-		public NodeBuilder (Dictionary<string, IProperty> symbolTable)
+		public NodeFactory (Dictionary<string, IProperty> symbolTable)
 		{
 			this.symbolTable = symbolTable;
+		}
+
+		public ProgramNode CreateProgramNode (Token token, VariableIdNode idNode, FunctionNode functionNode, BlockNode mainBlock)
+		{
+			return new ProgramNode (token, idNode, functionNode, mainBlock);
+		}
+
+		public ParametersNode CreateParametersNode (Token token, List<Parameter> parameters)
+		{
+			return new ParametersNode (token, parameters);
+		}
+
+		public FunctionNode CreateFunctionNode(Token token, VariableIdNode idNode, ParametersNode parameters, BlockNode blockNode)
+		{
+			return new FunctionNode (token, idNode, parameters, blockNode);
 		}
 
 		public RootNode CreateRootNode ()
@@ -35,7 +50,13 @@ namespace Compiler
 			return new VariableIdNode (symbolTable);
 		}
 
-		public IExpressionNode CreateIdNode(Token t)
+		public VariableIdNode CreateIdNode(Token t)
+		{
+			string value = t.Value;
+			return new VariableIdNode (value, symbolTable, t);
+		}
+
+		public IExpressionNode OldCreateIdNode(Token t)
 		{
 			string value = t.Value;
 			return new VariableIdNode (value, symbolTable, t);

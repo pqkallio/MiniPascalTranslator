@@ -291,6 +291,33 @@ namespace CompilerTests
 		}
 
 		[Test]
+		public void TestSize ()
+		{
+			tokenizeInput (ScannerTestInputs.size);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.SIZE);
+		}
+
+		[Test]
+		public void TestDot1 ()
+		{
+			tokenizeInput (ScannerTestInputs.dot1);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 2);
+			Assert.AreEqual (tokens [0].Type, TokenType.DOT);
+		}
+
+		[Test]
+		public void TestDot2 ()
+		{
+			tokenizeInput (ScannerTestInputs.dot2);
+			checkErrorCount (0);
+			Assert.AreEqual (tokens.Count, 3);
+			Assert.AreEqual (tokens [0].Type, TokenType.DOT);
+		}
+
+		[Test]
 		public void TestGcd ()
 		{
 			tokenizeInput (ScannerTestInputs.gcd);

@@ -156,6 +156,18 @@ namespace CompilerTests
 			"?var"
 		};
 
+		public static readonly string[] size = {
+			".size"
+		};
+
+		public static readonly string[] dot1 = {
+			"."
+		};
+
+		public static readonly string[] dot2 = {
+			".nice"
+		};
+
 		public static readonly string[] gcd = {
 			"program gcd;\n",
 			"\n",

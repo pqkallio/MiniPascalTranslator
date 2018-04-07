@@ -30,6 +30,30 @@ namespace Compiler
 			{TokenType.END_STATEMENT, null},
 			{TokenType.END_OF_FILE, null}
 		};
+
+		public static readonly Dictionary<TokenType, string> PROGRAM_FASTFORWARD_TO = new Dictionary<TokenType, string> ()
+		{
+			{TokenType.DOT, null},
+			{TokenType.END_OF_FILE, null}
+		};
+
+		public static readonly Dictionary<TokenType, string> FUNCTION_AND_PROCEDURE_FASTFORWARD_TO = new Dictionary<TokenType, string> ()
+		{
+			{TokenType.DOT, null},
+			{TokenType.END_OF_FILE, null}
+		};
+
+		public static readonly Dictionary<TokenType, string> PARAMETERS_FASTFORWARD_TO = new Dictionary<TokenType, string> ()
+		{
+			{TokenType.PARENTHESIS_RIGHT, null},
+			{TokenType.END_OF_FILE, null}
+		};
+
+		public static readonly Dictionary<TokenType, string> FUNCTION_FASTFORWARD_TO = new Dictionary<TokenType, string> ()
+		{
+			{TokenType.END, null},
+			{TokenType.END_OF_FILE, null}
+		};
 			
 		public static readonly string IDENTIFIER_STR = "identifier";
 		public static readonly string EOF_STR = "end of file";
@@ -50,6 +74,32 @@ namespace Compiler
 			TOKEN_TYPE_STRINGS[TokenType.ASSERT],
 			IDENTIFIER_STR,
 			EOF_STR
+		};
+
+		public static readonly string[] EXPECTATION_SET_FUNCTIONS_AND_PROCEDURES = new string[] 
+		{
+			TOKEN_TYPE_STRINGS[TokenType.FUNCTION],
+			TOKEN_TYPE_STRINGS[TokenType.PROCEDURE],
+			TOKEN_TYPE_STRINGS[TokenType.BEGIN]
+		};
+
+		public static readonly string[] EXPECTATION_SET_PARAMETER = new string[]
+		{
+			TOKEN_TYPE_STRINGS[TokenType.VAR],
+			TOKEN_TYPE_STRINGS[TokenType.ID]
+		};
+
+		public static readonly string[] EXPECTATION_SET_PARAMETER_TAIL = new string[]
+		{
+			TOKEN_TYPE_STRINGS[TokenType.COMMA],
+			TOKEN_TYPE_STRINGS[TokenType.PARENTHESIS_RIGHT]
+		};
+
+		public static readonly string[] EXPECTATION_SET_PARAMETERS = new string[]
+		{
+			TOKEN_TYPE_STRINGS[TokenType.VAR],
+			TOKEN_TYPE_STRINGS[TokenType.ID],
+			TOKEN_TYPE_STRINGS[TokenType.PARENTHESIS_RIGHT]
 		};
 
 		public static readonly string[] EXPECTATION_SET_STATEMENTS = new string[] 

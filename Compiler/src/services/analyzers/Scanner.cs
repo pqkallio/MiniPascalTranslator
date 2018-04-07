@@ -16,6 +16,7 @@ namespace Compiler
 		private int column = -1;		// the current reading position in the current source line
 		private int line = 0;			// the number of current source line.
 		private bool endOfStream = false; // true if the source has been read in full
+		private Token buffer = null;	// if the next token is already read, it's in the buffer
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Compiler.Scanner"/> class.
@@ -92,9 +93,15 @@ namespace Compiler
 		/// </summary>
 		/// <returns>The next token.</returns>
 		/// <param name="previous">The previous token the parser received, can be null</param>
-		public Token getNextToken(Token previous)
+		public Token getNextToken(Token previous=null)
 		{
 			Token token = null;
+
+			if (buffer != null) {
+				token = buffer;
+				buffer = null;
+				return token;
+			}
 
 			while (!endOfStream) {			// try to read the next token until the end of the source is reached
 				char c = readStream();
@@ -133,8 +140,10 @@ namespace Compiler
 
 			if (ScannerConstants.INDEPENDENT_CHARS.ContainsKey (c)) {	// if it's special, its a token of its own
 				token.Type = ScannerConstants.INDEPENDENT_CHARS [c];
-			} else if (ScannerConstants.SUCCESSOR_DEPENDENTS.ContainsKey(c)) {			// if it's a colon, it might set type or be a part of assignment
+			} else if (ScannerConstants.SUCCESSOR_DEPENDENTS.ContainsKey (c)) {			// if it's a colon, it might set type or be a part of assignment
 				parseSuccessorDependent (token, c);
+			} else if (c == ScannerConstants.DOT) {
+				parseSizeOrEndOfProgram (ref token, c);
 			} else if (c == ScannerConstants.STRING_DELIMITER) {		// it's a a start of a string literal
 				parseString (token);
 			} else if (StringUtils.isNumeral (c)) {						// it's clearly an integer literal
@@ -148,6 +157,18 @@ namespace Compiler
 			}
 
 			return token;
+		}
+
+		private void parseSizeOrEndOfProgram (ref Token token, char c)
+		{
+			token.Type = TokenType.DOT;
+			Token next = getNextToken ();
+
+			if (next.Type == TokenType.SIZE) {
+				token = next;
+			} else {
+				buffer = next;
+			}
 		}
 
 		/// <summary>

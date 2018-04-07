@@ -16,7 +16,7 @@ namespace Compiler
 		private Scanner scanner;							// we ask tokens from the scanner
 		private bool syntaxTreeBuilt;						// true if no errors were encountered, false otherwise
 		private Dictionary<string, IProperty> symbolTable;	// the universal symbol table for the compiler frontend
-		private NodeBuilder nodeBuilder;					// we ask ST-nodes from the NodeBuilder
+		private NodeFactory nodeFactory;					// we ask ST-nodes from the NodeBuilder
 
 		public Parser(Dictionary<string, IProperty> symbolTable)
 			: this(symbolTable, null)
@@ -33,7 +33,7 @@ namespace Compiler
 			this.errors = new List<Error> ();
 			this.syntaxTreeBuilt = false;
 			this.symbolTable = symbolTable;
-			this.nodeBuilder = new NodeBuilder (symbolTable);
+			this.nodeFactory = new NodeFactory (symbolTable);
 			this.scanner = scanner;
 		}
 
@@ -54,9 +54,6 @@ namespace Compiler
 		public SyntaxTree Parse () {
 			// make the preparations first
 			syntaxTreeBuilt = true;
-			IStatementsContainer root = nodeBuilder.CreateRootNode ();
-			syntaxTree.Root = root;
-
 			/* Then start parsing by asking for the first token from the scanner.
 			 * 
 			 * So, the first pass over the source starts here, and it's made
@@ -64,14 +61,189 @@ namespace Compiler
 			 * interleaved during parsing: the lexical and syntactical analyses
 			 * completely and the building of the AST, which is actually a part
 			 * of the third frontend phase, the semantical analysis. */
-			ParseProgram (scanner.getNextToken (null), root);
-
-			// if there were errors during parsing, don't return the AST
-			if (!syntaxTreeBuilt) {
-				return null;
-			}
+			syntaxTree.Root = ParseProgram ();
 
 			return syntaxTree;
+		}
+
+		private ProgramNode ParseProgram ()
+		{
+			Token token = scanner.getNextToken ();
+
+			switch (token.Type) {
+				case TokenType.PROGRAM:
+					try {
+						VariableIdNode idNode = ParseVarId ();
+						match (scanner.getNextToken (), TokenType.END_STATEMENT);
+							
+						FunctionNode functionNode = ParseFunctionsAndProcedures ();
+						BlockNode blockNode = ParseBlock ();
+						match (scanner.getNextToken (), TokenType.DOT);
+							
+						if (SyntaxTreeBuilt) {
+							return nodeFactory.CreateProgramNode (token, idNode, functionNode, blockNode);
+						}
+					} catch (UnexpectedTokenException ex) {
+						notifyError (new SyntaxError (ex.Token, ex.ExpectedType, ex.ExpectationSet));
+						FastForwardTo (ParserConstants.PROGRAM_FASTFORWARD_TO, token);
+					}
+
+					break;
+			}
+
+			return null;
+		}
+
+		private FunctionNode ParseFunctionsAndProcedures ()
+		{
+			Token token = scanner.getNextToken ();
+			switch (token.Type) {
+				case TokenType.FUNCTION:
+					return ParseFunction (token);
+				case TokenType.PROCEDURE:
+					return ParseProcedure (token);
+				case TokenType.BEGIN:
+					break;
+				default:
+					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_FUNCTIONS_AND_PROCEDURES);
+			}
+			return null;
+		}
+
+		private FunctionNode ParseProcedure (Token token)
+		{
+			// FIX THE FFWDS
+			try {
+				VariableIdNode idNode = ParseVarId ();
+
+				match(scanner.getNextToken(), TokenType.PARENTHESIS_LEFT);
+				ParametersNode parameters = ParseParameters();
+
+				idNode.VariableType = TokenType.VOID;
+				match(scanner.getNextToken(), TokenType.END_STATEMENT);
+
+				BlockNode blockNode = ParseBlock();
+				match(scanner.getNextToken(), TokenType.END_STATEMENT);
+
+				if (SyntaxTreeBuilt) {
+					FunctionNode functionNode = nodeFactory.CreateFunctionNode(token, idNode, parameters, blockNode);
+					functionNode.Sequitor = ParseFunctionsAndProcedures ();
+					return functionNode;
+				}
+			} catch (UnexpectedTokenException ex) {
+				notifyError (new SyntaxError (ex.Token, ex.ExpectedType, ex.ExpectationSet));
+				FastForwardTo (ParserConstants.FUNCTION_FASTFORWARD_TO, token);
+			}
+
+			return null;
+		}
+
+		private FunctionNode ParseFunction (Token token)
+		{
+			// FIX THE FFWDS
+			try {
+				VariableIdNode idNode = ParseVarId ();
+
+				match(scanner.getNextToken(), TokenType.PARENTHESIS_LEFT);
+				ParametersNode parameters = ParseParameters();
+
+				match(scanner.getNextToken(), TokenType.SET_TYPE);
+				ParseType (idNode);
+				match(scanner.getNextToken(), TokenType.END_STATEMENT);
+
+				BlockNode blockNode = ParseBlock();
+				match(scanner.getNextToken(), TokenType.END_STATEMENT);
+
+				if (SyntaxTreeBuilt) {
+					FunctionNode functionNode = nodeFactory.CreateFunctionNode(token, idNode, parameters, blockNode);
+					functionNode.Sequitor = ParseFunctionsAndProcedures ();
+					return functionNode;
+				}
+			} catch (UnexpectedTokenException ex) {
+				notifyError (new SyntaxError (ex.Token, ex.ExpectedType, ex.ExpectationSet));
+				FastForwardTo (ParserConstants.FUNCTION_FASTFORWARD_TO, token);
+			}
+
+			return null;
+		}
+
+		private ParametersNode ParseParameters ()
+		{
+			List<Parameter> parameters = new List<Parameter> ();
+			Token token = null;
+
+			try {
+				while (true) {
+					token = scanner.getNextToken ();
+
+					switch (token.Type) {
+						case TokenType.VAR:
+						case TokenType.ID:
+							parameters.Add (ParseParameter(token));
+							break;
+						case TokenType.PARENTHESIS_RIGHT:
+							goto END_WHILE;
+						default:
+							throw new UnexpectedTokenException(token, ParserConstants.EXPECTATION_SET_PARAMETERS);
+					}
+
+					token = scanner.getNextToken();
+
+					switch (token.Type) {
+					case TokenType.PARENTHESIS_RIGHT:
+						goto END_WHILE;
+					case TokenType.COMMA:
+						break;
+					default:
+						throw new UnexpectedTokenException(token, ParserConstants.EXPECTATION_SET_PARAMETER_TAIL);
+					}
+				}
+
+				END_WHILE:
+				if (SyntaxTreeBuilt) {
+					return nodeFactory.CreateParametersNode(token, parameters);
+				}
+			} catch (UnexpectedTokenException ex) {
+				notifyError (new SyntaxError (ex.Token, ex.ExpectedType, ex.ExpectationSet));
+				FastForwardTo (ParserConstants.PARAMETERS_FASTFORWARD_TO, ex.Token);
+			}
+
+			return null;
+		}
+
+		private Parameter ParseParameter (Token token)
+		{
+			switch (token.Type) {
+				case TokenType.VAR:
+					return Param (reference: true);
+				case TokenType.ID:
+					return Param (token);
+				default:
+					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_PARAMETER);
+			}
+		}
+
+		private Parameter Param(Token idToken=null, bool reference=false)
+		{
+			if (reference) {
+				idToken = scanner.getNextToken ();
+			}
+
+			if (idToken.Type != TokenType.ID) {
+				throw new UnexpectedTokenException (idToken, TokenType.ID);
+			}
+
+			VariableIdNode idNode = new VariableIdNode (idToken.Value, symbolTable, idToken);
+
+			match (scanner.getNextToken (), TokenType.SET_TYPE);
+			TokenType type = ParseType ();
+
+			return new Parameter (idNode, type, reference);
+		}
+
+		private BlockNode ParseBlock ()
+		{
+			return new BlockNode ();
 		}
 
 		/// <summary>
@@ -147,7 +319,7 @@ namespace Compiler
 					   Note that the token the scanner provides is also connected to its corresponding
 					   node(s). This makes it easier to print informative error messages in case something
 					   goes wrong. */
-					StatementsNode statements = nodeBuilder.CreateStatementsNode (parent, token);
+					StatementsNode statements = nodeFactory.CreateStatementsNode (parent, token);
 					Token next;
 					
 					try {
@@ -217,7 +389,7 @@ namespace Compiler
 		{
 			// Try to parse all the pieces that a DeclarationNode needs to be evaluated.
 			try {
-				VariableIdNode idNode = nodeBuilder.CreateIdNode ();
+				VariableIdNode idNode = nodeFactory.CreateIdNode ();
 				// parse the target id
 				Token next = ParseVarId (scanner.getNextToken (token), idNode);
 
@@ -226,7 +398,7 @@ namespace Compiler
 				next = ParseType (scanner.getNextToken (next), idNode);
 
 				// create the actual DeclarationNode
-				DeclarationNode declarationNode = nodeBuilder.CreateDeclarationNode(idNode, statementsNode, token);
+				DeclarationNode declarationNode = nodeFactory.CreateDeclarationNode(idNode, statementsNode, token);
 				// parse the assign for the DeclarationNode
 				return ParseAssign (next, declarationNode.AssignNode);
 			} catch (UnexpectedTokenException ex) {
@@ -243,12 +415,12 @@ namespace Compiler
 		private Token ParseVariableAssign(Token token, StatementsNode statementsNode)
 		{
 			try {
-				VariableIdNode idNode = nodeBuilder.CreateIdNode ();
+				VariableIdNode idNode = nodeFactory.CreateIdNode ();
 				// parse the target id
 				Token next = ParseVarId (token, idNode);
 
 				match (next, TokenType.ASSIGN);
-				AssignNode assignNode = nodeBuilder.CreateAssignNode(idNode, statementsNode, token);
+				AssignNode assignNode = nodeFactory.CreateAssignNode(idNode, statementsNode, token);
 
 				// parses the expression of the assignment
 				return ParseExpression (scanner.getNextToken(next), assignNode);
@@ -266,9 +438,9 @@ namespace Compiler
 		private Token ParseRead(Token token, StatementsNode statementsNode)
 		{
 			try {
-				VariableIdNode varId = nodeBuilder.CreateIdNode ();
+				VariableIdNode varId = nodeFactory.CreateIdNode ();
 				// create the IOReadNode and affiliate it with the statementsNode
-				nodeBuilder.CreateIOReadNode(varId, statementsNode, token);
+				nodeFactory.CreateIOReadNode(varId, statementsNode, token);
 				// parses the variable id that the read operation's value is saved to
 				return ParseVarId (scanner.getNextToken(token), varId);
 			} catch (UnexpectedTokenException ex) {
@@ -286,7 +458,7 @@ namespace Compiler
 		{
 			try {
 				// build the print statement node
-				IOPrintNode printNode = nodeBuilder.CreateIOPrintNode(statementsNode, token);
+				IOPrintNode printNode = nodeFactory.CreateIOPrintNode(statementsNode, token);
 				// parse the expression to print
 				return ParseExpression (scanner.getNextToken(token), printNode);
 			} catch (UnexpectedTokenException ex) {
@@ -307,19 +479,35 @@ namespace Compiler
 				match (next, TokenType.PARENTHESIS_LEFT);
 
 				// create the AssertNode
-				AssertNode assertNode = nodeBuilder.CreateAssertNode(statementsNode, token);
+				AssertNode assertNode = nodeFactory.CreateAssertNode(statementsNode, token);
 
 				// parse the expression to assert when executed
 				next = ParseExpression (scanner.getNextToken (next), assertNode);
 				match (next, TokenType.PARENTHESIS_RIGHT);
 
 				// create an IOPrinterNode to print a message in case of a failed assertion
-				nodeBuilder.CreateIOPrintNodeForAssertNode(assertNode);
+				nodeFactory.CreateIOPrintNodeForAssertNode(assertNode);
 
 				return scanner.getNextToken (next);
 			} catch (UnexpectedTokenException ex) {
 				return FastForwardToStatementEnd (ex);
 			}
+		}
+
+		private VariableIdNode ParseVarId() {
+			Token token = scanner.getNextToken ();
+
+			switch (token.Type) {
+				case TokenType.ID:
+					if (SyntaxTreeBuilt) {
+						return nodeFactory.CreateIdNode (token);
+					}
+					break;
+				default:
+					throw new UnexpectedTokenException (token, TokenType.ID, null);
+				}
+
+			return null;
 		}
 
 		/// <summary>
@@ -376,6 +564,44 @@ namespace Compiler
 			return scanner.getNextToken (token);
 		}
 
+		private void ParseType (VariableIdNode idNode)
+		{
+			Token token = scanner.getNextToken ();
+			// MUST ADD REALS HERE AS WELL
+			switch (token.Type) {
+				case TokenType.TYPE_INTEGER:
+					// set the id node's type
+					idNode.VariableType = TokenType.INTEGER_VAL;
+					// add the id to the symbol table, with its value set to default value
+					symbolTable.Add (idNode.ID, (new IntegerProperty (SemanticAnalysisConstants.DEFAULT_INTEGER_VALUE)));
+					break;
+				case TokenType.TYPE_STRING:
+					idNode.VariableType = TokenType.STRING_VAL;
+					symbolTable.Add (idNode.ID, new StringProperty (SemanticAnalysisConstants.DEFAULT_STRING_VALUE));
+					break;
+				case TokenType.TYPE_BOOLEAN:
+					idNode.VariableType = TokenType.BOOLEAN_VAL_FALSE;
+					symbolTable.Add (idNode.ID, new BooleanProperty (SemanticAnalysisConstants.DEFAULT_BOOL_VALUE));
+					break;
+				default:
+					throw new UnexpectedTokenException (token, TokenType.UNDEFINED, ParserConstants.EXPECTATION_SET_DECLARATION_TYPE);
+			}
+		}
+
+		private TokenType ParseType ()
+		{
+			Token token = scanner.getNextToken ();
+			switch (token.Type) {
+				case TokenType.TYPE_INTEGER:
+				case TokenType.TYPE_STRING:
+				case TokenType.TYPE_BOOLEAN:
+				case TokenType.TYPE_REAL:
+					return token.Type;
+				default:
+					throw new UnexpectedTokenException (token, TokenType.UNDEFINED, ParserConstants.EXPECTATION_SET_DECLARATION_TYPE);
+			}
+		}
+
 		/// <summary>
 		/// Parses an assignment during a declaration statement into an AssignNode. 
 		/// </summary>
@@ -416,14 +642,14 @@ namespace Compiler
 				case TokenType.PARENTHESIS_LEFT:
 				case TokenType.ID:
 					// parse a binary operation
-					BinOpNode binOp = nodeBuilder.CreateBinOpNode(node, token);
+					BinOpNode binOp = nodeFactory.CreateBinOpNode(node, token);
 					// parse the first operand
 					next = ParseOperand (token, binOp);
 					// parse the rest of the operation
 					return ParseBinaryOp (next, binOp);
 				case TokenType.UNARY_OP_LOG_NEG:
 					// parse a unary operation
-					UnOpNode unOp = nodeBuilder.CreateUnOpNode (node, token);
+					UnOpNode unOp = nodeFactory.CreateUnOpNode (node, token);
 					// parse the operation, then the operand
 					next = ParseUnaryOp (token, unOp);
 					return ParseOperand (next, unOp);
@@ -447,13 +673,13 @@ namespace Compiler
 					ParseIntegerOperand(token, parent);
 					break;
 				case TokenType.STRING_VAL:
-					nodeBuilder.CreateStringValueNode(token, parent);
+					nodeFactory.CreateStringValueNode(token, parent);
 					break;
 				case TokenType.BOOLEAN_VAL_FALSE:
-					nodeBuilder.CreateBoolValueNode(token, parent);
+					nodeFactory.CreateBoolValueNode(token, parent);
 					break;
 				case TokenType.ID:
-					nodeBuilder.CreateIdNode(token, parent);
+					nodeFactory.CreateIdNode(token, parent);
 					break;
 				case TokenType.PARENTHESIS_LEFT:
 					Token next = ParseExpression (scanner.getNextToken (token), parent);
@@ -474,13 +700,13 @@ namespace Compiler
 		private void ParseIntegerOperand(Token token, IExpressionContainer parent) {
 			try {
 				// try to create an IntValueNode for the value
-				nodeBuilder.CreateIntValueNode (token, parent);
+				nodeFactory.CreateIntValueNode (token, parent);
 			} catch (OverflowException) {
 				// In case the token's value is an integer that cannot be represented as a
 				// signed 32-bit integer, an OverflowException is thrown.
 				// In this case, the parses reports an IntegerOverflowError.
 				notifyError (new IntegerOverflowError (token));
-				nodeBuilder.CreateDefaultIntValueNode (token, parent);
+				nodeFactory.CreateDefaultIntValueNode (token, parent);
 			}
 		}
 
@@ -563,13 +789,13 @@ namespace Compiler
 
 			switch (idType) {
 				case TokenType.STRING_VAL:
-					nodeBuilder.CreateDefaultStringValueNode(assignNode.Token, assignNode);
+					nodeFactory.CreateDefaultStringValueNode(assignNode.Token, assignNode);
 					break;
 				case TokenType.INTEGER_VAL:
-					nodeBuilder.CreateDefaultIntValueNode(assignNode.Token, assignNode);
+					nodeFactory.CreateDefaultIntValueNode(assignNode.Token, assignNode);
 					break;
 				case TokenType.BOOLEAN_VAL_FALSE:
-					nodeBuilder.CreateDefaultBoolValueNode (assignNode.Token, assignNode);
+					nodeFactory.CreateDefaultBoolValueNode (assignNode.Token, assignNode);
 					break;
 				default:
 					throw new UnexpectedTokenException (assignNode.IDNode.Token, TokenType.UNDEFINED, ParserConstants.EXPECTATION_SET_ID_VAL);
@@ -695,6 +921,7 @@ namespace Compiler
 
 		public void notifyError (Error error)
 		{
+			this.syntaxTreeBuilt = false;
 			this.errors.Add (error);
 		}
 

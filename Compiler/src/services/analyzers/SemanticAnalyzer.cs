@@ -38,7 +38,7 @@ namespace Compiler
 			 * StatementCheckVisitor. */
 			StatementCheckVisitor statementChecker = new StatementCheckVisitor (this);
 
-			IStatementsContainer rootNode = syntaxTree.Root;
+			ProgramNode rootNode = syntaxTree.Root;
 
 			// We only call on the root node to accept the statementChecker, since the checking methods
 			// of the statementChecker implement the functionality of traversing and checking the

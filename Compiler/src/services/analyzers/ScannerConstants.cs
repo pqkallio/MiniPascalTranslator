@@ -69,7 +69,6 @@ namespace Compiler
 			{'=', TokenType.BINARY_OP_LOG_EQ},
 			{';', TokenType.END_STATEMENT},
 			{',', TokenType.COMMA},
-			{'.', TokenType.DOT},
 			{'(', TokenType.PARENTHESIS_LEFT}, 
 			{')', TokenType.PARENTHESIS_RIGHT},
 			{'[', TokenType.BRACKET_LEFT}, 
