@@ -36,6 +36,8 @@
   <ItemGroup>
     <Compile Include="test\services\analyzers\ScannerTest.cs" />
     <Compile Include="test\services\analyzers\ScannerTestInputs.cs" />
+    <Compile Include="test\services\analyzers\ParserTest.cs" />
+    <Compile Include="test\services\analyzers\ParserTestInputs.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

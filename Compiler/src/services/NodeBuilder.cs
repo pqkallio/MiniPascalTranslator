@@ -3,18 +3,11 @@ using System.Collections.Generic;
 
 namespace Compiler
 {
-	public class NodeFactory
+	public class NodeBuilder
 	{
-		private Dictionary<string, IProperty> symbolTable;
-
-		public NodeFactory (Dictionary<string, IProperty> symbolTable)
+		public ProgramNode CreateProgramNode (Token token, FunctionNode functionNode, BlockNode mainBlock, Scope scope)
 		{
-			this.symbolTable = symbolTable;
-		}
-
-		public ProgramNode CreateProgramNode (Token token, VariableIdNode idNode, FunctionNode functionNode, BlockNode mainBlock)
-		{
-			return new ProgramNode (token, idNode, functionNode, mainBlock);
+			return new ProgramNode (token, functionNode, mainBlock, scope);
 		}
 
 		public ParametersNode CreateParametersNode (Token token, List<Parameter> parameters)
@@ -22,9 +15,9 @@ namespace Compiler
 			return new ParametersNode (token, parameters);
 		}
 
-		public FunctionNode CreateFunctionNode(Token token, VariableIdNode idNode, ParametersNode parameters, BlockNode blockNode)
+		public FunctionNode CreateFunctionNode(Token token, VariableIdNode idNode, ParametersNode parameters, BlockNode blockNode, Scope scope)
 		{
-			return new FunctionNode (token, idNode, parameters, blockNode);
+			return new FunctionNode (token, idNode, parameters, blockNode, scope);
 		}
 
 		public RootNode CreateRootNode ()
@@ -45,59 +38,59 @@ namespace Compiler
 			return statementsNode;
 		}
 
-		public VariableIdNode CreateIdNode ()
+		public VariableIdNode CreateIdNode (Scope scope)
 		{
-			return new VariableIdNode (symbolTable);
+			return new VariableIdNode (scope);
 		}
 
-		public VariableIdNode CreateIdNode(Token t)
+		public VariableIdNode CreateIdNode(Token t, Scope scope)
 		{
 			string value = t.Value;
-			return new VariableIdNode (value, symbolTable, t);
+			return new VariableIdNode (value, scope, t);
 		}
 
-		public IExpressionNode OldCreateIdNode(Token t)
+		public IExpressionNode OldCreateIdNode(Token t, Scope scope)
 		{
 			string value = t.Value;
-			return new VariableIdNode (value, symbolTable, t);
+			return new VariableIdNode (value, scope, t);
 		}
 
-		public IExpressionNode CreateIdNode(Token t, IExpressionContainer parent)
+		public IExpressionNode CreateIdNode(Token t, IExpressionContainer parent, Scope scope)
 		{
-			VariableIdNode node = new VariableIdNode (t.Value, symbolTable, t);
+			VariableIdNode node = new VariableIdNode (t.Value, scope, t);
 			parent.AddExpression (node);
 
 			return node;
 		}
 
-		public DeclarationNode CreateDeclarationNode (VariableIdNode idNode, StatementsNode statementsNode, Token t)
+		public DeclarationNode CreateDeclarationNode (VariableIdNode idNode, Scope scope, StatementsNode statementsNode, Token t)
 		{
-			DeclarationNode declarationNode = new DeclarationNode (idNode, symbolTable, t);
-			declarationNode.AssignNode = CreateAssignNode (idNode, t);
+			DeclarationNode declarationNode = new DeclarationNode (idNode, t);
+			declarationNode.AssignNode = CreateAssignNode (idNode, scope, t);
 			statementsNode.Statement = declarationNode;
 
 			return declarationNode;
 		}
 
-		public AssignNode CreateAssignNode (VariableIdNode idNode, Token t)
+		public AssignNode CreateAssignNode (VariableIdNode idNode, Scope scope, Token t, IExpressionNode expression=null)
 		{
 			if (idNode.Token == null) {
 				idNode.Token = t;
 			}
-			return new AssignNode (idNode, symbolTable, t);
+			return new AssignNode (idNode, scope, t, expression);
 		}
 
-		public AssignNode CreateAssignNode (VariableIdNode idNode, StatementsNode statementsNode, Token t)
+		public AssignNode CreateAssignNode (VariableIdNode idNode, StatementsNode statementsNode, Scope scope, Token t)
 		{
-			AssignNode assignNode = new AssignNode (idNode, symbolTable, t);
+			AssignNode assignNode = new AssignNode (idNode, scope, t);
 			statementsNode.Statement = assignNode;
 
 			return assignNode;
 		}
 
-		public IOReadNode CreateIOReadNode (VariableIdNode idNode, StatementsNode statementsNode, Token t)
+		public IOReadNode CreateIOReadNode (VariableIdNode idNode, StatementsNode statementsNode, Scope scope, Token t)
 		{
-			IOReadNode ioReadNode = new IOReadNode (idNode, symbolTable, t);
+			IOReadNode ioReadNode = new IOReadNode (idNode, scope, t);
 			statementsNode.Statement = ioReadNode;
 
 			return ioReadNode;
@@ -144,10 +137,9 @@ namespace Compiler
 			return binOp;
 		}
 
-		public UnOpNode CreateUnOpNode (IExpressionContainer parent, Token t)
+		public UnOpNode CreateUnOpNode (Token t, IExpressionNode operand=null)
 		{
-			UnOpNode unOp = new UnOpNode (t);
-			parent.AddExpression (unOp);
+			UnOpNode unOp = new UnOpNode (t, operand);
 
 			return unOp;
 		}

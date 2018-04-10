@@ -101,8 +101,13 @@
     <Compile Include="src\domain\SyntaxTree\FunctionNode.cs" />
     <Compile Include="src\domain\SyntaxTree\ProgramNode.cs" />
     <Compile Include="src\domain\SyntaxTree\BlockNode.cs" />
-    <Compile Include="src\services\NodeFactory.cs" />
     <Compile Include="src\domain\SyntaxTree\ParametersNode.cs" />
     <Compile Include="src\domain\SyntaxTree\Parameter.cs" />
+    <Compile Include="src\domain\Scope.cs" />
+    <Compile Include="src\domain\Errors\DeclarationException.cs" />
+    <Compile Include="src\domain\Values\ArrayProperty.cs" />
+    <Compile Include="src\services\NodeBuilder.cs" />
+    <Compile Include="src\domain\SyntaxTree\FunctionCallNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\ArgumentsNode.cs" />
   </ItemGroup>
 </Project>

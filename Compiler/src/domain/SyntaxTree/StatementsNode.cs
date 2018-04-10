@@ -8,7 +8,7 @@ namespace Compiler
 	/// </summary>
 	public class StatementsNode : IStatementsContainer
 	{
-		public ISyntaxTreeNode statement;
+		public IExpressionContainer statement;
 		public StatementsNode sequitor;
 		public Token token;
 
@@ -19,7 +19,7 @@ namespace Compiler
 			this.token = token;
 		}
 
-		public ISyntaxTreeNode Statement {
+		public IExpressionContainer Statement {
 			get { return statement; }
 			set { statement = value; }
 		}

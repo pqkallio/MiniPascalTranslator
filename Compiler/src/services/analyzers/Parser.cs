@@ -11,30 +11,28 @@ namespace Compiler
 	/// </summary>
 	public class Parser : IErrorAggregator
 	{
-		private SyntaxTree syntaxTree;						// the AST to be built
-		private List<Error> errors;							// a list of errors encountered while parsing
-		private Scanner scanner;							// we ask tokens from the scanner
-		private bool syntaxTreeBuilt;						// true if no errors were encountered, false otherwise
-		private Dictionary<string, IProperty> symbolTable;	// the universal symbol table for the compiler frontend
-		private NodeFactory nodeFactory;					// we ask ST-nodes from the NodeBuilder
-
-		public Parser(Dictionary<string, IProperty> symbolTable)
-			: this(symbolTable, null)
-		{}
+		private SyntaxTree syntaxTree;		// the AST to be built
+		private List<Error> errors;			// a list of errors encountered while parsing
+		private Scanner scanner;			// we ask tokens from the scanner
+		private bool syntaxTreeBuilt;		// true if no errors were encountered, false otherwise
+		private NodeBuilder nodeBuilder;	// we ask ST-nodes from the NodeBuilder
+		private Scope programScope;			// the highest scope level
+		private Token bufferedToken;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Compiler.Parser"/> class.
 		/// </summary>
 		/// <param name="symbolTable">The universal symbol table provided by the compiler frontend</param>
 		/// <param name="scanner">The scanner that works for this parser</param>
-		public Parser (Dictionary<string, IProperty> symbolTable, Scanner scanner)
+		public Parser (Scanner scanner)
 		{
 			this.syntaxTree = new SyntaxTree ();
 			this.errors = new List<Error> ();
 			this.syntaxTreeBuilt = false;
-			this.symbolTable = symbolTable;
-			this.nodeFactory = new NodeFactory (symbolTable);
+			this.nodeBuilder = new NodeBuilder ();
 			this.scanner = scanner;
+			this.programScope = null;
+			this.bufferedToken = null;
 		}
 
 		public Scanner Scanner {
@@ -46,6 +44,20 @@ namespace Compiler
 			get { return syntaxTree; }
 		}
 
+		private Token getNextToken ()
+		{
+			Token nextToken;
+
+			if (bufferedToken != null) {
+				nextToken = bufferedToken;
+				bufferedToken = null;
+			} else {
+				nextToken = getNextToken ();
+			}
+
+			return nextToken;
+		}
+			
 		/// <summary>
 		/// This method is called when we want the parsing to be done.
 		/// The AST is returned when finished
@@ -68,20 +80,36 @@ namespace Compiler
 
 		private ProgramNode ParseProgram ()
 		{
-			Token token = scanner.getNextToken ();
+			Token token = getNextToken ();
 
 			switch (token.Type) {
 				case TokenType.PROGRAM:
+						/* The exception handling in the parser is handled using exceptions:
+						
+						   If a parsing method encounters a token it isn't expecting, it throws a
+						   UnexpectedTokenException, which is then catched by some of the methods
+						   lower in the call stack. This method then reports the error and finds
+						   a safe spot where the parsing can continue, by asking new tokens
+						   from the scanner and discarding them until it finds a token it can cope with.
+
+						   This here being the very first parsing method, it means that if the error thrown
+						   higher in the stack is not catched before this point, the next safe point
+						   is the end of file. */
 					try {
-						VariableIdNode idNode = ParseVarId ();
-						match (scanner.getNextToken (), TokenType.END_STATEMENT);
+						this.programScope = new Scope();
+						Token programIdToken = getNextToken ();
+						match(programIdToken, TokenType.ID);
+						syntaxTree.ProgramName = programIdToken.Value;
+						match (getNextToken (), TokenType.END_STATEMENT);
 							
 						FunctionNode functionNode = ParseFunctionsAndProcedures ();
-						BlockNode blockNode = ParseBlock ();
-						match (scanner.getNextToken (), TokenType.DOT);
+						BlockNode blockNode = ParseBlock (programScope);
+						
+						match (getNextToken (), TokenType.DOT);
+						match(getNextToken(), TokenType.END_OF_FILE);
 							
 						if (SyntaxTreeBuilt) {
-							return nodeFactory.CreateProgramNode (token, idNode, functionNode, blockNode);
+							return nodeBuilder.CreateProgramNode (token, functionNode, blockNode, this.programScope);
 						}
 					} catch (UnexpectedTokenException ex) {
 						notifyError (new SyntaxError (ex.Token, ex.ExpectedType, ex.ExpectationSet));
@@ -96,12 +124,12 @@ namespace Compiler
 
 		private FunctionNode ParseFunctionsAndProcedures ()
 		{
-			Token token = scanner.getNextToken ();
+			Token token = getNextToken ();
 			switch (token.Type) {
 				case TokenType.FUNCTION:
 					return ParseFunction (token);
 				case TokenType.PROCEDURE:
-					return ParseProcedure (token);
+					return ParseFunction (token, procedure: true);
 				case TokenType.BEGIN:
 					break;
 				default:
@@ -110,23 +138,36 @@ namespace Compiler
 			return null;
 		}
 
-		private FunctionNode ParseProcedure (Token token)
+		private FunctionNode ParseFunction (Token token, bool procedure=false)
 		{
-			// FIX THE FFWDS
+			VariableIdNode idNode = null;
+			ParametersNode parameters = null;
+			Scope functionScope = new Scope (programScope);
+
 			try {
-				VariableIdNode idNode = ParseVarId ();
+				idNode = ParseVarId (programScope);
 
-				match(scanner.getNextToken(), TokenType.PARENTHESIS_LEFT);
-				ParametersNode parameters = ParseParameters();
+				match(getNextToken(), TokenType.PARENTHESIS_LEFT);
+				parameters = ParseParameters(functionScope);
 
-				idNode.VariableType = TokenType.VOID;
-				match(scanner.getNextToken(), TokenType.END_STATEMENT);
+				if (procedure) {
+					idNode.VariableType = TokenType.VOID;
+				} else {
+					match(getNextToken(), TokenType.SET_TYPE);
+					ParseType (idNode);
+				}
 
-				BlockNode blockNode = ParseBlock();
-				match(scanner.getNextToken(), TokenType.END_STATEMENT);
+				match(getNextToken(), TokenType.END_STATEMENT);
+			} catch (UnexpectedTokenException ex) {
+				FastForwardToStatementEnd (ex);
+			}
+
+			try {
+				BlockNode blockNode = ParseBlock(functionScope);
+				match(getNextToken(), TokenType.END_STATEMENT);
 
 				if (SyntaxTreeBuilt) {
-					FunctionNode functionNode = nodeFactory.CreateFunctionNode(token, idNode, parameters, blockNode);
+					FunctionNode functionNode = nodeBuilder.CreateFunctionNode(token, idNode, parameters, blockNode, functionScope);
 					functionNode.Sequitor = ParseFunctionsAndProcedures ();
 					return functionNode;
 				}
@@ -138,114 +179,329 @@ namespace Compiler
 			return null;
 		}
 
-		private FunctionNode ParseFunction (Token token)
-		{
-			// FIX THE FFWDS
-			try {
-				VariableIdNode idNode = ParseVarId ();
-
-				match(scanner.getNextToken(), TokenType.PARENTHESIS_LEFT);
-				ParametersNode parameters = ParseParameters();
-
-				match(scanner.getNextToken(), TokenType.SET_TYPE);
-				ParseType (idNode);
-				match(scanner.getNextToken(), TokenType.END_STATEMENT);
-
-				BlockNode blockNode = ParseBlock();
-				match(scanner.getNextToken(), TokenType.END_STATEMENT);
-
-				if (SyntaxTreeBuilt) {
-					FunctionNode functionNode = nodeFactory.CreateFunctionNode(token, idNode, parameters, blockNode);
-					functionNode.Sequitor = ParseFunctionsAndProcedures ();
-					return functionNode;
-				}
-			} catch (UnexpectedTokenException ex) {
-				notifyError (new SyntaxError (ex.Token, ex.ExpectedType, ex.ExpectationSet));
-				FastForwardTo (ParserConstants.FUNCTION_FASTFORWARD_TO, token);
-			}
-
-			return null;
-		}
-
-		private ParametersNode ParseParameters ()
+		private ParametersNode ParseParameters (Scope scope)
 		{
 			List<Parameter> parameters = new List<Parameter> ();
 			Token token = null;
 
-			try {
-				while (true) {
-					token = scanner.getNextToken ();
+			while (true) {
+				token = getNextToken ();
 
-					switch (token.Type) {
-						case TokenType.VAR:
-						case TokenType.ID:
-							parameters.Add (ParseParameter(token));
-							break;
-						case TokenType.PARENTHESIS_RIGHT:
-							goto END_WHILE;
-						default:
-							throw new UnexpectedTokenException(token, ParserConstants.EXPECTATION_SET_PARAMETERS);
-					}
+				switch (token.Type) {
+					case TokenType.VAR:
+					case TokenType.ID:
+						parameters.Add (ParseParameter(token, scope));
+						break;
+					case TokenType.PARENTHESIS_RIGHT:
+						goto END_WHILE;
+					default:
+						throw new UnexpectedTokenException(token, ParserConstants.EXPECTATION_SET_PARAMETERS);
+				}
 
-					token = scanner.getNextToken();
+				token = getNextToken();
 
-					switch (token.Type) {
+				switch (token.Type) {
 					case TokenType.PARENTHESIS_RIGHT:
 						goto END_WHILE;
 					case TokenType.COMMA:
 						break;
 					default:
 						throw new UnexpectedTokenException(token, ParserConstants.EXPECTATION_SET_PARAMETER_TAIL);
-					}
 				}
+			}
 
-				END_WHILE:
-				if (SyntaxTreeBuilt) {
-					return nodeFactory.CreateParametersNode(token, parameters);
-				}
-			} catch (UnexpectedTokenException ex) {
-				notifyError (new SyntaxError (ex.Token, ex.ExpectedType, ex.ExpectationSet));
-				FastForwardTo (ParserConstants.PARAMETERS_FASTFORWARD_TO, ex.Token);
+			END_WHILE:
+			if (SyntaxTreeBuilt) {
+				return nodeBuilder.CreateParametersNode(token, parameters);
 			}
 
 			return null;
 		}
 
-		private Parameter ParseParameter (Token token)
+		private Parameter ParseParameter (Token token, Scope scope)
 		{
 			switch (token.Type) {
 				case TokenType.VAR:
-					return Param (reference: true);
+					return Param (scope, reference: true);
 				case TokenType.ID:
-					return Param (token);
+					return Param (scope, token);
 				default:
 					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_PARAMETER);
 			}
 		}
 
-		private Parameter Param(Token idToken=null, bool reference=false)
+		private Parameter Param(Scope scope, Token idToken=null, bool reference=false)
 		{
 			if (reference) {
-				idToken = scanner.getNextToken ();
+				idToken = getNextToken ();
 			}
 
 			if (idToken.Type != TokenType.ID) {
 				throw new UnexpectedTokenException (idToken, TokenType.ID);
 			}
 
-			VariableIdNode idNode = new VariableIdNode (idToken.Value, symbolTable, idToken);
+			VariableIdNode idNode = new VariableIdNode (idToken.Value, scope, idToken);
 
-			match (scanner.getNextToken (), TokenType.SET_TYPE);
+			match (getNextToken (), TokenType.SET_TYPE);
 			TokenType type = ParseType ();
+			scope.AddProperty (idNode.ID, null);
 
 			return new Parameter (idNode, type, reference);
 		}
 
-		private BlockNode ParseBlock ()
+		private BlockNode ParseBlock (Scope scope)
 		{
-			return new BlockNode ();
+			try {
+				Scope newScope = scope.AddChildScope ();
+				StatementsNode statements = ParseStatements (scope);
+				match (getNextToken (), TokenType.END);
+				if (SyntaxTreeBuilt) {
+					return new BlockNode (newScope, statements);
+				}
+			} catch (UnexpectedTokenException ex) {
+				FastForwardToEndOfBlock (ex);
+			}
+
+			return null;
 		}
 
+		private StatementsNode ParseStatements (Scope scope)
+		{
+			IExpressionContainer statement = null;
+			Token token = getNextToken ();
+
+			switch (token.Type) {
+				case TokenType.ID:
+				case TokenType.RETURN:
+				case TokenType.READ:
+				case TokenType.WRITELN:
+				case TokenType.ASSERT:
+					statement = ParseSimpleStatement (scope, token);
+					break;
+				case TokenType.BEGIN:
+				case TokenType.IF:
+				case TokenType.WHILE_LOOP:
+					statement = ParseStructuredStatement (scope, token);
+					break;
+				case TokenType.VAR:
+					statement = ParseVarDeclaration (scope);
+					break;
+				case TokenType.END:
+					return null;
+				default:
+					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_STATEMENTS);
+			}
+
+			StatementsNode statements = nodeBuilder.CreateStatementsNode (token);
+			Token nextToken = getNextToken ();
+
+			switch (nextToken.Type) {
+				case TokenType.END:
+					break;
+				case TokenType.END_STATEMENT:
+					Token nextNextToken = getNextToken ();
+
+					if (nextNextToken.Type != TokenType.END) {
+						bufferedToken = nextNextToken;
+						statements.Sequitor = ParseStatements (scope);
+					}
+
+					break;
+			}
+
+			if (SyntaxTreeBuilt) {
+				return statements;
+			}
+
+			return null;
+		}
+
+		private IExpressionContainer ParseSimpleStatement (Scope scope, Token token)
+		{
+			try {
+				switch (token.Type) {
+					case TokenType.ID:
+						return ParseIdStatement (scope, token);
+					case TokenType.RETURN:
+						return ParseReturnStatement (scope, token);
+					case TokenType.READ:
+						return ParseReadStatement (scope, token);
+					case TokenType.WRITELN:
+						return ParseWriteStatement (scope, token);
+					case TokenType.ASSERT:
+						return ParseAssertStatement (scope, token);
+				}
+			} catch (UnexpectedTokenException ex) {
+				FastForwardToStatementEnd (ex);
+			}
+		}
+
+		private IExpressionContainer ParseIdStatement (Scope scope, Token token)
+		{
+			VariableIdNode idNode = ParseVarId (scope, token);
+			Token next = getNextToken ();
+
+			switch (next.Type) {
+				case TokenType.BRACKET_LEFT:
+					return ParseAssignToArray (idNode, scope);
+				case TokenType.ASSIGN:
+					return ParseAssign (next, idNode, scope);
+				case TokenType.PARENTHESIS_LEFT:
+					ParseFunctionCall (idNode);
+				default:
+					throw new UnexpectedTokenException (next, ParserConstants.EXPECTATION_SET_ID_STATEMENT);
+			}
+		}
+
+		private IExpressionContainer ParseAssignToArray (VariableIdNode idNode, Scope scope)
+		{
+			IExpressionNode arrayIndexExpression = ParseExpression (scope);
+			match (getNextToken (), TokenType.BRACKET_RIGHT);
+			idNode.ArrayIndex = arrayIndexExpression;
+
+			Token token = getNextToken ();
+
+			switch (token.Type) {
+				case TokenType.ASSIGN:
+					return ParseAssignToArray (getNextToken, idNode);
+				default:
+					throw new UnexpectedTokenException (token, TokenType.ASSIGN);
+			}
+		}
+
+		private IExpressionContainer ParseAssign (Token token, VariableIdNode idNode, Scope scope)
+		{
+			IExpressionNode expression = ParseExpression (scope);
+
+			if (SyntaxTreeBuilt) {
+				return nodeBuilder.CreateAssignNode (idNode, scope, token, expression);
+			}
+
+			return null;
+		}
+
+		private IExpressionNode ParseExpression (Scope scope)
+		{
+			Token token = getNextToken ();
+
+			switch (token.Type) {
+				case TokenType.SIGN_MINUS:
+				case TokenType.SIGN_PLUS:
+				case TokenType.ID:
+				case TokenType.STRING_VAL:
+				case TokenType.INTEGER_VAL:
+				case TokenType.BOOLEAN_VAL_FALSE:
+				case TokenType.BOOLEAN_VAL_TRUE:
+				case TokenType.REAL_VAL:
+				case TokenType.PARENTHESIS_LEFT:
+				case TokenType.UNARY_OP_LOG_NEG:
+					IExpressionNode expression = ParseSimpleExpression (scope, token);
+					return ParseExpressionTail (expression, scope);
+				default:
+					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
+			}
+		}
+
+		private IExpressionNode ParseSimpleExpression (Scope scope, Token token)
+		{
+			IExpressionNode lhs = null;
+			switch (token.Type) {
+				case TokenType.ID:
+				case TokenType.STRING_VAL:
+				case TokenType.INTEGER_VAL:
+				case TokenType.BOOLEAN_VAL_FALSE:
+				case TokenType.BOOLEAN_VAL_TRUE:
+				case TokenType.REAL_VAL:
+				case TokenType.PARENTHESIS_LEFT:
+				case TokenType.UNARY_OP_LOG_NEG:
+					lhs = ParseTerm (scope, token);
+				case TokenType.SIGN_MINUS:
+					lhs = ParseUnaryOp (TokenType.UNARY_OP_NEGATIVE, scope);
+				case TokenType.SIGN_PLUS:
+					lhs = ParseUnaryOp (TokenType.UNARY_OP_POSITIVE, scope);
+				default:
+					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
+			}
+		
+			return ParseSimpleExpressionTail (lhs, scope);
+		}
+
+		private IExpressionNode ParseTerm (Scope scope, Token token)
+		{
+			switch (token.Type) {
+			case TokenType.ID:
+			case TokenType.STRING_VAL:
+			case TokenType.INTEGER_VAL:
+			case TokenType.BOOLEAN_VAL_FALSE:
+			case TokenType.BOOLEAN_VAL_TRUE:
+			case TokenType.REAL_VAL:
+			case TokenType.PARENTHESIS_LEFT:
+			case TokenType.UNARY_OP_LOG_NEG:
+				IExpressionNode factor = ParseFactor (scope, token);
+				return ParseTermTail (factor, scope);
+			default:
+				throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
+			}
+		}
+
+		private IExpressionNode ParseFactor (Scope scope, Token token)
+		{
+			switch (token.Type) {
+			case TokenType.ID:
+			case TokenType.STRING_VAL:
+			case TokenType.INTEGER_VAL:
+			case TokenType.BOOLEAN_VAL_FALSE:
+			case TokenType.BOOLEAN_VAL_TRUE:
+			case TokenType.REAL_VAL:
+			case TokenType.PARENTHESIS_LEFT:
+			case TokenType.UNARY_OP_LOG_NEG:
+				IExpressionNode factor = ParseFactorMain (scope, token);
+				return ParseFactorTail (factor, scope);
+			default:
+				throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
+			}
+		}
+
+		private IExpressionNode ParseFactorMain (Scope scope, Token token)
+		{
+			switch (token.Type) {
+			case TokenType.ID:
+				VariableIdNode idNode = ParseVarId (scope, token);
+				return ParseFactorIdTail (idNode, scope);
+			case TokenType.STRING_VAL:
+			case TokenType.INTEGER_VAL:
+			case TokenType.BOOLEAN_VAL_FALSE:
+			case TokenType.BOOLEAN_VAL_TRUE:
+			case TokenType.REAL_VAL:
+				return ParseLiteral (token);
+			case TokenType.PARENTHESIS_LEFT:
+				return ParseExpression (scope);
+			case TokenType.UNARY_OP_LOG_NEG:
+				IExpressionNode factor = ParseFactor (scope, getNextToken ());
+				return nodeBuilder.CreateUnOpNode(token, factor);
+			default:
+				throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
+			}
+		}
+
+		private IExpressionNode ParseFactorIdTail (VariableIdNode idNode, Scope scope)
+		{
+			Token token = getNextToken ();
+			switch (token.Type) {
+			case (TokenType.PARENTHESIS_LEFT):
+				return ParseCallTail(idNode, scope, token);
+			default:
+				bufferedToken = token;
+				return idNode;
+			}
+		}
+
+		private IExpressionNode ParseCallTail(VariableIdNode idNode, Scope scope, Token token)
+		{
+			ArgumentsNode arguments = ParseArguments (scope);
+		}
+
+		/*
 		/// <summary>
 		/// Starting point for the recursive descent parsing.
 		/// </summary>
@@ -267,20 +523,10 @@ namespace Compiler
 					try {	
 						next = ParseStatements (token, root);	// try to parse statements
 					} catch (UnexpectedTokenException ex) {
-						/* The exception handling in the parser is handled using exceptions:
 						
-						   If a parsing method encounters a token it isn't expecting, it throws a
-						   UnexpectedTokenException, which is then catched by some of the methods
-						   lower in the call stack. This method then reports the error and finds
-						   a safe spot where the parsing can continue, by asking new tokens
-						   from the scanner and discarding them until it finds a token it can cope with.
-
-						   This here being the very first parsing method, it means that if the error thrown
-						   higher in the stack is not catched before this point, the next safe point
-						   is the end of file. */
 						next = FastForwardToSourceEnd (ex);
 					}
-					
+
 					try {
 						match (next, TokenType.END_OF_FILE);	// we are excpecting the token to be end of file
 					} catch (UnexpectedTokenException ex) {
@@ -313,12 +559,7 @@ namespace Compiler
 				case TokenType.WRITELN:
 				case TokenType.ASSERT:
 				case TokenType.ID:
-					/* Asks the NodeBuilder to create a StatementsNode and affiliate it with the
-					   parent node given as argument.
-
-					   Note that the token the scanner provides is also connected to its corresponding
-					   node(s). This makes it easier to print informative error messages in case something
-					   goes wrong. */
+					
 					StatementsNode statements = nodeFactory.CreateStatementsNode (parent, token);
 					Token next;
 					
@@ -493,14 +734,15 @@ namespace Compiler
 				return FastForwardToStatementEnd (ex);
 			}
 		}
+		*/
 
-		private VariableIdNode ParseVarId() {
-			Token token = scanner.getNextToken ();
+		private VariableIdNode ParseVarId(Scope scope, Token idToken=null) {
+			Token token = idToken == null ? getNextToken () : idToken;
 
 			switch (token.Type) {
 				case TokenType.ID:
 					if (SyntaxTreeBuilt) {
-						return nodeFactory.CreateIdNode (token);
+						return nodeBuilder.CreateIdNode (token, scope);
 					}
 					break;
 				default:
@@ -510,6 +752,7 @@ namespace Compiler
 			return null;
 		}
 
+		/*
 		/// <summary>
 		/// Parses a variable id into a VariableIdNode
 		/// </summary>
@@ -563,25 +806,29 @@ namespace Compiler
 
 			return scanner.getNextToken (token);
 		}
+		*/
 
 		private void ParseType (VariableIdNode idNode)
 		{
-			Token token = scanner.getNextToken ();
-			// MUST ADD REALS HERE AS WELL
+			Token token = getNextToken ();
+
 			switch (token.Type) {
 				case TokenType.TYPE_INTEGER:
 					// set the id node's type
 					idNode.VariableType = TokenType.INTEGER_VAL;
 					// add the id to the symbol table, with its value set to default value
-					symbolTable.Add (idNode.ID, (new IntegerProperty (SemanticAnalysisConstants.DEFAULT_INTEGER_VALUE)));
+					// symbolTable.Add (idNode.ID, (new IntegerProperty (SemanticAnalysisConstants.DEFAULT_INTEGER_VALUE)));
 					break;
 				case TokenType.TYPE_STRING:
 					idNode.VariableType = TokenType.STRING_VAL;
-					symbolTable.Add (idNode.ID, new StringProperty (SemanticAnalysisConstants.DEFAULT_STRING_VALUE));
+					// symbolTable.Add (idNode.ID, new StringProperty (SemanticAnalysisConstants.DEFAULT_STRING_VALUE));
 					break;
 				case TokenType.TYPE_BOOLEAN:
-					idNode.VariableType = TokenType.BOOLEAN_VAL_FALSE;
-					symbolTable.Add (idNode.ID, new BooleanProperty (SemanticAnalysisConstants.DEFAULT_BOOL_VALUE));
+					idNode.VariableType = TokenType.BOOLEAN_VAL;
+					// symbolTable.Add (idNode.ID, new BooleanProperty (SemanticAnalysisConstants.DEFAULT_BOOL_VALUE));
+					break;
+				case TokenType.TYPE_REAL:
+					idNode.VariableType = TokenType.REAL_VAL;
 					break;
 				default:
 					throw new UnexpectedTokenException (token, TokenType.UNDEFINED, ParserConstants.EXPECTATION_SET_DECLARATION_TYPE);
@@ -590,7 +837,7 @@ namespace Compiler
 
 		private TokenType ParseType ()
 		{
-			Token token = scanner.getNextToken ();
+			Token token = getNextToken ();
 			switch (token.Type) {
 				case TokenType.TYPE_INTEGER:
 				case TokenType.TYPE_STRING:
@@ -602,6 +849,7 @@ namespace Compiler
 			}
 		}
 
+		/*
 		/// <summary>
 		/// Parses an assignment during a declaration statement into an AssignNode. 
 		/// </summary>
@@ -801,6 +1049,7 @@ namespace Compiler
 					throw new UnexpectedTokenException (assignNode.IDNode.Token, TokenType.UNDEFINED, ParserConstants.EXPECTATION_SET_ID_VAL);
 			} 
 		}
+		*/
 
 		/// <summary>
 		/// Match the specified token and expectedType.
@@ -823,7 +1072,7 @@ namespace Compiler
 		/// </summary>
 		/// <returns>The last token, namely the EOF token.</returns>
 		/// <param name="ex">An UnexpectedTokenException.</param>
-		private Token FastForwardToSourceEnd (UnexpectedTokenException ex)
+		private void FastForwardToSourceEnd (UnexpectedTokenException ex)
 		{
 			// report the error
 			notifyError(new SyntaxError(ex.Token, ex.ExpectedType, ex.ExpectationSet));
@@ -833,10 +1082,8 @@ namespace Compiler
 
 			// ask for new token's until the end of file has been reached
 			do {
-				token = scanner.getNextToken (null);
+				token = getNextToken (null);
 			} while (token.Type != TokenType.END_OF_FILE);
-
-			return token;
 		}
 
 		/// <summary>
@@ -846,7 +1093,7 @@ namespace Compiler
 		/// <returns>The token fastforwarded to.</returns>
 		/// <param name="tokenTypes">Token types.</param>
 		/// <param name="errorToken">The token that caused the error.</param>
-		private Token FastForwardTo (Dictionary<TokenType, string> tokenTypes, Token errorToken)
+		private void FastForwardTo (Dictionary<TokenType, string> tokenTypes, Token errorToken)
 		{
 			syntaxTreeBuilt = false;
 
@@ -855,10 +1102,8 @@ namespace Compiler
 			// ask for another token until the token's type matches one of
 			// the types in the keyset
 			while (!tokenTypes.ContainsKey(token.Type)) {
-				token = scanner.getNextToken (token);
+				token = getNextToken (token);
 			}
-
-			return token;
 		}
 
 		/// <summary>
@@ -866,11 +1111,11 @@ namespace Compiler
 		/// </summary>
 		/// <returns>The token that ends the statement.</returns>
 		/// <param name="ex">An UnexpectedTokenException.</param>
-		private Token FastForwardToStatementEnd (UnexpectedTokenException ex)
+		private void FastForwardToStatementEnd (UnexpectedTokenException ex)
 		{
 			notifyError (new SyntaxError (ex.Token, ex.ExpectedType, ex.ExpectationSet));
 
-			return FastForwardTo (ParserConstants.STATEMENT_FASTFORWARD_TO, ex.Token);
+			FastForwardTo (ParserConstants.STATEMENT_FASTFORWARD_TO, ex.Token);
 		}
 
 		/// <summary>
@@ -878,9 +1123,9 @@ namespace Compiler
 		/// </summary>
 		/// <returns>The token that ends the statement.</returns>
 		/// <param name="token">A Token.</param>
-		private Token FastForwardToStatementEnd (Token token)
+		private void FastForwardToStatementEnd (Token token)
 		{
-			return FastForwardTo (ParserConstants.STATEMENT_FASTFORWARD_TO, token);
+			FastForwardTo (ParserConstants.STATEMENT_FASTFORWARD_TO, token);
 		}
 
 		/// <summary>
@@ -888,35 +1133,27 @@ namespace Compiler
 		/// </summary>
 		/// <returns>The token that ends the for-loop block</returns>
 		/// <param name="ex">An UnexpectedTokenException.</param>
-		private Token FastForwardToEndOfBlock (UnexpectedTokenException ex)
+		private void FastForwardToEndOfBlock (UnexpectedTokenException ex)
 		{
 			notifyError (new SyntaxError (ex.Token, ex.ExpectedType, ex.ExpectationSet));
 			Token token = ex.Token;
 			// since blocks can be nested, we must track the depth we're in to make sure
 			// we find the correct end statement
 			int blockDepth = 0;
-			bool blockEndFound = false;
 
 			while (token.Type != TokenType.END_OF_FILE) {
 				if (token.Type == TokenType.END) {		// if an end of block is found
 					if (blockDepth == 0) {						// and the depth matches
-						return scanner.getNextToken (null);		// return the next token
-					}
-					blockEndFound = true;
-				} else if (token.Type == TokenType.WHILE_LOOP) {	// if we find another for-loop token
-					if (blockEndFound) {						// and the last token was an end block token
-						blockDepth--;							// decrease the depth
-						blockEndFound = false;
+						break;		// return the next token
 					} else {
-						blockDepth++;							// otherwise, increase the depth
+						blockDepth--;
 					}
-				} else {
-					blockEndFound = false;
+				} else if (token.Type == TokenType.BEGIN) {
+					blockDepth++;
 				}
-				token = scanner.getNextToken (null);
-			}
 
-			return token;
+				token = getNextToken (null);
+			}
 		}
 
 		public void notifyError (Error error)

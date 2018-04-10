@@ -11,19 +11,27 @@ namespace Compiler
 	public class VariableIdNode : IExpressionNode
 	{
 		private string id;
-		private Dictionary<string, IProperty> symbolTable;
+		private Scope scope;
 		private TokenType variableType;
 		private Token token;
+		private IExpressionNode arrayIndexNode;
+		private bool arrayRequestSize;
 
-		public VariableIdNode(Dictionary<string, IProperty> symbolTable)
-			: this(null, symbolTable, null)
+		public VariableIdNode(Scope scope)
+			: this(null, scope, null, null)
 		{}
 
-		public VariableIdNode (string id, Dictionary<string, IProperty> symbolTable, Token token)
+		public VariableIdNode(string id, Scope scope, Token token)
+			: this(id, scope, token, null)
+		{}
+
+		public VariableIdNode (string id, Scope scope, Token token, IExpressionNode arrayIndexNode)
 		{
 			this.id = id;
-			this.symbolTable = symbolTable;
+			this.scope = scope;
 			this.token = token;
+			this.arrayIndexNode = arrayIndexNode;
+			this.arrayRequestSize = false;
 		}
 
 		/// <summary>
@@ -33,7 +41,7 @@ namespace Compiler
 		/// <value>The type of the evaluation.</value>
 		public TokenType EvaluationType
 		{
-			get { return symbolTable [id].GetTokenType (); }
+			get { return scope.GetProperty (id).GetTokenType (); }
 			set { }
 		}
 
@@ -72,6 +80,18 @@ namespace Compiler
 		{
 			get { return this.token; }
 			set { this.token = value; }
+		}
+
+		public IExpressionNode ArrayIndex
+		{
+			get { return arrayIndexNode; }
+			set { arrayIndexNode = value; }
+		}
+
+		public bool ArrayRequestSize
+		{
+			get { return arrayRequestSize; }
+			set { arrayRequestSize = value; }
 		}
 	}
 }

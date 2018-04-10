@@ -4,17 +4,17 @@ namespace Compiler
 {
 	public class ProgramNode : ISyntaxTreeNode
 	{
-		Token token;
-		VariableIdNode idNode;
-		FunctionNode functionNode;
-		BlockNode mainBlock;
+		private Token token;
+		private FunctionNode functionNode;
+		private BlockNode mainBlock;
+		private Scope scope;
 
-		public ProgramNode (Token token, VariableIdNode idNode, FunctionNode functionNode, BlockNode mainBlock)
+		public ProgramNode (Token token, FunctionNode functionNode, BlockNode mainBlock, Scope scope)
 		{
 			this.token = token;
-			this.idNode = idNode;
 			this.functionNode = functionNode;
 			this.mainBlock = mainBlock;
+			this.scope = scope;
 		}
 
 		public ISemanticCheckValue Accept(INodeVisitor visitor)

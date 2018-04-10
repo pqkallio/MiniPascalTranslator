@@ -46,6 +46,7 @@ namespace Compiler
 		ASSERT,				// "assert" terminal
 		INTEGER_VAL,			// an integer value
 		TYPE_INTEGER,		// integer type
+		BOOLEAN_VAL,		// boolean value in general
 		BOOLEAN_VAL_FALSE,	// a boolean value, false
 		BOOLEAN_VAL_TRUE,	// a boolean value, true
 		TYPE_BOOLEAN,		// boolean type

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Compiler;
 
 namespace Translator
@@ -14,15 +15,9 @@ namespace Translator
 
 			SourceBuffer buf = new SourceBuffer(@args[0]);
 			string[] sourceLines = buf.SourceLines;
-
 			Scanner sc = new Scanner (sourceLines);
-
-			Token token = null;
-
-			while (token == null || token.Type != TokenType.END_OF_FILE) {
-				token = sc.getNextToken (token);
-				Console.WriteLine (token);
-			}
+			Parser parser = new Parser (sc);
+			parser.Parse ();
 		}
 	}
 }

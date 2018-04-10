@@ -13,9 +13,10 @@ namespace Compiler
 		private Token token;
 		private TokenType evaluationType;
 
-		public UnOpNode (Token t)
+		public UnOpNode (Token t, IExpressionNode operand=null)
 		{
 			this.token = t;
+			this.operand = operand;
 			this.evaluationType = TokenType.UNDEFINED;
 		}
 

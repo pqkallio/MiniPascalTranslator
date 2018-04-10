@@ -14,14 +14,14 @@ namespace Compiler
 		private IExpressionNode exprNode;
 		private Token token;
 
-		public AssignNode (VariableIdNode idNode, Dictionary<string, IProperty> symbolTable)
-			: this (idNode, symbolTable, null)
+		public AssignNode (VariableIdNode idNode, Scope scope)
+			: this (idNode, scope, null)
 		{}
 
-		public AssignNode (VariableIdNode idNode, Dictionary<string, IProperty> symbolTable, Token token)
+		public AssignNode (VariableIdNode idNode, Scope scope, Token token, IExpressionNode expr=null)
 		{
 			this.idNode = idNode;
-			this.exprNode = null;
+			this.exprNode = expr;
 			this.token = token;
 		}
 

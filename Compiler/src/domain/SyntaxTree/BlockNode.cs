@@ -5,9 +5,14 @@ namespace Compiler
 	public class BlockNode : ISyntaxTreeNode
 	{
 		private Token token;
+		private Scope blockScope;
+		StatementsNode statements;
 
-		public BlockNode ()
-		{}
+		public BlockNode (Scope blockScope, StatementsNode statements)
+		{
+			this.blockScope = blockScope;
+			this.statements = statements;
+		}
 
 		public ISemanticCheckValue Accept(INodeVisitor visitor)
 		{

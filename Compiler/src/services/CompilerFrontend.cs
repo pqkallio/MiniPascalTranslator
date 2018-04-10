@@ -25,7 +25,7 @@ namespace Compiler
 			this.sourceLines = readSource (filePath);
 			this.symbolTable = new Dictionary<string, IProperty> ();
 			this.scanner = new Scanner (sourceLines);
-			this.parser = new Parser (symbolTable, scanner);
+			this.parser = new Parser (scanner);
 		}
 
 		/// <summary>
@@ -43,9 +43,9 @@ namespace Compiler
 			}
 
 			// perform semantic analysis
-			semanticAnalyzer = new SemanticAnalyzer (syntaxTree, symbolTable);
+			//semanticAnalyzer = new SemanticAnalyzer (syntaxTree, symbolTable);
 
-			semanticAnalyzer.Analyze ();
+			//semanticAnalyzer.Analyze ();
 
 			// return the AST
 			return syntaxTree;

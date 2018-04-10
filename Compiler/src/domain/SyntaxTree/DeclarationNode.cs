@@ -13,7 +13,7 @@ namespace Compiler
 		private AssignNode assignNode;
 		private Token token;
 
-		public DeclarationNode (VariableIdNode idNode, Dictionary<string, IProperty> ids, Token t)
+		public DeclarationNode (VariableIdNode idNode, Token t)
 		{
 			this.idNode = idNode;
 			this.token = t;

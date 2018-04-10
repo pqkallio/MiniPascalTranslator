@@ -9,13 +9,15 @@ namespace Compiler
 		private FunctionNode sequitor;
 		private ParametersNode parameters;
 		private TokenType returnType;
+		private Scope scope;
 
-		public FunctionNode (Token token, VariableIdNode idNode, ParametersNode parametersNode, BlockNode block)
+		public FunctionNode (Token token, VariableIdNode idNode, ParametersNode parametersNode, BlockNode block, Scope scope)
 		{
 			this.token = token;
 			this.block = block;
 			this.sequitor = null;
 			this.returnType = idNode.VariableType;
+			this.scope = scope;
 		}
 
 		public ISemanticCheckValue Accept (INodeVisitor visitor)

@@ -13,10 +13,10 @@ namespace Compiler
 		private AssignNode assignNode;
 		private Token token;
 
-		public IOReadNode (VariableIdNode idNode, Dictionary<string, IProperty> symbolTable, Token t)
+		public IOReadNode (VariableIdNode idNode, Scope scope, Token t)
 		{
 			this.idNode = idNode;
-			this.assignNode = new AssignNode (this.idNode, symbolTable, t);
+			this.assignNode = new AssignNode (this.idNode, scope, t);
 			this.token = t;
 		}
 

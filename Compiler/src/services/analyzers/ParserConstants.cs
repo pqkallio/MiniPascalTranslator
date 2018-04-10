@@ -105,12 +105,22 @@ namespace Compiler
 		public static readonly string[] EXPECTATION_SET_STATEMENTS = new string[] 
 		{
 			TOKEN_TYPE_STRINGS[TokenType.VAR],
+			TOKEN_TYPE_STRINGS[TokenType.RETURN],
+			TOKEN_TYPE_STRINGS[TokenType.BEGIN],
+			TOKEN_TYPE_STRINGS[TokenType.IF],
 			TOKEN_TYPE_STRINGS[TokenType.WHILE_LOOP],
 			TOKEN_TYPE_STRINGS[TokenType.READ],
 			TOKEN_TYPE_STRINGS[TokenType.WRITELN],
 			TOKEN_TYPE_STRINGS[TokenType.ASSERT],
 			IDENTIFIER_STR,
 			TOKEN_TYPE_STRINGS[TokenType.END_OF_FILE]
+		};
+
+		public static readonly string[] EXPECTATION_SET_ID_STATEMENT = new string[]
+		{
+			TOKEN_TYPE_STRINGS[TokenType.BRACKET_LEFT],
+			TOKEN_TYPE_STRINGS[TokenType.ASSIGN],
+			TOKEN_TYPE_STRINGS[TokenType.PARENTHESIS_LEFT]
 		};
 
 		public static readonly string[] EXPECTATION_SET_STATEMENT = new string[] 
