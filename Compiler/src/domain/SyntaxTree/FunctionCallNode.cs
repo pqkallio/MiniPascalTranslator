@@ -3,22 +3,16 @@ using System.Collections.Generic;
 
 namespace Compiler
 {
-	public class FunctionCallNode : IIdentifierContainer, IExpressionNode
+	public class FunctionCallNode : SyntaxTreeNode
 	{
-		private Token token;
 		private VariableIdNode idNode;
 		private ArgumentsNode argumentsNode;
 
 		public FunctionCallNode (Token token, VariableIdNode idNode, ArgumentsNode argumentsNode = null)
+			: base(token)
 		{
-			this.token = token;
 			this.idNode = idNode;
 			this.argumentsNode = argumentsNode;
-		}
-
-		public Token Token
-		{
-			get{ return token; }
 		}
 
 		public ArgumentsNode ArgumentsNode
@@ -55,6 +49,11 @@ namespace Compiler
 		public TokenType Operation { 
 			get { return TokenType.BINARY_OP_NO_OP; }
 			set { }
+		}
+
+		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		{
+			return null;
 		}
 	}
 }

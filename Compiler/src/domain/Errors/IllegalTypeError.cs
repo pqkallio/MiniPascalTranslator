@@ -7,7 +7,7 @@ namespace Compiler
 	/// </summary>
 	public class IllegalTypeError : SemanticError
 	{
-		public IllegalTypeError (ISyntaxTreeNode node)
+		public IllegalTypeError (SyntaxTreeNode node)
 			: base(ErrorConstants.ILLEGAL_TYPE_ERROR_MESSAGE, node)
 		{}
 	}

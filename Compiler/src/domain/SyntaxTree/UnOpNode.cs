@@ -6,16 +6,15 @@ namespace Compiler
 	/// <summary>
 	/// Represents a unary operation in the AST
 	/// </summary>
-	public class UnOpNode : IExpressionContainer, IExpressionNode
+	public class UnOpNode : StatementNode, IExpressionNode
 	{
 		private IExpressionNode operand;
 		private TokenType operation;
-		private Token token;
 		private TokenType evaluationType;
 
 		public UnOpNode (Token t, IExpressionNode operand=null)
+			: base(t)
 		{
-			this.token = t;
 			this.operand = operand;
 			this.evaluationType = TokenType.UNDEFINED;
 		}
@@ -60,14 +59,8 @@ namespace Compiler
 			return operation;
 		}
 
-		public ISemanticCheckValue Accept(INodeVisitor visitor) {
+		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return visitor.VisitUnOpNode (this);
-		}
-
-		public Token Token
-		{
-			get { return this.token; }
-			set { }
 		}
 	}
 }

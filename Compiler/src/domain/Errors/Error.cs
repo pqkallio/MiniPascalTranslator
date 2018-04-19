@@ -10,13 +10,14 @@ namespace Compiler
 		private string title;			// the error's title
 		private string errorMessage;	// the error message
 		private Token token;			// the token where the error occured
-		private ISyntaxTreeNode node;	// the node where the error occured
+		private SyntaxTreeNode node;	// the node where the error occured
 
-		public Error (string title, string errorMessage, ISyntaxTreeNode node)
+		public Error (string title, string errorMessage, SyntaxTreeNode node = null, Token token = null)
 		{
 			this.title = title;
 			this.errorMessage = errorMessage;
 			this.node = node;
+			this.token = token;
 		}
 
 		public Error (string title, string errorMessage, Token token)
@@ -47,7 +48,7 @@ namespace Compiler
 				}
 		}
 
-		public ISyntaxTreeNode Node {
+		public SyntaxTreeNode Node {
 			get { return this.Node; }
 		}
 

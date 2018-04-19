@@ -69,7 +69,6 @@
     <Compile Include="src\domain\SyntaxTree\IOPrintNode.cs" />
     <Compile Include="src\domain\SyntaxTree\IOReadNode.cs" />
     <Compile Include="src\domain\SyntaxTree\IStatementsContainer.cs" />
-    <Compile Include="src\domain\SyntaxTree\ISyntaxTreeNode.cs" />
     <Compile Include="src\domain\SyntaxTree\IntValueNode.cs" />
     <Compile Include="src\domain\SyntaxTree\RootNode.cs" />
     <Compile Include="src\domain\SyntaxTree\StatementsNode.cs" />
@@ -79,12 +78,9 @@
     <Compile Include="src\domain\SyntaxTree\VariableIdNode.cs" />
     <Compile Include="src\domain\Values\BooleanProperty.cs" />
     <Compile Include="src\domain\Values\ErrorProperty.cs" />
-    <Compile Include="src\domain\Values\IProperty.cs" />
     <Compile Include="src\domain\Values\IntegerProperty.cs" />
     <Compile Include="src\domain\Values\StringProperty.cs" />
     <Compile Include="src\domain\Values\VoidProperty.cs" />
-    <Compile Include="src\domain\Visitors\EvaluationVisitor.cs" />
-    <Compile Include="src\domain\Visitors\ExecutionVisitor.cs" />
     <Compile Include="src\domain\Visitors\INodeVisitor.cs" />
     <Compile Include="src\domain\Visitors\StatementCheckVisitor.cs" />
     <Compile Include="src\domain\Visitors\TypeCheckingVisitor.cs" />
@@ -109,5 +105,36 @@
     <Compile Include="src\services\NodeBuilder.cs" />
     <Compile Include="src\domain\SyntaxTree\FunctionCallNode.cs" />
     <Compile Include="src\domain\SyntaxTree\ArgumentsNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\RealValueNode.cs" />
+    <Compile Include="src\domain\Values\RealProperty.cs" />
+    <Compile Include="src\domain\SyntaxTree\ArraySizeCheckNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\TermNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\ProcedureNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\ArrayAccessNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\TypeNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\SimpleTypeNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\ArrayTypeNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\IfNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\WhileNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\ExpressionNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\SyntaxTreeNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\SimpleExpression.cs" />
+    <Compile Include="src\domain\SyntaxTree\SimpleExpressionTail.cs" />
+    <Compile Include="src\domain\SyntaxTree\Factor.cs" />
+    <Compile Include="src\domain\SyntaxTree\FactorMain.cs" />
+    <Compile Include="src\domain\SyntaxTree\FactorTail.cs" />
+    <Compile Include="src\domain\SyntaxTree\ReturnStatement.cs" />
+    <Compile Include="src\services\MiniPascalLabelFactory.cs" />
+    <Compile Include="src\services\ILabelFactory.cs" />
+    <Compile Include="src\domain\Values\FunctionProperty.cs" />
+    <Compile Include="src\domain\Values\Property.cs" />
+    <Compile Include="src\domain\Errors\IllegalArrayElementTypeError.cs" />
+    <Compile Include="src\domain\Errors\IllegalArrayElementTypeException.cs" />
+    <Compile Include="src\domain\Errors\MiniPascalException.cs" />
+    <Compile Include="src\domain\SyntaxTree\ExpressionTail.cs" />
+    <Compile Include="src\domain\SyntaxTree\TermTail.cs" />
+    <Compile Include="src\domain\SyntaxTree\Evaluee.cs" />
+    <Compile Include="src\domain\SyntaxTree\ArrayAssignStatement.cs" />
+    <Compile Include="src\domain\SyntaxTree\StatementNode.cs" />
   </ItemGroup>
 </Project>

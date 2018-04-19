@@ -3,24 +3,18 @@ using System.Collections.Generic;
 
 namespace Compiler
 {
-	public class ParametersNode : ISyntaxTreeNode
+	public class ParametersNode : SyntaxTreeNode
 	{
-		private Token token;
 		private List<Parameter> parameters;
 
-		public ParametersNode (Token token)
-		{
-			this.token = token;
-		}
-
 		public ParametersNode (Token token, params Parameter[] parameters)
-			: this(token)
+			: base(token)
 		{
 			this.parameters = new List<Parameter> (parameters);
 		}
 
 		public ParametersNode (Token token, List<Parameter> parameters)
-			: this(token)
+			: base(token)
 		{
 			this.parameters = parameters;
 		}
@@ -39,14 +33,9 @@ namespace Compiler
 			get { return parameters; }
 		}
 
-		public ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override ISemanticCheckValue Accept(INodeVisitor visitor)
 		{
 			return null;
-		}
-
-		public Token Token {
-			get { return token; }
-			set { this.token = value; }
 		}
 	}
 }

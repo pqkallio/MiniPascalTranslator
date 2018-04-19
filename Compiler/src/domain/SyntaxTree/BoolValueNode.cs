@@ -6,19 +6,23 @@ namespace Compiler
 	/// <summary>
 	/// Represents a boolean value in the AST
 	/// </summary>
-	public class BoolValueNode : IExpressionNode, ISemanticCheckValue
+	public class BoolValueNode : SyntaxTreeNode, ISemanticCheckValue
 	{
 		private bool value;
-		private Token token;
 
 		public BoolValueNode (bool value)
 			: this(value, new Token (0, 0, "", TokenType.BOOLEAN_VAL_FALSE))
 		{}
 
 		public BoolValueNode (bool value, Token t)
+			: base(t)
 		{
 			this.value = value;
-			this.token = t;
+		}
+
+		public Property asProperty()
+		{
+			return new BooleanProperty ();
 		}
 
 		public TokenType EvaluationType
@@ -43,19 +47,8 @@ namespace Compiler
 			set { }
 		}
 
-		public ISemanticCheckValue Accept(INodeVisitor visitor) {
+		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return visitor.VisitBoolValueNode (this);
-		}
-
-		public IProperty asProperty ()
-		{
-			return new BooleanProperty(Value);
-		}
-
-		public Token Token
-		{
-			get { return this.token; }
-			set { }
 		}
 
 		public override string ToString ()

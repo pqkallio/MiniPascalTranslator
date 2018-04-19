@@ -2,7 +2,7 @@
 
 namespace Compiler
 {
-	public interface IIdentifierContainer : ISyntaxTreeNode
+	public interface IIdentifierContainer
 	{
 		VariableIdNode IDNode {
 			get;

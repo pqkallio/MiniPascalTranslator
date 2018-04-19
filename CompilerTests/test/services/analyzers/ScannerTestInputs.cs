@@ -23,7 +23,7 @@ namespace CompilerTests
 			{new[] {"Boolean"}, TokenType.TYPE_BOOLEAN},
 			{new[] {"assert"}, TokenType.ASSERT},
 			{new[] {"size"}, TokenType.SIZE},
-			{new[] {"array"}, TokenType.ARRAY},
+			{new[] {"array"}, TokenType.TYPE_ARRAY},
 			{new[] {"real"}, TokenType.TYPE_REAL},
 			{new[] {"or"}, TokenType.BINARY_OP_LOG_OR},
 			{new[] {"and"}, TokenType.BINARY_OP_LOG_AND},

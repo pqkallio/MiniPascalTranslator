@@ -7,7 +7,7 @@ namespace Compiler
 	/// </summary>
 	public class IllegalAssignmentError : SemanticError
 	{
-		public IllegalAssignmentError (ISyntaxTreeNode node)
+		public IllegalAssignmentError (SyntaxTreeNode node)
 			: base(ErrorConstants.ILLEGAL_ASSIGNMENT_ERROR_MESSAGE, node)
 		{}
 	}

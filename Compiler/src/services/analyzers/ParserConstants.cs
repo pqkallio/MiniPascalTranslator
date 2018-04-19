@@ -18,6 +18,14 @@ namespace Compiler
 			{TokenType.UNARY_OP_NEGATIVE, null}
 		};
 
+		public static readonly Dictionary<TokenType, string> SIMPLE_TYPES = new Dictionary<TokenType, string> ()
+		{
+			{TokenType.TYPE_INTEGER, null},
+			{TokenType.TYPE_BOOLEAN, null},
+			{TokenType.TYPE_REAL, null},
+			{TokenType.TYPE_STRING, null}
+		};
+
 		public static readonly Dictionary<TokenType, string> STATEMENT_FASTFORWARD_TO = new Dictionary<TokenType, string> () 
 		{
 			{TokenType.END_STATEMENT, null},
@@ -167,6 +175,29 @@ namespace Compiler
 			INT_VAL_STR,
 			STR_VAL_STR,
 			BOOL_VAL_STR
+		};
+
+		public static readonly string[] EXPECTATION_SET_ARGUMENTS = new string[]
+		{
+			EXPRESSION_STR,
+			TOKEN_TYPE_STRINGS[TokenType.COMMA],
+			TOKEN_TYPE_STRINGS[TokenType.PARENTHESIS_RIGHT]
+		};
+
+		public static readonly string[] EXPECTATION_SET_LITERAL = new string[]
+		{
+			TOKEN_TYPE_STRINGS[TokenType.STRING_VAL],
+			TOKEN_TYPE_STRINGS[TokenType.INTEGER_VAL],
+			TOKEN_TYPE_STRINGS[TokenType.REAL_VAL],
+			TOKEN_TYPE_STRINGS[TokenType.BOOLEAN_VAL]
+		};
+
+		public static readonly string[] EXPECTATION_SET_RETURN_STATEMENT = new string[]
+		{
+			EXPRESSION_STR,
+			TOKEN_TYPE_STRINGS[TokenType.END_STATEMENT],
+			TOKEN_TYPE_STRINGS[TokenType.END],
+			TOKEN_TYPE_STRINGS[TokenType.ELSE]
 		};
 	}
 }

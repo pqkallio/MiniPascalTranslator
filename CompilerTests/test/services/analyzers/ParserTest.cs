@@ -10,7 +10,6 @@ namespace CompilerTests
 	{
 		private Scanner scanner;
 		private Parser parser;
-		private Dictionary<string, IProperty> symbolTable;
 
 		private void InitScanner (string[] testInput)
 		{
@@ -20,7 +19,6 @@ namespace CompilerTests
 		private void InitParser (string[] testInput)
 		{
 			InitScanner (testInput);
-			this.symbolTable = new Dictionary<string, IProperty> ();
 			this.parser = new Parser (scanner);
 		}
 

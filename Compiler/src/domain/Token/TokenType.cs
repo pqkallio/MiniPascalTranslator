@@ -62,7 +62,7 @@ namespace Compiler
 		BINARY_OP_NO_OP,	// binary expression, no operation (only lefthand side)
 		VOID,				// a void property
 		SIZE,				// an array's size accessor
-		ARRAY,				// an array
+		TYPE_ARRAY,				// an array
 		TYPE_REAL,			// a real variable
 		REAL_VAL,			// a real value
 		COMMA,				// a comma terminal

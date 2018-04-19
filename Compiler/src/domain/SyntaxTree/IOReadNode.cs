@@ -7,38 +7,36 @@ namespace Compiler
 	/// <summary>
 	/// Represents a read statement in the AST
 	/// </summary>
-	public class IOReadNode : ISyntaxTreeNode, IIdentifierContainer
+	public class IOReadNode : SyntaxTreeNode
 	{
-		private VariableIdNode idNode;
-		private AssignNode assignNode;
+		private List<VariableIdNode> idNodes;
+		private List<AssignNode> assignNodes;
 		private Token token;
 
-		public IOReadNode (VariableIdNode idNode, Scope scope, Token t)
+		public IOReadNode (List<VariableIdNode> idNodes, Scope scope, Token t)
+			: base(t)
 		{
-			this.idNode = idNode;
-			this.assignNode = new AssignNode (this.idNode, scope, t);
+			this.idNodes = idNodes;
+			this.assignNodes = new List<AssignNode> ();
+			foreach (VariableIdNode idNode in idNodes) {
+				this.assignNodes.Add (new AssignNode (idNode, scope, idNode.Token));
+			}
 			this.token = t;
 		}
 
-		public VariableIdNode IDNode
+		public List<VariableIdNode> IDNodes
 		{
-			get { return this.idNode; }
-			set { this.idNode = value; }
+			get { return this.idNodes; }
+			set { this.idNodes = value; }
 		}
 
-		public AssignNode AssignNode
+		public List<AssignNode> AssignNodes
 		{
-			get { return this.assignNode; }
+			get { return this.assignNodes; }
 		}
 
-		public ISemanticCheckValue Accept(INodeVisitor visitor) {
+		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return visitor.VisitIOReadNode (this);
-		}
-
-		public Token Token
-		{
-			get { return this.token; }
-			set { }
 		}
 	}
 }

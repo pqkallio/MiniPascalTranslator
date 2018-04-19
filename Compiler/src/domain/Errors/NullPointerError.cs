@@ -7,7 +7,7 @@ namespace Compiler
 	/// </summary>
 	public class NullPointerError : SemanticError
 	{
-		public NullPointerError (ISyntaxTreeNode node)
+		public NullPointerError (SyntaxTreeNode node)
 			: base(ErrorConstants.NULL_POINTER_ERROR_MESSAGE, node)
 		{}
 	}

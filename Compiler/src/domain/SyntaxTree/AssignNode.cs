@@ -8,21 +8,22 @@ namespace Compiler
 	/// <summary>
 	/// Represents an assignment in the AST
 	/// </summary>
-	public class AssignNode : IExpressionContainer, IIdentifierContainer
+	public class AssignNode : StatementNode
 	{
 		private VariableIdNode idNode;
-		private IExpressionNode exprNode;
-		private Token token;
+		private ExpressionNode assignValueExpression;
+		private Scope scope;
 
 		public AssignNode (VariableIdNode idNode, Scope scope)
 			: this (idNode, scope, null)
 		{}
 
-		public AssignNode (VariableIdNode idNode, Scope scope, Token token, IExpressionNode expr=null)
+		public AssignNode (VariableIdNode idNode, Scope scope, Token token, ExpressionNode assignValueExpression = null)
+			: base(token)
 		{
 			this.idNode = idNode;
-			this.exprNode = expr;
-			this.token = token;
+			this.scope = scope;
+			this.assignValueExpression = assignValueExpression;
 		}
 
 		public VariableIdNode IDNode {
@@ -30,14 +31,14 @@ namespace Compiler
 			set { idNode = value; }
 		}
 
-		public IExpressionNode ExprNode {
-			get { return exprNode; }
-			set { exprNode = value; }
+		public ExpressionNode ExprNode {
+			get { return assignValueExpression; }
+			set { assignValueExpression = value; }
 		}
 
-		public void AddExpression(IExpressionNode expressionNode)
+		public void AddExpression(ExpressionNode expressionNode)
 		{
-			this.exprNode = expressionNode;
+			this.assignValueExpression = expressionNode;
 		}
 
 		public override string ToString ()
@@ -45,14 +46,8 @@ namespace Compiler
 			return "ASSIGN";
 		}
 
-		public ISemanticCheckValue Accept(INodeVisitor visitor) {
+		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return visitor.VisitAssignNode (this);
-		}
-
-		public Token Token
-		{
-			get { return this.token; }
-			set { }
 		}
 	}
 }

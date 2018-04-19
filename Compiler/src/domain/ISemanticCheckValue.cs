@@ -4,7 +4,7 @@ namespace Compiler
 {
 	public interface ISemanticCheckValue
 	{
-		IProperty asProperty();
+		Property asProperty();
 	}
 }
 

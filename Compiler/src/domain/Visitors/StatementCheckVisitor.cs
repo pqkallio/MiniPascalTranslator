@@ -35,33 +35,6 @@ namespace Compiler
 		/// <param name="node">Node.</param>
 		public ISemanticCheckValue VisitAssignNode(AssignNode node)
 		{
-			// Check that the id property in this AssignNode is ok.
-			IProperty property = getVariableProperty (node);
-
-			// if the property was voidProperty, return at this point,
-			// an error has been reported already
-			if (property == voidProperty) {
-				return voidProperty;
-			}
-
-			VariableIdNode idNode = node.IDNode;
-
-			// check that the id variable is declared
-			checkPropertyDeclared (idNode, property, true);
-
-			// check that the id property we should be assigning to is not constant
-			// at this point of its lifecycle (i.e. not a current block's control variable)
-			if (property.Constant) {
-				analyzer.notifyError (new IllegalAssignmentError (node));
-			}
-
-			// evaluate the type of this property
-			IProperty evaluated = node.Accept (this.typeChecker).asProperty ();
-
-			// check the type of the expression in the assign node matches the one in the symbol table
-			if (!checkPropertyType(property, evaluated.GetTokenType ())) {
-				analyzer.notifyError (new IllegalTypeError(idNode));
-			}
 
 			return voidProperty;
 		}
@@ -86,26 +59,7 @@ namespace Compiler
 		/// <param name="node">Node.</param>
 		public ISemanticCheckValue VisitDeclarationNode(DeclarationNode node)
 		{
-			// check that the id property is ok
-			IProperty property = getVariableProperty (node);
-
-			if (property == voidProperty) {
-				return voidProperty;
-			}
-
-			VariableIdNode idNode = node.IDNode;
-
-			// if the property is declared already, it's an error
-			if (property.Declared) {
-				analyzer.notifyError (new DeclarationError (idNode));
-			} else {
-				// if it wasn't declared, now it is.
-				property.Declared = true;
-				// check the AssignNode
-				node.AssignNode.Accept (this);
-			}
-
-			return voidProperty;
+			return null;
 		}
 
 		/// <summary>
@@ -211,7 +165,7 @@ namespace Compiler
 		public ISemanticCheckValue VisitAssertNode(AssertNode node)
 		{
 			// get the evaluation of this node
-			IProperty evaluation = node.Accept(this.typeChecker).asProperty();
+			Property evaluation = node.Accept(this.typeChecker).asProperty();
 
 			// check that the evaluation is a boolean value
 			if (!checkPropertyType(evaluation, TokenType.BOOLEAN_VAL_FALSE)) {
@@ -229,9 +183,7 @@ namespace Compiler
 		public ISemanticCheckValue VisitIOPrintNode(IOPrintNode node)
 		{
 			// check the expression of this node
-			node.Expression.Accept (this.typeChecker).asProperty ();
-
-			return voidProperty;
+			return null;
 		}
 
 		/// <summary>
@@ -241,24 +193,7 @@ namespace Compiler
 		/// <param name="node">Node.</param>
 		public ISemanticCheckValue VisitIOReadNode(IOReadNode node) 
 		{
-			// check that the id property is ok
-			IProperty property = getVariableProperty (node);
-
-			if (property == voidProperty) {
-				return voidProperty;
-			}
-
-			VariableIdNode idNode = node.IDNode;
-
-			// check that the variable we're about to read into is declared
-			checkPropertyDeclared(node, property, true);
-
-			// check that we don't try to read a boolean value
-			if (checkPropertyType(property, TokenType.BOOLEAN_VAL_FALSE)) {
-				analyzer.notifyError (new IllegalTypeError(idNode));
-			}
-
-			return voidProperty;
+			return null;
 		}
 
 		/// <summary>
@@ -267,27 +202,9 @@ namespace Compiler
 		/// </summary>
 		/// <returns>An IProperty.</returns>
 		/// <param name="node">Node.</param>
-		private IProperty getVariableProperty(IIdentifierContainer node)
+		private Property getVariableProperty(IIdentifierContainer node)
 		{
-			// if the variable node is not set, report an error and return
-			// a VoidProperty to signal this one doesn't evaluate
-			if (node.IDNode == null) {
-				analyzer.notifyError(new UninitializedVariableError(node));
-				return voidProperty;
-			}
-
-			VariableIdNode idNode = node.IDNode;
-
-			// check the evaluation type of the id node
-			IProperty property = idNode.Accept(this.typeChecker).asProperty();
-
-			// if it wasn't declared, report an error
-			if (property.GetTokenType () == TokenType.ERROR) {
-				analyzer.notifyError(new UninitializedVariableError(node));
-				return voidProperty;
-			}
-
-			return property;
+			return null;
 		}
 
 		/// <summary>
@@ -296,34 +213,13 @@ namespace Compiler
 		/// <returns><c>true</c>, if property's type matches the expectation, <c>false</c> otherwise.</returns>
 		/// <param name="property">Property.</param>
 		/// <param name="expected">Expected type.</param>
-		private bool checkPropertyType (IProperty property, TokenType expected)
+		private bool checkPropertyType (Property property, TokenType expected)
 		{
 			TokenType tokenType = property.GetTokenType ();
 
 			// if the type is error, it will be handle by the calling method,
 			// so it's ok
 			return tokenType == TokenType.ERROR || tokenType == expected;
-		}
-
-		/// <summary>
-		/// A private helper method to help check the declaration state of a property.
-		/// </summary>
-		/// <param name="node">Node.</param>
-		/// <param name="property">Property.</param>
-		/// <param name="declarationExpected">If set to <c>true</c> declaration expected.</param>
-		private void checkPropertyDeclared(ISyntaxTreeNode node, IProperty property, bool declarationExpected)
-		{
-			if (declarationExpected) {
-				if (!property.Declared) {
-					// if the declaration was expected, report an error about an uninitialized variable
-					analyzer.notifyError (new UninitializedVariableError (node));
-				}
-			} else {
-				if (property.Declared) {
-					// if the declaration was not expected, report an error about a repeated declaration of a variable
-					analyzer.notifyError (new DeclarationError (node));
-				}
-			}
 		}
 	}
 }

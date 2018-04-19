@@ -2,7 +2,7 @@
 
 namespace Compiler
 {
-	public interface IExpressionNode : ISyntaxTreeNode
+	public interface IExpressionNode
 	{
 		IExpressionNode[] GetExpressions ();
 		TokenType Operation { 

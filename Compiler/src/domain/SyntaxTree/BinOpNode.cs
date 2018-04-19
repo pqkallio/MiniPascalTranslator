@@ -6,21 +6,20 @@ namespace Compiler
 	/// <summary>
 	/// Represents a binary operation in the AST
 	/// </summary>
-	public class BinOpNode : IExpressionContainer, IExpressionNode
+	public class BinOpNode : StatementNode, IExpressionNode
 	{
 		private IExpressionNode leftOperand;
 		private IExpressionNode rightOperand;
 		private TokenType operation;
 		private TokenType evaluationType;
-		private Token token;
 
 		public BinOpNode (Token t)
+			: base(t)
 		{
 			// by default the operation is a "no operation",
 			// meaning that in this case, only the lefthandside would
 			// be evaluated
 			this.operation = TokenType.BINARY_OP_NO_OP;
-			this.token = t;
 			this.evaluationType = TokenType.UNDEFINED;
 		}
 
@@ -89,14 +88,8 @@ namespace Compiler
 			return operation;
 		}
 
-		public ISemanticCheckValue Accept(INodeVisitor visitor) {
+		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return visitor.VisitBinOpNode (this);
-		}
-
-		public Token Token
-		{
-			get { return this.token; }
-			set { }
 		}
 	}
 }

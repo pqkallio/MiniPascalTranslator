@@ -7,7 +7,7 @@ namespace Compiler
 	/// </summary>
 	public class UninitializedVariableError : SemanticError
 	{
-		public UninitializedVariableError (ISyntaxTreeNode node)
+		public UninitializedVariableError (SyntaxTreeNode node)
 			: base(ErrorConstants.UNINITIALIZED_VARIABLE_ERROR_MESSAGE, node)
 		{}
 	}

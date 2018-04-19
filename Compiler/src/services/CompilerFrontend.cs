@@ -11,7 +11,7 @@ namespace Compiler
 		private Scanner scanner;							// lexical analyzer
 		private Parser parser;								// syntactical analyzer
 		private SemanticAnalyzer semanticAnalyzer;			// semantic analyzer
-		private Dictionary<string, IProperty> symbolTable;	// global symbol table
+		private Dictionary<string, Property> symbolTable;	// global symbol table
 		private string[] sourceLines;						// source code as lines
 
 		public CompilerFrontend ()
@@ -23,7 +23,7 @@ namespace Compiler
 		/// <param name="filePath">File path.</param>
 		private void Init(string filePath) {
 			this.sourceLines = readSource (filePath);
-			this.symbolTable = new Dictionary<string, IProperty> ();
+			this.symbolTable = new Dictionary<string, Property> ();
 			this.scanner = new Scanner (sourceLines);
 			this.parser = new Parser (scanner);
 		}

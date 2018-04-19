@@ -41,6 +41,7 @@ namespace Compiler
 			{TokenType.BINARY_OP_LOG_AND, "and"},
 			{TokenType.UNARY_OP_LOG_NEG, "not"},
 			{TokenType.BINARY_OP_LOG_OR, "or"},
+			{TokenType.BINARY_OP_NO_OP, "no operation"},
 			{TokenType.END_STATEMENT, ";"},
 			{TokenType.PARENTHESIS_LEFT, "("},
 			{TokenType.PARENTHESIS_RIGHT, ")"},
@@ -61,7 +62,14 @@ namespace Compiler
 			{TokenType.ASSIGN, ":="},
 			{TokenType.ID, "identifier"},
 			{TokenType.END_OF_FILE, "end of file"},
-			{TokenType.UNDEFINED, "undefined"}
+			{TokenType.UNDEFINED, "undefined"},
+			{TokenType.STRING_VAL, "string value"},
+			{TokenType.INTEGER_VAL, "integer value"},
+			{TokenType.BOOLEAN_VAL, "boolean value"},
+			{TokenType.ERROR, "error"},
+			{TokenType.VOID, "void"},
+			{TokenType.TYPE_ARRAY, "array"},
+			{TokenType.REAL_VAL, "real value"}
 		};
 
 		public static readonly string LINEBREAK = UNIX ? "\n" : "\r\n";

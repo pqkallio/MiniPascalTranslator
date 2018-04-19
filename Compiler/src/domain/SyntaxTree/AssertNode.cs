@@ -6,13 +6,14 @@ namespace Compiler
 	/// <summary>
 	/// Represents an assert statement in the AST.
 	/// </summary>
-	public class AssertNode : IExpressionContainer
+	public class AssertNode : StatementNode
 	{
 		private IExpressionNode expressionNode;
 		private IOPrintNode ioPrintNode;
 		private Token token;
 
 		public AssertNode (Token t)
+			: base(t)
 		{
 			this.token = t;
 		}
@@ -37,14 +38,8 @@ namespace Compiler
 			return "ASSERT";
 		}
 
-		public ISemanticCheckValue Accept(INodeVisitor visitor) {
+		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return visitor.VisitAssertNode (this);
-		}
-
-		public Token Token
-		{
-			get { return this.token; }
-			set { }
 		}
 	}
 }

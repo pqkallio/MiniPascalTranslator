@@ -5,9 +5,9 @@ namespace Compiler
 {
 	public class NodeBuilder
 	{
-		public ProgramNode CreateProgramNode (Token token, FunctionNode functionNode, BlockNode mainBlock, Scope scope)
+		public ProgramNode CreateProgramNode (Token token, Dictionary<string, FunctionNode> functions, BlockNode mainBlock, Scope scope)
 		{
-			return new ProgramNode (token, functionNode, mainBlock, scope);
+			return new ProgramNode (token, functions, mainBlock, scope);
 		}
 
 		public ParametersNode CreateParametersNode (Token token, List<Parameter> parameters)
@@ -15,9 +15,9 @@ namespace Compiler
 			return new ParametersNode (token, parameters);
 		}
 
-		public FunctionNode CreateFunctionNode(Token token, VariableIdNode idNode, ParametersNode parameters, BlockNode blockNode, Scope scope)
+		public FunctionNode CreateFunctionNode(Token token, ILabelFactory labelFactory, VariableIdNode idNode, ParametersNode parameters, BlockNode blockNode, Scope scope)
 		{
-			return new FunctionNode (token, idNode, parameters, blockNode, scope);
+			return new FunctionNode (token, labelFactory, idNode, parameters, blockNode, scope);
 		}
 
 		public RootNode CreateRootNode ()
@@ -49,35 +49,23 @@ namespace Compiler
 			return new VariableIdNode (value, scope, t);
 		}
 
-		public IExpressionNode OldCreateIdNode(Token t, Scope scope)
-		{
-			string value = t.Value;
-			return new VariableIdNode (value, scope, t);
-		}
-
-		public IExpressionNode CreateIdNode(Token t, IExpressionContainer parent, Scope scope)
-		{
-			VariableIdNode node = new VariableIdNode (t.Value, scope, t);
-			parent.AddExpression (node);
-
-			return node;
-		}
-
 		public DeclarationNode CreateDeclarationNode (VariableIdNode idNode, Scope scope, StatementsNode statementsNode, Token t)
 		{
-			DeclarationNode declarationNode = new DeclarationNode (idNode, t);
-			declarationNode.AssignNode = CreateAssignNode (idNode, scope, t);
-			statementsNode.Statement = declarationNode;
-
-			return declarationNode;
+			return null;
 		}
 
-		public AssignNode CreateAssignNode (VariableIdNode idNode, Scope scope, Token t, IExpressionNode expression=null)
+		public AssignNode CreateAssignNode (VariableIdNode idNode, Scope scope, Token token, ExpressionNode expression=null)
 		{
 			if (idNode.Token == null) {
-				idNode.Token = t;
+				idNode.Token = token;
 			}
-			return new AssignNode (idNode, scope, t, expression);
+
+			return new AssignNode (idNode, scope, token, expression);
+		}
+
+		public ArrayAssignStatement CreateAssignToArrayNode (VariableIdNode idNode, Scope scope, Token token, ExpressionNode arrayIndexExpression, ExpressionNode assignValueExpression)
+		{
+			return new ArrayAssignStatement (idNode, scope, token, arrayIndexExpression, assignValueExpression);
 		}
 
 		public AssignNode CreateAssignNode (VariableIdNode idNode, StatementsNode statementsNode, Scope scope, Token t)
@@ -88,28 +76,19 @@ namespace Compiler
 			return assignNode;
 		}
 
+		public ReturnStatement CreateReturnStatement (Token token, ExpressionNode expression)
+		{
+			return new ReturnStatement (token, expression);
+		}
+
 		public IOReadNode CreateIOReadNode (VariableIdNode idNode, StatementsNode statementsNode, Scope scope, Token t)
 		{
-			IOReadNode ioReadNode = new IOReadNode (idNode, scope, t);
-			statementsNode.Statement = ioReadNode;
-
-			return ioReadNode;
+			return null;
 		}
 
 		public IOPrintNode CreateIOPrintNode (StatementsNode statementsNode, Token t)
 		{
-			IOPrintNode ioPrintNode = new IOPrintNode (t);
-			statementsNode.Statement = ioPrintNode;
-
-			return ioPrintNode;
-		}
-
-		public IOPrintNode CreateIOPrintNodeForAssertNode (AssertNode assertNode)
-		{
-			assertNode.IOPrintNode = new IOPrintNode (assertNode.Expression.Token);
-			assertNode.IOPrintNode.AddExpression (new StringValueNode(StringFormatter.formatFailedAssertion(assertNode)));
-
-			return assertNode.IOPrintNode;
+			return null;
 		}
 
 		public AssertNode CreateAssertNode (StatementsNode statementsNode, Token t)
@@ -120,126 +99,45 @@ namespace Compiler
 			return assertNode;
 		}
 
-		public BinOpNode CreateBinOpNode(IExpressionContainer parent, IExpressionNode leftHandSide, Token operation) {
-			BinOpNode binOp = new BinOpNode (parent.Token);
-			binOp.AddExpression (leftHandSide);
-			binOp.Operation = operation.Type;
-			parent.AddExpression (binOp);
-
-			return binOp;
+		public ArgumentsNode CreateArgumentsNode (Scope scope, List<IExpressionNode> arguments, Token token)
+		{
+			return new ArgumentsNode (token, scope, arguments);
 		}
 
-		public BinOpNode CreateBinOpNode (IExpressionContainer parent, Token t)
+		public FunctionCallNode CreateFunctionCallNode (VariableIdNode idNode, ArgumentsNode arguments, Token token, Scope scope)
 		{
-			BinOpNode binOp = new BinOpNode (t);
-			parent.AddExpression (binOp);
-
-			return binOp;
+			return new FunctionCallNode (token, idNode, arguments);
 		}
 
-		public UnOpNode CreateUnOpNode (Token t, IExpressionNode operand=null)
+		public FactorTail CreateArraySizeCheckNode (Token token, Scope scope)
 		{
-			UnOpNode unOp = new UnOpNode (t, operand);
-
-			return unOp;
+			return new ArraySizeCheckNode (token, scope);
 		}
 
-		public IExpressionNode CreateValueNode (Token t, IExpressionContainer node, TokenType valueType)
+		public IntValueNode CreateIntValueNode(Token token)
 		{
-			switch (valueType) {
-				case TokenType.INTEGER_VAL:
-					return CreateIntValueNode (t, node);
-				case TokenType.STRING_VAL:
-					return CreateStringValueNode (t, node);
-				case TokenType.BOOLEAN_VAL_FALSE:
-					return CreateBoolValueNode (t, node);
-				default:
-					throw new ArgumentException();
-			}
+			int value = StringUtils.parseToInt (token.Value);
+			return new IntValueNode (value, token);
 		}
 
-		public IExpressionNode CreateIntValueNode(Token t, IExpressionContainer parent)
+		public StringValueNode CreateStringValueNode (Token token)
 		{
-			int value = StringUtils.parseToInt (t.Value);
-			IntValueNode node = new IntValueNode (value, t);
-			parent.AddExpression (node);
-
-			return node;
+			string value = token.Value;
+			return new StringValueNode (value, token);
 		}
 
-		public IExpressionNode CreateStringValueNode (Token t, IExpressionContainer parent)
+		public BoolValueNode CreateBoolValueNode (Token t)
 		{
-			string value = t.Value;
-			StringValueNode node = new StringValueNode (value, t);
-			parent.AddExpression (node);
+			bool value = t.Type == TokenType.BOOLEAN_VAL_TRUE ? true : false;
 
-			return node;
-		}
-
-		public IExpressionNode CreateBoolValueNode (Token t, IExpressionContainer parent)
-		{
-			bool value = StringUtils.parseToBoolean (t.Value);
-			BoolValueNode node = new BoolValueNode (value, t);
-			parent.AddExpression (node);
-
-			return node;
-		}
-
-		public IExpressionNode CreateIntValueNode(Token t)
-		{
-			int value = StringUtils.parseToInt (t.Value);
-			return new IntValueNode (value, t);
-		}
-
-		public IExpressionNode CreateStringValueNode (Token t)
-		{
-			string value = t.Value;
-			return new StringValueNode (value, t);
-		}
-
-		public IExpressionNode CreateBoolValueNode (Token t)
-		{
-			bool value = StringUtils.parseToBoolean (t.Value);
 			return new BoolValueNode (value, t);
 		}
 
-		public IExpressionNode CreateDefaultIntValueNode(Token t, IExpressionContainer parent)
+		public RealValueNode CreateRealValueNode (Token t)
 		{
-			IntValueNode node = new IntValueNode (SemanticAnalysisConstants.DEFAULT_INTEGER_VALUE, t);
-			parent.AddExpression (node);
+			float value = float.Parse(t.Value);
 
-			return node;
-		}
-
-		public IExpressionNode CreateDefaultStringValueNode (Token t, IExpressionContainer parent)
-		{
-			StringValueNode node = new StringValueNode (SemanticAnalysisConstants.DEFAULT_STRING_VALUE, t);
-			parent.AddExpression (node);
-
-			return node;
-		}
-
-		public IExpressionNode CreateDefaultBoolValueNode (Token t, IExpressionContainer parent)
-		{
-			BoolValueNode node = new BoolValueNode (SemanticAnalysisConstants.DEFAULT_BOOL_VALUE, t);
-			parent.AddExpression (node);
-
-			return node;
-		}
-
-		public IExpressionNode CreateDefaultIntValueNode(Token t)
-		{
-			return new IntValueNode (SemanticAnalysisConstants.DEFAULT_INTEGER_VALUE, t);
-		}
-
-		public IExpressionNode CreateDefaultStringValueNode (Token t)
-		{
-			return new StringValueNode (SemanticAnalysisConstants.DEFAULT_STRING_VALUE, t);
-		}
-
-		public IExpressionNode CreateDefaultBoolValueNode (Token t)
-		{
-			return new BoolValueNode (SemanticAnalysisConstants.DEFAULT_BOOL_VALUE, t);
+			return new RealValueNode (value, t);
 		}
 	}
 }

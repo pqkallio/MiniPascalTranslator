@@ -3,17 +3,28 @@ using System.Collections.Generic;
 
 namespace Compiler
 {
-	public class ArgumentsNode : ISyntaxTreeNode
+	public class ArgumentsNode : SyntaxTreeNode
 	{
 		private List<IExpressionNode> arguments;
 		private Scope scope;
-		private Token token;
+
+		public ArgumentsNode (Token token, Scope scope, List<IExpressionNode> expressions)
+			: base(token)
+		{
+			this.scope = scope;
+			this.arguments = expressions;
+		}
 
 		public ArgumentsNode (Token token, Scope scope, params IExpressionNode[] expressions)
+			: base (token)
 		{
-			this.token = token;
 			this.scope = scope;
 			AddExpressions (expressions);
+		}
+
+		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		{
+			return null;
 		}
 
 		private void AddExpressions (IExpressionNode[] expressions)

@@ -7,19 +7,23 @@ namespace Compiler
 	/// </summary>
 	public class SemanticError : Error, ISemanticCheckValue
 	{
-		public SemanticError (string title, string message, ISyntaxTreeNode node)
-			: base (title, message, node)
+		public SemanticError (string title, string message, SyntaxTreeNode node = null, Token token = null)
+			: base (title, message, node, token)
 		{}
 
-		public SemanticError (string message, ISyntaxTreeNode node)
+		public SemanticError (string message, SyntaxTreeNode node)
 			: this (ErrorConstants.SEMANTIC_ERROR_TITLE, message, node)
 		{}
 
-		public SemanticError (ISyntaxTreeNode node)
+		public SemanticError (string message)
+			: this (ErrorConstants.SEMANTIC_ERROR_TITLE, message)
+		{}
+
+		public SemanticError (SyntaxTreeNode node)
 			: this (ErrorConstants.SEMANTIC_ERROR_TITLE, ErrorConstants.SEMANTIC_ERROR_MESSAGE, node)
 		{}
 
-		public IProperty asProperty ()
+		public Property asProperty ()
 		{
 			return null;
 		}

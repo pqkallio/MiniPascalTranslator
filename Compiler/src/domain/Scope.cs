@@ -6,37 +6,58 @@ namespace Compiler
 	public class Scope
 	{
 		private Scope parentScope;
-		private Dictionary<string, IProperty> symbolTable;
+		private Dictionary<string, Property> symbolTable;
 		private List<Scope> childScopes;
 
 		public Scope (Scope parentScope=null)
 		{
 			this.parentScope = parentScope;
-			this.symbolTable = new Dictionary<string, IProperty> ();
+			this.symbolTable = new Dictionary<string, Property> ();
 			this.childScopes = new List<Scope> ();
 		}
 
-		public IProperty GetProperty (string key)
+		public bool ContainsKey (string key)
 		{
 			Scope scope = this;
 
 			while (scope != null) {
 				if (symbolTable.ContainsKey (key)) {
-					return symbolTable [key];
+					return true;
 				}
 				scope = scope.ParentScope;
 			}
 
-			return null;
+			return false;
 		}
 
-		public void AddProperty (string key, IProperty property)
+		public bool TypeMatch (string key, TokenType type)
 		{
-			if (symbolTable.ContainsKey (key)) {
-				throw new DeclarationException ();
+			Property property = GetProperty (key);
+
+			if (property.GetTokenType () == type) {
+				return true;
 			}
 
-			symbolTable [key] = property;
+			return false;
+		}
+
+		public void AddProperty (string key, Property property)
+		{
+			symbolTable.Add (key, property);
+		}
+
+		public Property GetProperty (string key)
+		{
+			Scope scope = this;
+
+			while (scope != null) {
+				if (symbolTable.ContainsKey (key)) {
+					return symbolTable[key];
+				}
+				scope = scope.ParentScope;
+			}
+
+			return new ErrorProperty ();
 		}
 
 		public Scope ParentScope

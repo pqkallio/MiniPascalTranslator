@@ -6,21 +6,18 @@ namespace Compiler
 	/// <summary>
 	/// Represents a string value in the AST
 	/// </summary>
-	public class StringValueNode : IExpressionNode, ISemanticCheckValue
+	public class StringValueNode : Evaluee, ISemanticCheckValue
 	{
 		private string value;
-		private Token token;
 
 		public StringValueNode (string value)
-		{
-			this.value = value;
-			this.token = new Token (0, 0, "", TokenType.STRING_VAL);
-		}
+			: this(value, new Token (0, 0, "", TokenType.STRING_VAL))
+		{}
 
-		public StringValueNode (string value, Token t)
+		public StringValueNode (string value, Token token)
+			: base (token)
 		{
 			this.value = value;
-			this.token = t;
 		}
 
 		public TokenType EvaluationType
@@ -45,24 +42,23 @@ namespace Compiler
 			set { }
 		}
 
-		public ISemanticCheckValue Accept(INodeVisitor visitor) {
+		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return visitor.VisitStringValueNode (this);
 		}
 
-		public IProperty asProperty ()
+		public Property asProperty ()
 		{
-			return new StringProperty(Value);
-		}
-
-		public Token Token
-		{
-			get { return this.token; }
-			set { }
+			return new StringProperty();
 		}
 
 		public override string ToString ()
 		{
 			return '\"' + Value + '\"';
+		}
+
+		public override string GetValue ()
+		{
+			return ToString ();
 		}
 	}
 }

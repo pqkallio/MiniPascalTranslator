@@ -8,12 +8,11 @@ namespace Compiler
 	/// Represents a variable id in the AST.
 	/// Can be used as an expression.
 	/// </summary>
-	public class VariableIdNode : IExpressionNode
+	public class VariableIdNode : SyntaxTreeNode
 	{
 		private string id;
 		private Scope scope;
 		private TokenType variableType;
-		private Token token;
 		private IExpressionNode arrayIndexNode;
 		private bool arrayRequestSize;
 
@@ -26,10 +25,10 @@ namespace Compiler
 		{}
 
 		public VariableIdNode (string id, Scope scope, Token token, IExpressionNode arrayIndexNode)
+			: base(token)
 		{
 			this.id = id;
 			this.scope = scope;
-			this.token = token;
 			this.arrayIndexNode = arrayIndexNode;
 			this.arrayRequestSize = false;
 		}
@@ -72,14 +71,8 @@ namespace Compiler
 			set { }
 		}
 
-		public ISemanticCheckValue Accept(INodeVisitor visitor) {
+		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return visitor.VisitVariableIdNode (this);
-		}
-
-		public Token Token
-		{
-			get { return this.token; }
-			set { this.token = value; }
 		}
 
 		public IExpressionNode ArrayIndex

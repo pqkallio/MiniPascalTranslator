@@ -1,27 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Compiler
 {
-	public class BlockNode : ISyntaxTreeNode
+	public class BlockNode : SyntaxTreeNode
 	{
-		private Token token;
 		private Scope blockScope;
-		StatementsNode statements;
+		List<StatementNode> statements;
 
-		public BlockNode (Scope blockScope, StatementsNode statements)
+		public BlockNode (Token token, Scope blockScope, ILabelFactory labelFactory, List<StatementNode> statements)
+			: base(token, labelFactory)
 		{
 			this.blockScope = blockScope;
 			this.statements = statements;
 		}
 
-		public ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override ISemanticCheckValue Accept(INodeVisitor visitor)
 		{
 			return new VoidProperty ();
-		}
-
-		public Token Token { 
-			get { return token; }
-			set { token = value; } 
 		}
 	}
 }

@@ -2,19 +2,16 @@
 
 namespace Compiler
 {
-	public class ArrayProperty : IProperty
+	public class ArrayProperty : Property
 	{
 		private int size;
-		private bool declared;
-		private bool constant;
-		private TokenType valueType;
+		private TokenType arrayElementType;
 
-		public ArrayProperty (TokenType valueType, int size=0)
+		public ArrayProperty (TokenType valueType, int size = -1)
+			: base(true)
 		{
-			this.valueType = valueType;
+			this.arrayElementType = valueType;
 			this.size = size;
-			this.declared = false;
-			this.constant = false;
 		}
 
 		public int Size
@@ -22,44 +19,15 @@ namespace Compiler
 			get { return this.size; }
 		}
 
-		public TokenType GetTokenType ()
+		public override TokenType GetTokenType ()
 		{
-			return this.valueType;
+			return TokenType.TYPE_ARRAY;
 		}
 
-		bool Declared {				// an accessor for defining if the property is declared or not
-			get { return this.declared; }
-			set { this.declared = value; }
-		}
-
-		bool Constant {				// an accessor for defining if the property is constant or not
-			get { return this.constant; }
-			set { this.constant = value; }
-		}
-
-		public int asInteger ()			// returns the property as an integer
+		public TokenType ArrayElementType
 		{
-			return -1;
+			get { return arrayElementType; }
 		}
-
-		public string asString ()
-		{
-			return null;
-		}
-
-		public bool asBoolean ()
-		{
-			return false;
-		}
-
-		public void setInteger (int value)
-		{}
-
-		public void setString (string value)
-		{}
-
-		public void setBoolean (bool value)
-		{}
 	}
 }
 

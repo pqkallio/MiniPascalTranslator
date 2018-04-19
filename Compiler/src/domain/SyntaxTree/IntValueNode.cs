@@ -6,19 +6,18 @@ namespace Compiler
 	/// <summary>
 	/// Represents an integer value in the AST
 	/// </summary>
-	public class IntValueNode : IExpressionNode, ISemanticCheckValue
+	public class IntValueNode : Evaluee, ISemanticCheckValue
 	{
 		private int value;
-		private Token token;
 
 		public IntValueNode (int value)
 			: this(value, new Token (0, 0, "", TokenType.INTEGER_VAL))
 		{}
 
-		public IntValueNode (int value, Token t)
+		public IntValueNode (int value, Token token)
+			: base (token)
 		{
 			this.value = value;
-			this.token = t;
 		}
 
 		public TokenType EvaluationType
@@ -43,24 +42,23 @@ namespace Compiler
 			set { }
 		}
 
-		public ISemanticCheckValue Accept(INodeVisitor visitor) {
+		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return visitor.VisitIntValueNode (this);
 		}
 
-		public IProperty asProperty ()
+		public Property asProperty ()
 		{
-			return new IntegerProperty(Value);
-		}
-
-		public Token Token
-		{
-			get { return this.token; }
-			set { }
+			return new IntegerProperty();
 		}
 
 		public override string ToString ()
 		{
 			return Value.ToString ();
+		}
+
+		public override string GetValue ()
+		{
+			return ToString ();
 		}
 	}
 }

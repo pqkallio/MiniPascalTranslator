@@ -7,7 +7,7 @@ namespace Compiler
 	/// </summary>
 	public class DeclarationError : SemanticError
 	{
-		public DeclarationError (ISyntaxTreeNode node)
+		public DeclarationError (SyntaxTreeNode node)
 			:base(ErrorConstants.DECLARATION_ERROR_MESSAGE, node)
 		{
 		}

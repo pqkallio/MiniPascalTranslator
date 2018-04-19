@@ -5,20 +5,13 @@ namespace Compiler
 	/// <summary>
 	/// Used to throw an exception in runtime.
 	/// </summary>
-	public class RuntimeException : Exception
+	public class RuntimeException : MiniPascalException
 	{
 		private Token token;
 
 		public RuntimeException (string message, Token token)
-			: base (message)
-		{
-			this.token = token;
-		}
-
-		public Token Token
-		{
-			get { return this.token; }
-		}
+			: base (message, token)
+		{}
 
 		public override string ToString ()
 		{

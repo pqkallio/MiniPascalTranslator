@@ -6,15 +6,13 @@ namespace Compiler
 	/// <summary>
 	/// Represents a print statement in the AST
 	/// </summary>
-	public class IOPrintNode: IExpressionContainer
+	public class IOPrintNode: StatementNode
 	{
 		private IExpressionNode expression;
-		private Token token;
 
 		public IOPrintNode (Token t)
-		{
-			this.token = t;
-		}
+			: base(t)
+		{}
 
 		public IExpressionNode Expression
 		{
@@ -26,14 +24,8 @@ namespace Compiler
 			this.expression = expressionNode;
 		}
 
-		public ISemanticCheckValue Accept(INodeVisitor visitor) {
+		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return visitor.VisitIOPrintNode (this);
-		}
-
-		public Token Token
-		{
-			get { return this.token; }
-			set { }
 		}
 	}
 }

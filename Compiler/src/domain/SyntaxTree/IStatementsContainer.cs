@@ -2,7 +2,7 @@
 
 namespace Compiler
 {
-	public interface IStatementsContainer : ISyntaxTreeNode
+	public interface IStatementsContainer
 	{
 		StatementsNode Sequitor {
 			get;
