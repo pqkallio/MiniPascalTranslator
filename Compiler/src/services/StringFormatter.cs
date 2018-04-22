@@ -37,11 +37,6 @@ namespace Compiler
 			return errorMessage;
 		}
 
-		public static string formatFailedAssertion (AssertNode assertNode)
-		{
-			return line(StringFormattingConstants.ASSERTION_FAILED + assertNode.Expression.ToString());
-		}
-
 		public static string formatRowAndColumn (int numRow, int numCol)
 		{
 			Tuple<char, char> parentheses = StringFormattingConstants.PRINT_ROW_AND_COLUMN_PARENTHESES;

@@ -6,12 +6,10 @@ namespace Compiler
 	{
 		private string arrayId;
 		private ExpressionNode index;
-		private Scope scope;
 
 		public ArrayAccessNode (string arrayId, Token token, Scope scope, ExpressionNode index)
-			: base(token)
+			: base(token, scope: scope)
 		{
-			this.scope = scope;
 			this.arrayId = arrayId;
 			this.index = index;
 		}

@@ -2,13 +2,11 @@
 
 namespace Compiler
 {
-	public abstract class Evaluee : SyntaxTreeNode
+	public abstract class Evaluee : StatementNode
 	{
-		public Evaluee (Token token)
-			: base(token)
+		public Evaluee (Token token, INameFactory nameFactory = null, Scope scope = null)
+			: base(token, nameFactory)
 		{}
-
-		public abstract string GetValue();
 	}
 }
 

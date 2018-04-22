@@ -2,18 +2,16 @@
 
 namespace Compiler
 {
-	public class IfNode : SyntaxTreeNode
+	public class IfNode : StatementNode
 	{
 		private ExpressionNode ifCondition;
-		private ExpressionNode elseCondition;
 		private StatementNode ifBranch;
 		private StatementNode elseBranch;
 
-		public IfNode (Token token, ExpressionNode ifCondition, StatementNode ifBranch, ExpressionNode elseCondition = null, StatementNode elseBranch = null)
-			: base(token)
+		public IfNode (Token token, INameFactory nameFactory, ExpressionNode ifCondition, StatementNode ifBranch, StatementNode elseBranch = null)
+			: base(token, nameFactory)
 		{
 			this.ifCondition = ifCondition;
-			this.elseCondition = elseCondition;
 			this.ifBranch = ifBranch;
 			this.elseBranch = elseBranch;
 		}

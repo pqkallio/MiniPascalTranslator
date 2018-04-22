@@ -25,7 +25,7 @@ namespace Compiler
 		public ISemanticCheckValue VisitAssertNode(AssertNode node)
 		{
 			// return the evaluation of the node's expression
-			return getEvaluation (node.Expression);
+			return null;
 		}
 
 		/// <summary>
@@ -37,17 +37,6 @@ namespace Compiler
 		{
 			// return the evaluation of the node's expression
 			return null;
-		}
-
-		/// <summary>
-		/// Visits the bin op node.
-		/// </summary>
-		/// <returns>An ISemanticCheckValue.</returns>
-		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitBinOpNode(BinOpNode node)
-		{
-			// return the evaluation of the node using a helper method
-			return VisitOperationNode (node);
 		}
 
 		/// <summary>
@@ -139,17 +128,6 @@ namespace Compiler
 			// Here, the node itself is the evaluation we're looking for.
 			// Value nodes implement the ISemanticCheckValue interface.
 			return node;
-		}
-
-		/// <summary>
-		/// Visits the un op node.
-		/// </summary>
-		/// <returns>An ISemanticCheckValue.</returns>
-		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitUnOpNode(UnOpNode node)
-		{
-			// return the evaluation of the node using a helper method
-			return VisitOperationNode (node);
 		}
 
 		/// <summary>

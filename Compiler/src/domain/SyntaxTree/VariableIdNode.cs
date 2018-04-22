@@ -8,12 +8,13 @@ namespace Compiler
 	/// Represents a variable id in the AST.
 	/// Can be used as an expression.
 	/// </summary>
-	public class VariableIdNode : SyntaxTreeNode
+	public class VariableIdNode : Evaluee
 	{
 		private string id;
-		private Scope scope;
 		private TokenType variableType;
-		private IExpressionNode arrayIndexNode;
+		private ExpressionNode arrayIndexNode;
+		private ExpressionNode arraySizeExpression;
+		private TokenType arrayElementType;
 		private bool arrayRequestSize;
 
 		public VariableIdNode(Scope scope)
@@ -24,12 +25,13 @@ namespace Compiler
 			: this(id, scope, token, null)
 		{}
 
-		public VariableIdNode (string id, Scope scope, Token token, IExpressionNode arrayIndexNode)
-			: base(token)
+		public VariableIdNode (string id, Scope scope, Token token, ExpressionNode arrayIndexNode = null, ExpressionNode arraySizeExpression = null, TokenType arrayElementType = TokenType.UNDEFINED)
+			: base(token, scope: scope)
 		{
 			this.id = id;
-			this.scope = scope;
 			this.arrayIndexNode = arrayIndexNode;
+			this.arraySizeExpression = arraySizeExpression;
+			this.arrayElementType = arrayElementType;
 			this.arrayRequestSize = false;
 		}
 
@@ -60,22 +62,11 @@ namespace Compiler
 			return ID;
 		}
 
-		public IExpressionNode[] GetExpressions()
-		{
-			return null;
-		}
-
-		public TokenType Operation
-		{
-			get { return TokenType.BINARY_OP_NO_OP; }
-			set { }
-		}
-
 		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return visitor.VisitVariableIdNode (this);
 		}
 
-		public IExpressionNode ArrayIndex
+		public ExpressionNode ArrayIndex
 		{
 			get { return arrayIndexNode; }
 			set { arrayIndexNode = value; }

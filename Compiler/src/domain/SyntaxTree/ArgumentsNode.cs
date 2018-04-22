@@ -5,17 +5,17 @@ namespace Compiler
 {
 	public class ArgumentsNode : SyntaxTreeNode
 	{
-		private List<IExpressionNode> arguments;
+		private List<ExpressionNode> arguments;
 		private Scope scope;
 
-		public ArgumentsNode (Token token, Scope scope, List<IExpressionNode> expressions)
-			: base(token)
+		public ArgumentsNode (Token token, Scope scope, List<ExpressionNode> expressions)
+			: base(token, scope: scope)
 		{
 			this.scope = scope;
 			this.arguments = expressions;
 		}
 
-		public ArgumentsNode (Token token, Scope scope, params IExpressionNode[] expressions)
+		public ArgumentsNode (Token token, Scope scope, params ExpressionNode[] expressions)
 			: base (token)
 		{
 			this.scope = scope;
@@ -27,27 +27,27 @@ namespace Compiler
 			return null;
 		}
 
-		private void AddExpressions (IExpressionNode[] expressions)
+		private void AddExpressions (ExpressionNode[] expressions)
 		{
-			this.arguments = new List<IExpressionNode> ();
+			this.arguments = new List<ExpressionNode> ();
 
 			for (int i = 0; i < expressions.Length; i++) {
 				this.arguments.Add (expressions [i]);
 			}
 		}
 
-		public List<IExpressionNode> Arguments
+		public List<ExpressionNode> Arguments
 		{
 			get { return arguments; }
 			set { this.arguments = value; }
 		}
 
-		public void AddArgument(IExpressionNode expressionNode)
+		public void AddArgument(ExpressionNode expressionNode)
 		{
 			this.arguments.Add (expressionNode);
 		}
 
-		public List<IExpressionNode> GetArguments ()
+		public List<ExpressionNode> GetArguments ()
 		{
 			return arguments;
 		}

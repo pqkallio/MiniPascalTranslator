@@ -15,7 +15,7 @@ namespace Compiler
 		{}
 
 		public IntValueNode (int value, Token token)
-			: base (token)
+			: base (token, null)
 		{
 			this.value = value;
 		}
@@ -31,11 +31,6 @@ namespace Compiler
 			set { this.value = value; }
 		}
 
-		public IExpressionNode[] GetExpressions()
-		{
-			return null;
-		}
-
 		public TokenType Operation 
 		{
 			get { return TokenType.BINARY_OP_NO_OP; }
@@ -48,17 +43,12 @@ namespace Compiler
 
 		public Property asProperty ()
 		{
-			return new IntegerProperty();
+			return new IntegerProperty ();
 		}
 
 		public override string ToString ()
 		{
 			return Value.ToString ();
-		}
-
-		public override string GetValue ()
-		{
-			return ToString ();
 		}
 	}
 }

@@ -3,15 +3,13 @@ using System.Collections.Generic;
 
 namespace Compiler
 {
-	public class BlockNode : SyntaxTreeNode
+	public class BlockNode : StatementNode
 	{
-		private Scope blockScope;
 		List<StatementNode> statements;
 
-		public BlockNode (Token token, Scope blockScope, ILabelFactory labelFactory, List<StatementNode> statements)
-			: base(token, labelFactory)
+		public BlockNode (Token token, Scope blockScope, INameFactory labelFactory, List<StatementNode> statements)
+			: base(token, labelFactory, blockScope)
 		{
-			this.blockScope = blockScope;
 			this.statements = statements;
 		}
 

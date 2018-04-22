@@ -18,7 +18,7 @@ namespace Compiler
 		private NodeBuilder nodeBuilder;	// we ask ST-nodes from the NodeBuilder
 		private Scope programScope;			// the highest scope level
 		private Token bufferedToken;
-		private ILabelFactory labelFactory;
+		private INameFactory nameFactory;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Compiler.Parser"/> class.
@@ -34,7 +34,7 @@ namespace Compiler
 			this.scanner = scanner;
 			this.programScope = null;
 			this.bufferedToken = null;
-			this.labelFactory = new MiniPascalLabelFactory ();
+			this.nameFactory = new MiniPascalNameFactory ();
 		}
 
 		public Scanner Scanner {
@@ -46,7 +46,7 @@ namespace Compiler
 			get { return syntaxTree; }
 		}
 
-		private Token getNextToken ()
+		private Token GetNextToken ()
 		{
 			Token nextToken;
 
@@ -82,7 +82,7 @@ namespace Compiler
 
 		private ProgramNode ParseProgram ()
 		{
-			Token token = getNextToken ();
+			Token token = GetNextToken ();
 
 			switch (token.Type) {
 				case TokenType.PROGRAM:
@@ -100,11 +100,11 @@ namespace Compiler
 					try {
 						this.programScope = new Scope(); // first we create the program's scope
 						
-						Token programIdToken = getNextToken ();
+						Token programIdToken = GetNextToken ();
 						match(programIdToken, TokenType.ID); // check the program has a valid id
 						
 						syntaxTree.ProgramName = programIdToken.Value; // save the program's id
-						match (getNextToken (), TokenType.END_STATEMENT); // the declaration ends here
+						match (GetNextToken (), TokenType.END_STATEMENT); // the declaration ends here
 						
 						// now we start parsing the functions and procedures to a dictionary
 						Dictionary<string, FunctionNode> functions = new Dictionary<string, FunctionNode>();
@@ -112,8 +112,8 @@ namespace Compiler
 						
 						BlockNode blockNode = ParseBlock (programScope); // then the main block
 						
-						match (getNextToken (), TokenType.DOT); // the program should end here
-						match(getNextToken(), TokenType.END_OF_FILE); // and nothing more to come after it
+						match (GetNextToken (), TokenType.DOT); // the program should end here
+						match(GetNextToken(), TokenType.END_OF_FILE); // and nothing more to come after it
 							
 						// if the parsing went well, return the program's root node 
 						if (SyntaxTreeBuilt) {
@@ -137,7 +137,7 @@ namespace Compiler
 		/// <param name="functions">Functions.</param>
 		private void ParseFunctionsAndProcedures (Dictionary<string, FunctionNode> functions)
 		{
-			Token token = getNextToken ();
+			Token token = GetNextToken ();
 
 			switch (token.Type) {
 			case TokenType.FUNCTION:
@@ -163,7 +163,7 @@ namespace Compiler
 		{
 			VariableIdNode idNode = null;
 			ParametersNode parameters = null;
-			Scope functionScope = new Scope (programScope);
+			Scope functionScope = programScope.AddChildScope ();
 
 			try {
 				idNode = ParseVarId (programScope);
@@ -174,7 +174,7 @@ namespace Compiler
 					programScope.AddProperty (idNode.ID, new FunctionProperty ());
 				}
 
-				match(getNextToken(), TokenType.PARENTHESIS_LEFT);
+				match(GetNextToken(), TokenType.PARENTHESIS_LEFT);
 				parameters = ParseParameters(functionScope);
 
 				// if it's a procedure, set the return type to void
@@ -182,23 +182,25 @@ namespace Compiler
 					idNode.VariableType = TokenType.VOID;
 				} else {
 					// otherwise, parse the type
-					match(getNextToken(), TokenType.SET_TYPE);
+					match(GetNextToken(), TokenType.SET_TYPE);
 					ParseType (idNode);
 				}
 
-				match(getNextToken(), TokenType.END_STATEMENT);
+				match(GetNextToken(), TokenType.END_STATEMENT);
 			} catch (UnexpectedTokenException ex) {
 				FastForwardToStatementEnd (ex);
 			}
 
 			try {
+				match(GetNextToken(), TokenType.BEGIN);
 				// no we parse the function's main block 
 				BlockNode blockNode = ParseBlock(functionScope);
-				match(getNextToken(), TokenType.END_STATEMENT);
+				Token next = GetNextToken();
+				match(next, TokenType.END_STATEMENT);
 
 				// if all went well, add a new FunctionNode to the dictionary
 				if (SyntaxTreeBuilt) {
-					FunctionNode functionNode = nodeBuilder.CreateFunctionNode(token, labelFactory, idNode, parameters, blockNode, functionScope);
+					FunctionNode functionNode = nodeBuilder.CreateFunctionNode(token, nameFactory, idNode, parameters, blockNode, functionScope);
 					functions[idNode.ID] = functionNode;
 				}
 			} catch (UnexpectedTokenException ex) {
@@ -224,7 +226,7 @@ namespace Compiler
 			Token token = null;
 
 			while (true) {
-				token = getNextToken ();
+				token = GetNextToken ();
 
 				switch (token.Type) {
 					case TokenType.VAR:
@@ -237,7 +239,7 @@ namespace Compiler
 						throw new UnexpectedTokenException(token, ParserConstants.EXPECTATION_SET_PARAMETERS);
 				}
 
-				token = getNextToken();
+				token = GetNextToken();
 
 				switch (token.Type) {
 					case TokenType.PARENTHESIS_RIGHT:
@@ -272,7 +274,7 @@ namespace Compiler
 		private Parameter Param(Scope scope, Token idToken=null, bool reference=false)
 		{
 			if (reference) {
-				idToken = getNextToken ();
+				idToken = GetNextToken ();
 			}
 
 			if (idToken.Type != TokenType.ID) {
@@ -281,11 +283,12 @@ namespace Compiler
 
 			VariableIdNode idNode = new VariableIdNode (idToken.Value, scope, idToken);
 
-			match (getNextToken (), TokenType.SET_TYPE);
+			match (GetNextToken (), TokenType.SET_TYPE);
 
 			Property property = ParsePropertyForParam ();
 
-			if (property.GetTokenType () == TokenType.TYPE_ARRAY) {
+			if (property.GetTokenType () == TokenType.TYPE_ARRAY
+				|| property.GetTokenType() == TokenType.STRING_VAL) {
 				reference = true;
 			}
 
@@ -322,9 +325,9 @@ namespace Compiler
 
 		private Property ParseArrayPropertyForParam ()
 		{
-			match (getNextToken (), TokenType.BRACKET_LEFT);
-			match (getNextToken (), TokenType.BRACKET_RIGHT);
-			match (getNextToken (), TokenType.OF);
+			match (GetNextToken (), TokenType.BRACKET_LEFT);
+			match (GetNextToken (), TokenType.BRACKET_RIGHT);
+			match (GetNextToken (), TokenType.OF);
 
 			TokenType type = ParseType ();
 
@@ -340,11 +343,12 @@ namespace Compiler
 		{
 			try {
 				Scope newScope = scope.AddChildScope ();
-				Token token = getNextToken ();
+				Token token = GetNextToken ();
 				List<StatementNode> statements = new List<StatementNode> ();
 				ParseStatements (token, scope, statements);
+
 				if (SyntaxTreeBuilt) {
-					return new BlockNode (token, newScope, labelFactory, statements);
+					return new BlockNode (token, newScope, nameFactory, statements);
 				}
 			} catch (UnexpectedTokenException ex) {
 				FastForwardToEndOfBlock (ex);
@@ -363,15 +367,11 @@ namespace Compiler
 				case TokenType.READ:
 				case TokenType.WRITELN:
 				case TokenType.ASSERT:
-					statement = ParseSimpleStatement (scope, token);
-					break;
 				case TokenType.BEGIN:
 				case TokenType.IF:
 				case TokenType.WHILE_LOOP:
-					statement = ParseStructuredStatement (scope, token);
-					break;
 				case TokenType.VAR:
-					statement = ParseVarDeclaration (scope);
+					statement = ParseStatement (scope, token);
 					break;
 				case TokenType.END:
 					return;
@@ -380,13 +380,13 @@ namespace Compiler
 			}
 
 			statements.Add (statement);
-			Token nextToken = getNextToken ();
+			Token nextToken = GetNextToken ();
 
 			switch (nextToken.Type) {
 				case TokenType.END:
 					break;
 				case TokenType.END_STATEMENT:
-					Token nextNextToken = getNextToken ();
+					Token nextNextToken = GetNextToken ();
 
 					if (nextNextToken.Type != TokenType.END) {
 						bufferedToken = nextNextToken;
@@ -397,14 +397,144 @@ namespace Compiler
 			}
 		}
 
+		private StatementNode ParseStatement (Scope scope, Token token)
+		{
+			StatementNode statement = null;
+
+			switch (token.Type) {
+			case TokenType.ID:
+			case TokenType.RETURN:
+			case TokenType.READ:
+			case TokenType.WRITELN:
+			case TokenType.ASSERT:
+				statement = ParseSimpleStatement (scope, token);
+				break;
+			case TokenType.BEGIN:
+			case TokenType.IF:
+			case TokenType.WHILE_LOOP:
+				statement = ParseStructuredStatement (scope, token);
+				break;
+			case TokenType.VAR:
+				statement = ParseVarDeclaration (token, scope);
+				break;
+				case TokenType.END:
+					break;
+				default:
+					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_STATEMENTS);
+			}
+
+			match (GetNextToken (), TokenType.END_STATEMENT);
+
+			return statement;
+		}
+
 		private StatementNode ParseStructuredStatement (Scope scope, Token token)
 		{
+			switch (token.Type) {
+				case TokenType.BEGIN:
+					return ParseBlock (scope);
+				case TokenType.IF:
+					return ParseIfStatement (token, scope);
+				case TokenType.WHILE_LOOP:
+					return ParseWhileLoop (token, scope);
+			}
+
 			return null;
 		}
 
-		private StatementNode ParseVarDeclaration (Scope scope)
+		private StatementNode ParseIfStatement (Token token, Scope scope)
 		{
+			ExpressionNode ifCondition = ParseExpression (scope);
+			match (GetNextToken (), TokenType.THEN);
+			StatementNode ifBranch = ParseStatement (scope, GetNextToken ());
+			StatementNode elseBranch = ParseElseStatement (scope);
+
+			if (SyntaxTreeBuilt) {
+				return new IfNode (token, nameFactory, ifCondition, ifBranch, elseBranch);
+			}
+
 			return null;
+		}
+
+		private StatementNode ParseElseStatement (Scope scope)
+		{
+			Token token = GetNextToken ();
+
+			switch (token.Type) {
+				case TokenType.ELSE:
+					return ParseStatement (scope, GetNextToken ());
+				default:
+					bufferedToken = token;
+					return null;
+			}
+		}
+
+		private StatementNode ParseWhileLoop (Token token, Scope scope)
+		{
+			ExpressionNode condition = ParseExpression (scope);
+			match (GetNextToken (), TokenType.DO_WHILE);
+			StatementNode statement = ParseStatement(scope, GetNextToken ());
+
+			if (SyntaxTreeBuilt) {
+				return new WhileNode (token, nameFactory, scope, condition, statement);
+			}
+
+			return null;
+		}
+
+		private StatementNode ParseVarDeclaration (Token token, Scope scope)
+		{
+			List<VariableIdNode> ids = new List<VariableIdNode> ();
+			ParseIdsToDeclare (ids, scope);
+			// SHOULD PARSE A TYPE NODE OR SOMETHING IN ORDER TO GET THE ARRAY TYPES ELEMENT TYPE AS WELL
+			TokenType type = ParseType ();
+
+			foreach (VariableIdNode idNode in ids) {
+				if (expectDeclared (idNode, scope, false)) {
+					switch (type) {
+					case TokenType.TYPE_INTEGER:
+						scope.AddProperty (idNode.ID, new IntegerProperty ());
+						break;
+					case TokenType.TYPE_STRING:
+						scope.AddProperty (idNode.ID, new StringProperty ());
+						break;
+					case TokenType.TYPE_BOOLEAN:
+						scope.AddProperty (idNode.ID, new BooleanProperty ());
+						break;
+					case TokenType.TYPE_REAL:
+						scope.AddProperty (idNode.ID, new RealProperty ());
+						break;
+					case TokenType.TYPE_ARRAY:
+						scope.AddProperty (idNode.ID, new ArrayProperty(TokenType.UNDEFINED));
+						break;
+					} 
+				}
+			}
+
+			if (SyntaxTreeBuilt) {
+				return new DeclarationNode (token, nameFactory, type, ids);
+			}
+
+			return null;
+		}
+
+		private void ParseIdsToDeclare (List<VariableIdNode> ids, Scope scope)
+		{
+			Token token = GetNextToken ();
+
+			switch (token.Type) {
+				case TokenType.ID:
+					ids.Add (ParseVarId (scope, token));
+					ParseIdsToDeclare (ids, scope);
+					break;
+				case TokenType.COMMA:
+					ParseIdsToDeclare (ids, scope);
+					break;
+				case TokenType.SET_TYPE:
+					break;
+				default:
+					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_DECLARATION);
+			}
 		}
 
 		private StatementNode ParseSimpleStatement (Scope scope, Token token)
@@ -431,7 +561,7 @@ namespace Compiler
 
 		private StatementNode ParseReturnStatement (Scope scope, Token token)
 		{
-			Token next = getNextToken ();
+			Token next = GetNextToken ();
 			ExpressionNode expression = null;
 
 			switch (next.Type) {
@@ -466,23 +596,85 @@ namespace Compiler
 
 		private StatementNode ParseReadStatement (Scope scope, Token token)
 		{
+			match (GetNextToken (), TokenType.PARENTHESIS_LEFT);
+			List<VariableIdNode> ids = new List<VariableIdNode> ();
+			ParseIdsForReadStatement (scope, ids);
+			match (GetNextToken (), TokenType.PARENTHESIS_RIGHT);
+
+			if (SyntaxTreeBuilt) {
+				return new IOReadNode (ids, scope, token, nameFactory);
+			}
+
 			return null;
+		}
+
+		private void ParseIdsForReadStatement (Scope scope, List<VariableIdNode> ids)
+		{
+			Token token = GetNextToken ();
+
+			switch (token.Type) {
+			case TokenType.ID:
+				VariableIdNode idNode = parseVariable (scope, token);
+				ids.Add (idNode);
+				ParseIdsForReadStatement (scope, ids);
+				break;
+			case TokenType.COMMA:
+				ParseIdsForReadStatement (scope, ids);
+				break;
+			case TokenType.PARENTHESIS_RIGHT:
+				bufferedToken = token;
+				break;
+			default:
+				throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_IDS_FOR_READ);
+			}
+		}
+
+		private VariableIdNode parseVariable (Scope scope, Token token)
+		{
+			Token next = GetNextToken ();
+
+			if (next.Type != TokenType.BRACKET_LEFT) {
+				bufferedToken = next;
+				return new VariableIdNode (token.Value, scope, token);
+			}
+
+			ExpressionNode arrayIndexExpression = ParseExpression (scope);
+			match (GetNextToken (), TokenType.BRACKET_RIGHT);
+
+			return new VariableIdNode (token.Value, scope, token, arrayIndexExpression);
 		}
 
 		private StatementNode ParseWriteStatement (Scope scope, Token token)
 		{
+			match (GetNextToken (), TokenType.PARENTHESIS_LEFT);
+			List<ExpressionNode> arguments = new List<ExpressionNode> ();
+			ArgumentsNode argumentsNode = ParseArguments (scope, arguments);
+			match (GetNextToken (), TokenType.PARENTHESIS_RIGHT);
+
+			if (SyntaxTreeBuilt) {
+				return new IOPrintNode (token, argumentsNode, nameFactory);
+			}
+
 			return null;
 		}
 
 		private StatementNode ParseAssertStatement (Scope scope, Token token)
 		{
+			match (GetNextToken (), TokenType.PARENTHESIS_LEFT);
+			ExpressionNode expression = ParseExpression (scope);
+			match (GetNextToken (), TokenType.PARENTHESIS_RIGHT);
+
+			if (SyntaxTreeBuilt) {
+				return new AssertNode (token, expression, nameFactory);
+			}
+
 			return null;
 		}
 
 		private StatementNode ParseIdStatement (Scope scope, Token token)
 		{
 			VariableIdNode idNode = ParseVarId (scope, token);
-			Token next = getNextToken ();
+			Token next = GetNextToken ();
 
 			switch (next.Type) {
 				case TokenType.BRACKET_LEFT:
@@ -498,16 +690,15 @@ namespace Compiler
 
 		private StatementNode ParseAssignToArray (VariableIdNode idNode, Scope scope)
 		{
-			expectDeclared (idNode, scope);
 			ExpressionNode arrayIndexExpression = ParseExpression (scope);
-			match (getNextToken (), TokenType.BRACKET_RIGHT);
+			match (GetNextToken (), TokenType.BRACKET_RIGHT);
 
-			Token token = getNextToken ();
+			Token token = GetNextToken ();
 
 			switch (token.Type) {
 				case TokenType.ASSIGN:
 					ExpressionNode assignValueExpression = ParseExpression (scope);
-					return nodeBuilder.CreateAssignToArrayNode (idNode, scope, token, arrayIndexExpression, assignValueExpression);
+					return nodeBuilder.CreateAssignToArrayNode (idNode, scope, token, nameFactory, arrayIndexExpression, assignValueExpression);
 				default:
 					throw new UnexpectedTokenException (token, TokenType.ASSIGN);
 			}
@@ -515,11 +706,10 @@ namespace Compiler
 
 		private StatementNode ParseAssign (Token token, VariableIdNode idNode, Scope scope)
 		{
-			expectDeclared (idNode, scope);
 			ExpressionNode expression = ParseExpression (scope);
 
 			if (SyntaxTreeBuilt) {
-				return nodeBuilder.CreateAssignNode (idNode, scope, token, expression);
+				return nodeBuilder.CreateAssignNode (idNode, scope, token, nameFactory, expression);
 			}
 
 			return null;
@@ -527,7 +717,7 @@ namespace Compiler
 
 		private ExpressionNode ParseExpression (Scope scope)
 		{
-			Token token = getNextToken ();
+			Token token = GetNextToken ();
 
 			switch (token.Type) {
 				case TokenType.SIGN_MINUS:
@@ -555,12 +745,43 @@ namespace Compiler
 
 		private ExpressionTail ParseExpressionTail (Scope scope)
 		{
+			Token token = GetNextToken ();
+
+			switch (token.Type) {
+				case TokenType.BINARY_OP_LOG_EQ:
+				case TokenType.BINARY_OP_LOG_NEQ:
+				case TokenType.BINARY_OP_LOG_LT:
+				case TokenType.BINARY_OP_LOG_LTE:
+				case TokenType.BINARY_OP_LOG_GTE:
+				case TokenType.BINARY_OP_LOG_GT:
+					SimpleExpression rightHandSide = ParseSimpleExpression (scope, GetNextToken ());
+
+					if (SyntaxTreeBuilt) {
+						return new ExpressionTail (token, token.Type, rightHandSide);
+					}
+
+					break;
+				case TokenType.PARENTHESIS_RIGHT:
+				case TokenType.COMMA:
+					bufferedToken = token;
+					break;
+			}
+
 			return null;
 		}
 
 		private SimpleExpression ParseSimpleExpression (Scope scope, Token token)
 		{
+			bool additiveInverse = false;
+
 			switch (token.Type) {
+				case TokenType.SIGN_MINUS:
+					additiveInverse = true;
+					token = GetNextToken ();
+					break;
+				case TokenType.SIGN_PLUS:
+					token = GetNextToken ();
+					break;
 				case TokenType.ID:
 				case TokenType.STRING_VAL:
 				case TokenType.INTEGER_VAL:
@@ -570,10 +791,26 @@ namespace Compiler
 				case TokenType.PARENTHESIS_LEFT:
 				case TokenType.UNARY_OP_LOG_NEG:
 					break;
-				case TokenType.SIGN_MINUS:
-					break;
-				case TokenType.SIGN_PLUS:
-					break;
+				default:
+					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
+			}
+
+			switch (token.Type) {
+			case TokenType.ID:
+			case TokenType.STRING_VAL:
+			case TokenType.INTEGER_VAL:
+			case TokenType.BOOLEAN_VAL_FALSE:
+			case TokenType.BOOLEAN_VAL_TRUE:
+			case TokenType.REAL_VAL:
+			case TokenType.PARENTHESIS_LEFT:
+			case TokenType.UNARY_OP_LOG_NEG:
+				TermNode term = ParseTerm (scope, token);
+				SimpleExpressionTail tail = ParseSimpleExpressionTail (scope);
+
+				if (SyntaxTreeBuilt) {
+					return new SimpleExpression (token, term, tail, additiveInverse);
+				}
+				break;
 				default:
 					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
 			}
@@ -581,8 +818,33 @@ namespace Compiler
 			return null;
 		}
 
-		private SimpleExpressionTail ParseSimpleExpressionTail (IExpressionNode expression, Scope scope)
+		private SimpleExpressionTail ParseSimpleExpressionTail (Scope scope)
 		{
+			Token token = GetNextToken ();
+			TokenType operation = TokenType.UNDEFINED;
+
+			switch (token.Type) {
+				case TokenType.SIGN_PLUS:
+					operation = TokenType.BINARY_OP_ADD;
+					break;
+				case TokenType.SIGN_MINUS:
+					operation = TokenType.BINARY_OP_SUB;
+					break;
+				case TokenType.BINARY_OP_LOG_OR:
+					operation = TokenType.BINARY_OP_LOG_OR;
+					break;
+				default:
+					bufferedToken = token;
+					return null;
+			}
+
+			TermNode term = ParseTerm(scope, GetNextToken ());
+			SimpleExpressionTail tail = ParseSimpleExpressionTail (scope);
+
+			if (SyntaxTreeBuilt) {
+				return new SimpleExpressionTail (token, operation, term, tail);
+			}
+
 			return null;
 		}
 
@@ -614,14 +876,14 @@ namespace Compiler
 
 		private TermTail ParseTermTail (Scope scope)
 		{
-			Token token = getNextToken ();
+			Token token = GetNextToken ();
 
 			switch (token.Type) {
 			case TokenType.BINARY_OP_MUL:
 			case TokenType.BINARY_OP_DIV:
 			case TokenType.BINARY_OP_MOD:
 			case TokenType.BINARY_OP_LOG_AND:
-				Factor factor = ParseFactor (scope, getNextToken ());
+				Factor factor = ParseFactor (scope, GetNextToken ());
 				TermTail termTail = ParseTermTail (scope);
 
 				if (SyntaxTreeBuilt) {
@@ -648,15 +910,22 @@ namespace Compiler
 			case TokenType.UNARY_OP_LOG_NEG:
 				FactorMain main = ParseFactorMain (scope, token);
 				FactorTail tail = ParseFactorTail (scope);
-				return new Factor (token, main, tail);
+
+				if (SyntaxTreeBuilt) {
+					return new Factor (token, main, tail);
+				}
+
+				break;
 			default:
 				throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
 			}
+
+			return null;
 		}
 
 		private FactorTail ParseFactorTail (Scope scope)
 		{
-			Token token = getNextToken ();
+			Token token = GetNextToken ();
 
 			if (token.Type == TokenType.SIZE) {
 				return nodeBuilder.CreateArraySizeCheckNode (token, scope);
@@ -667,32 +936,40 @@ namespace Compiler
 
 		private FactorMain ParseFactorMain (Scope scope, Token token)
 		{
-			/*
+			Evaluee evaluee = null;
 			switch (token.Type) {
 			case TokenType.ID:
 				VariableIdNode idNode = ParseVarId (scope, token);
-				return ParseFactorIdTail (idNode, scope);
+				evaluee = ParseFactorIdTail (idNode, scope);
+				break;
 			case TokenType.STRING_VAL:
 			case TokenType.INTEGER_VAL:
 			case TokenType.BOOLEAN_VAL_FALSE:
 			case TokenType.BOOLEAN_VAL_TRUE:
 			case TokenType.REAL_VAL:
-				return ParseLiteral (token);
+				evaluee = ParseLiteral (token);
+				break;
 			case TokenType.PARENTHESIS_LEFT:
-				return ParseExpression (scope);
+				evaluee = ParseExpression (scope);
+				match (GetNextToken (), TokenType.PARENTHESIS_RIGHT);
+				break;
 			case TokenType.UNARY_OP_LOG_NEG:
-				IExpressionNode factor = ParseFactor (scope, getNextToken ());
-				return nodeBuilder.CreateUnOpNode(token, factor);
+				Factor factor = ParseFactor (scope, GetNextToken ());
+				evaluee = new BooleanNegation (token, factor);
+				break;
 			default:
 				throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
 			}
-			*/
+
+			if (SyntaxTreeBuilt) {
+				return new FactorMain (token, evaluee);
+			}
+
 			return null;
 		}
 
-		private IExpressionNode ParseLiteral (Token token)
+		private Evaluee ParseLiteral (Token token)
 		{
-			/*
 			switch (token.Type) {
 			case TokenType.STRING_VAL:
 				return nodeBuilder.CreateStringValueNode (token);
@@ -706,7 +983,7 @@ namespace Compiler
 			default:
 				throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_LITERAL);
 			}
-			*/
+
 			return null;
 		}
 
@@ -715,11 +992,10 @@ namespace Compiler
 		/// </summary>
 		/// <param name="token">Token.</param>
 		/// <param name="parent">An IExpressionContainer.</param>
-		private void ParseIntegerOperand(Token token, StatementNode parent=null) {
-			/*
+		private IntValueNode ParseIntegerOperand(Token token) {
 			try {
 				// try to create an IntValueNode for the value
-				return nodeBuilder.CreateIntValueNode (token, parent);
+				return nodeBuilder.CreateIntValueNode (token);
 			} catch (OverflowException) {
 				// In case the token's value is an integer that cannot be represented as a
 				// signed 32-bit integer, an OverflowException is thrown.
@@ -727,45 +1003,48 @@ namespace Compiler
 				notifyError (new IntegerOverflowError (token));
 				return null;
 			}
-			*/
 		}
 
 
-		private IExpressionNode ParseFactorIdTail (VariableIdNode idNode, Scope scope)
+		private Evaluee ParseFactorIdTail (VariableIdNode idNode, Scope scope)
 		{
-			/*
-			Token token = getNextToken ();
+			Token token = GetNextToken ();
 			switch (token.Type) {
 			case (TokenType.PARENTHESIS_LEFT):
 				return ParseCallTail(idNode, scope, token);
+			case (TokenType.BRACKET_LEFT):
+				return ParseArrayAccess (idNode, scope);
 			default:
 				bufferedToken = token;
 				return idNode;
 			}
-			*/
+		}
+
+		private Evaluee ParseArrayAccess (VariableIdNode idNode, Scope scope)
+		{
 			return null;
 		}
 
-		private StatementNode ParseCallTail(VariableIdNode idNode, Scope scope, Token token)
+		private Evaluee ParseCallTail(VariableIdNode idNode, Scope scope, Token token)
 		{
-			/*
 			ArgumentsNode arguments = ParseFunctionArguments (scope);
-			FunctionCallNode callNode = nodeBuilder.CreateFunctionCallNode (idNode, arguments, token, scope);
-			return callNode;
-			*/
+
+			if (SyntaxTreeBuilt) {
+				return nodeBuilder.CreateFunctionCallNode (idNode, arguments, token, scope, nameFactory);
+			}
+
 			return null;
 		}
 
 		private ArgumentsNode ParseFunctionArguments (Scope scope)
 		{
-			List<IExpressionNode> arguments = new List<IExpressionNode> ();
+			List<ExpressionNode> arguments = new List<ExpressionNode> ();
 			return ParseArguments (scope, arguments);
 		}
 
-		private ArgumentsNode ParseArguments (Scope scope, List<IExpressionNode> arguments)
+		private ArgumentsNode ParseArguments (Scope scope, List<ExpressionNode> arguments)
 		{
-			/*
-			Token token = getNextToken ();
+			Token token = GetNextToken ();
 
 			switch (token.Type) {
 				case TokenType.SIGN_MINUS:
@@ -778,30 +1057,41 @@ namespace Compiler
 				case TokenType.BOOLEAN_VAL_TRUE:
 				case TokenType.PARENTHESIS_LEFT:
 				case TokenType.UNARY_OP_LOG_NEG:
-					IExpressionNode argument = ParseExpression (scope);
+					ExpressionNode argument = ParseExpression (scope);
 					arguments.Add (argument);
 					return ParseArguments (scope, arguments);
 				case TokenType.COMMA:
 					return ParseArguments (scope, arguments);
 				case TokenType.PARENTHESIS_RIGHT:
 					if (SyntaxTreeBuilt) {
-						return nodeBuilder.CreateArgumentsNode (scope, arguments);
+						return nodeBuilder.CreateArgumentsNode (scope, arguments, token);
 					}
 					return null;
 				default:
 					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_ARGUMENTS);
 			}
-			*/
+
 			return null;
 		}
 
 		private VariableIdNode ParseVarId(Scope scope, Token idToken=null) {
-			Token token = idToken == null ? getNextToken () : idToken;
+			Token token = idToken == null ? GetNextToken () : idToken;
 
 			switch (token.Type) {
-				case TokenType.ID:
+			case TokenType.ID:
+				Token next = GetNextToken ();
+				ExpressionNode arraySizeExpression = null;
+				TokenType elementType = TokenType.UNDEFINED;
+				if (next.Type == TokenType.BRACKET_LEFT) {
+					arraySizeExpression = ParseExpression (scope);
+					match (GetNextToken (), TokenType.BRACKET_RIGHT);
+					match (GetNextToken (), TokenType.OF);
+					elementType = ParseType ();
+				} else {
+					bufferedToken = next;
+				}
 					if (SyntaxTreeBuilt) {
-						return nodeBuilder.CreateIdNode (token, scope);
+					return nodeBuilder.CreateIdNode (token, scope, arraySizeExpression: arraySizeExpression, arrayElementType: elementType);
 					}
 					break;
 				default:
@@ -813,7 +1103,7 @@ namespace Compiler
 
 		private void ParseType (VariableIdNode idNode)
 		{
-			Token token = getNextToken ();
+			Token token = GetNextToken ();
 
 			switch (token.Type) {
 				case TokenType.TYPE_INTEGER:
@@ -834,13 +1124,13 @@ namespace Compiler
 					idNode.VariableType = TokenType.REAL_VAL;
 					break;
 				default:
-					throw new UnexpectedTokenException (token, TokenType.UNDEFINED, ParserConstants.EXPECTATION_SET_DECLARATION_TYPE);
+					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_DECLARATION_TYPE);
 			}
 		}
 
 		private TokenType ParseType ()
 		{
-			Token token = getNextToken ();
+			Token token = GetNextToken ();
 
 			switch (token.Type) {
 				case TokenType.TYPE_INTEGER:
@@ -850,7 +1140,7 @@ namespace Compiler
 				case TokenType.TYPE_ARRAY:
 					return token.Type;
 				default:
-					throw new UnexpectedTokenException (token, TokenType.UNDEFINED, ParserConstants.EXPECTATION_SET_DECLARATION_TYPE);
+					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_DECLARATION_TYPE);
 			}
 		}
 
@@ -902,7 +1192,7 @@ namespace Compiler
 
 			// ask for new token's until the end of file has been reached
 			do {
-				token = getNextToken ();
+				token = GetNextToken ();
 			} while (token.Type != TokenType.END_OF_FILE);
 		}
 
@@ -922,7 +1212,7 @@ namespace Compiler
 			// ask for another token until the token's type matches one of
 			// the types in the keyset
 			while (!tokenTypes.ContainsKey(token.Type)) {
-				token = getNextToken ();
+				token = GetNextToken ();
 			}
 		}
 
@@ -972,7 +1262,7 @@ namespace Compiler
 					blockDepth++;
 				}
 
-				token = getNextToken ();
+				token = GetNextToken ();
 			}
 		}
 

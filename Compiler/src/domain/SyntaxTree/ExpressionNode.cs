@@ -2,7 +2,7 @@
 
 namespace Compiler
 {
-	public class ExpressionNode : SyntaxTreeNode
+	public class ExpressionNode : Evaluee
 	{
 		private SimpleExpression expression;
 		private ExpressionTail tail;

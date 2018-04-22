@@ -7,13 +7,10 @@ namespace Compiler
 	{
 		private Dictionary<string, FunctionNode> functions;
 		private BlockNode mainBlock;
-		private Scope scope;
-
 		public ProgramNode (Token token, Dictionary<string, FunctionNode> functionNodes, BlockNode mainBlock, Scope scope)
-			: base (token)
+			: base (token, scope: scope)
 		{
 			this.mainBlock = mainBlock;
-			this.scope = scope;
 			this.functions = functionNodes;
 		}
 

@@ -33,5 +33,9 @@ namespace Compiler
 		{
 			return root.ToString ();
 		}
+
+		public Scope RootScope {
+			get { return root.Scope; }
+		}
 	}
 }

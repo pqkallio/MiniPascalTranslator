@@ -7,20 +7,15 @@ namespace Compiler
 	/// <summary>
 	/// Represents a read statement in the AST
 	/// </summary>
-	public class IOReadNode : SyntaxTreeNode
+	public class IOReadNode : StatementNode
 	{
 		private List<VariableIdNode> idNodes;
-		private List<AssignNode> assignNodes;
 		private Token token;
 
-		public IOReadNode (List<VariableIdNode> idNodes, Scope scope, Token t)
-			: base(t)
+		public IOReadNode (List<VariableIdNode> idNodes, Scope scope, Token t, INameFactory nameFactory)
+			: base(t, nameFactory, scope)
 		{
 			this.idNodes = idNodes;
-			this.assignNodes = new List<AssignNode> ();
-			foreach (VariableIdNode idNode in idNodes) {
-				this.assignNodes.Add (new AssignNode (idNode, scope, idNode.Token));
-			}
 			this.token = t;
 		}
 
@@ -28,11 +23,6 @@ namespace Compiler
 		{
 			get { return this.idNodes; }
 			set { this.idNodes = value; }
-		}
-
-		public List<AssignNode> AssignNodes
-		{
-			get { return this.assignNodes; }
 		}
 
 		public override ISemanticCheckValue Accept(INodeVisitor visitor) {

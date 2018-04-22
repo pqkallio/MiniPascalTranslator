@@ -23,17 +23,6 @@ namespace Compiler
 			set { this.value = value; }
 		}
 
-		public IExpressionNode[] GetExpressions()
-		{
-			return null;
-		}
-
-		public TokenType Operation 
-		{
-			get { return TokenType.BINARY_OP_NO_OP; }
-			set { }
-		}
-
 		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return null;
 		}
@@ -44,11 +33,6 @@ namespace Compiler
 		}
 
 		public override string ToString ()
-		{
-			return Value.ToString ();
-		}
-
-		public override string GetValue ()
 		{
 			return Value.ToString ();
 		}

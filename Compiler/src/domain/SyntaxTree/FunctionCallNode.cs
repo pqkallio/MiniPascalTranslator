@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace Compiler
 {
-	public class FunctionCallNode : SyntaxTreeNode
+	public class FunctionCallNode : Evaluee
 	{
 		private VariableIdNode idNode;
 		private ArgumentsNode argumentsNode;
 
-		public FunctionCallNode (Token token, VariableIdNode idNode, ArgumentsNode argumentsNode = null)
-			: base(token)
+		public FunctionCallNode (Token token, VariableIdNode idNode, INameFactory nameFactory, ArgumentsNode argumentsNode = null)
+			: base(token, nameFactory)
 		{
 			this.idNode = idNode;
 			this.argumentsNode = argumentsNode;
@@ -21,7 +21,7 @@ namespace Compiler
 			set { this.argumentsNode = value; }
 		}
 
-		public List<IExpressionNode> GetArguments ()
+		public List<ExpressionNode> GetArguments ()
 		{
 			if (ArgumentsNode == null) {
 				return null;
@@ -39,16 +39,6 @@ namespace Compiler
 		public TokenType EvaluationType {
 			get { return idNode.EvaluationType; }
 			set {  }
-		}
-
-		public IExpressionNode[] GetExpressions ()
-		{
-			return null;
-		}
-
-		public TokenType Operation { 
-			get { return TokenType.BINARY_OP_NO_OP; }
-			set { }
 		}
 
 		public override ISemanticCheckValue Accept(INodeVisitor visitor)

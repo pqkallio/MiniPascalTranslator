@@ -6,13 +6,13 @@ namespace Compiler
 	{
 		private ExpressionNode indexExpression;
 
-		public ArrayAssignStatement (VariableIdNode idNode, Scope scope, Token token, ExpressionNode indexExpression, ExpressionNode assignValueExpression)
-			: base(idNode, scope, token, assignValueExpression)
+		public ArrayAssignStatement (VariableIdNode idNode, Scope scope, Token token, INameFactory nameFactory, ExpressionNode indexExpression, ExpressionNode assignValueExpression)
+			: base(idNode, scope, token, nameFactory, assignValueExpression)
 		{
 			this.indexExpression = indexExpression;
 		}
 
-		public ISemanticCheckValue Accept (INodeVisitor visitor)
+		public override ISemanticCheckValue Accept (INodeVisitor visitor)
 		{
 			return null;
 		}

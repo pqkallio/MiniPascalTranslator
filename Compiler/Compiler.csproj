@@ -124,8 +124,6 @@
     <Compile Include="src\domain\SyntaxTree\FactorMain.cs" />
     <Compile Include="src\domain\SyntaxTree\FactorTail.cs" />
     <Compile Include="src\domain\SyntaxTree\ReturnStatement.cs" />
-    <Compile Include="src\services\MiniPascalLabelFactory.cs" />
-    <Compile Include="src\services\ILabelFactory.cs" />
     <Compile Include="src\domain\Values\FunctionProperty.cs" />
     <Compile Include="src\domain\Values\Property.cs" />
     <Compile Include="src\domain\Errors\IllegalArrayElementTypeError.cs" />
@@ -136,5 +134,8 @@
     <Compile Include="src\domain\SyntaxTree\Evaluee.cs" />
     <Compile Include="src\domain\SyntaxTree\ArrayAssignStatement.cs" />
     <Compile Include="src\domain\SyntaxTree\StatementNode.cs" />
+    <Compile Include="src\domain\SyntaxTree\BooleanNegation.cs" />
+    <Compile Include="src\services\INameFactory.cs" />
+    <Compile Include="src\services\MiniPascalNameFactory.cs" />
   </ItemGroup>
 </Project>

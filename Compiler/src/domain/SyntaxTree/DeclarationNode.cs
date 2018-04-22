@@ -7,16 +7,16 @@ namespace Compiler
 	/// <summary>
 	/// Represents a Declaration statement in the AST
 	/// </summary>
-	public class DeclarationNode : SyntaxTreeNode
+	public class DeclarationNode : StatementNode
 	{
-		private List<string> ids;
+		private List<VariableIdNode> idsToDeclare;
 		private TokenType type;
 
-		public DeclarationNode (Token t, TokenType type, List<string> ids = null)
-			: base(t)
+		public DeclarationNode (Token token, INameFactory nameFactory, TokenType type, List<VariableIdNode> idsToDeclare)
+			: base(token, nameFactory)
 		{
 			this.type = type;
-			this.ids = ids;
+			this.idsToDeclare = idsToDeclare;
 		}
 
 		public override ISemanticCheckValue Accept(INodeVisitor visitor) {

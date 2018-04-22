@@ -15,7 +15,7 @@ namespace Compiler
 			return new ParametersNode (token, parameters);
 		}
 
-		public FunctionNode CreateFunctionNode(Token token, ILabelFactory labelFactory, VariableIdNode idNode, ParametersNode parameters, BlockNode blockNode, Scope scope)
+		public FunctionNode CreateFunctionNode(Token token, INameFactory labelFactory, VariableIdNode idNode, ParametersNode parameters, BlockNode blockNode, Scope scope)
 		{
 			return new FunctionNode (token, labelFactory, idNode, parameters, blockNode, scope);
 		}
@@ -43,10 +43,10 @@ namespace Compiler
 			return new VariableIdNode (scope);
 		}
 
-		public VariableIdNode CreateIdNode(Token t, Scope scope)
+		public VariableIdNode CreateIdNode(Token token, Scope scope, ExpressionNode arraySizeExpression = null, TokenType arrayElementType = TokenType.UNDEFINED)
 		{
-			string value = t.Value;
-			return new VariableIdNode (value, scope, t);
+			string value = token.Value;
+			return new VariableIdNode (value, scope, token, arraySizeExpression: arraySizeExpression, arrayElementType: arrayElementType);
 		}
 
 		public DeclarationNode CreateDeclarationNode (VariableIdNode idNode, Scope scope, StatementsNode statementsNode, Token t)
@@ -54,26 +54,18 @@ namespace Compiler
 			return null;
 		}
 
-		public AssignNode CreateAssignNode (VariableIdNode idNode, Scope scope, Token token, ExpressionNode expression=null)
+		public AssignNode CreateAssignNode (VariableIdNode idNode, Scope scope, Token token, INameFactory nameFactory, ExpressionNode expression=null)
 		{
 			if (idNode.Token == null) {
 				idNode.Token = token;
 			}
 
-			return new AssignNode (idNode, scope, token, expression);
+			return new AssignNode (idNode, scope, token, nameFactory, expression);
 		}
 
-		public ArrayAssignStatement CreateAssignToArrayNode (VariableIdNode idNode, Scope scope, Token token, ExpressionNode arrayIndexExpression, ExpressionNode assignValueExpression)
+		public ArrayAssignStatement CreateAssignToArrayNode (VariableIdNode idNode, Scope scope, Token token, INameFactory nameFactory, ExpressionNode arrayIndexExpression, ExpressionNode assignValueExpression)
 		{
-			return new ArrayAssignStatement (idNode, scope, token, arrayIndexExpression, assignValueExpression);
-		}
-
-		public AssignNode CreateAssignNode (VariableIdNode idNode, StatementsNode statementsNode, Scope scope, Token t)
-		{
-			AssignNode assignNode = new AssignNode (idNode, scope, t);
-			statementsNode.Statement = assignNode;
-
-			return assignNode;
+			return new ArrayAssignStatement (idNode, scope, token, nameFactory, arrayIndexExpression, assignValueExpression);
 		}
 
 		public ReturnStatement CreateReturnStatement (Token token, ExpressionNode expression)
@@ -91,22 +83,14 @@ namespace Compiler
 			return null;
 		}
 
-		public AssertNode CreateAssertNode (StatementsNode statementsNode, Token t)
-		{
-			AssertNode assertNode = new AssertNode (t);
-			statementsNode.Statement = assertNode;
-
-			return assertNode;
-		}
-
-		public ArgumentsNode CreateArgumentsNode (Scope scope, List<IExpressionNode> arguments, Token token)
+		public ArgumentsNode CreateArgumentsNode (Scope scope, List<ExpressionNode> arguments, Token token)
 		{
 			return new ArgumentsNode (token, scope, arguments);
 		}
 
-		public FunctionCallNode CreateFunctionCallNode (VariableIdNode idNode, ArgumentsNode arguments, Token token, Scope scope)
+		public FunctionCallNode CreateFunctionCallNode (VariableIdNode idNode, ArgumentsNode arguments, Token token, Scope scope, INameFactory nameFactory)
 		{
-			return new FunctionCallNode (token, idNode, arguments);
+			return new FunctionCallNode (token, idNode, nameFactory, arguments);
 		}
 
 		public FactorTail CreateArraySizeCheckNode (Token token, Scope scope)

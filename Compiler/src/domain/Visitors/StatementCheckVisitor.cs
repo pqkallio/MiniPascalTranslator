@@ -42,18 +42,6 @@ namespace Compiler
 		/// <summary>
 		/// Checks the static semantic constraints of a BinOpNode.
 		/// </summary>
-		/// <returns>An ISemanticCheckValue.</returns>
-		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitBinOpNode(BinOpNode node)
-		{
-			// This is not a statement so it needs not to be actually checked here.
-			// So, we pass it to the TypeCheckerVisitor instead.
-			return node.Accept(this.typeChecker);
-		}
-
-		/// <summary>
-		/// Checks the static semantic constraints of a BinOpNode.
-		/// </summary>
 		/// 
 		/// <returns>An ISemanticCheckValue.</returns>
 		/// <param name="node">Node.</param>
@@ -127,18 +115,6 @@ namespace Compiler
 		/// <returns>An ISemanticCheckValue.</returns>
 		/// <param name="node">Node.</param>
 		public ISemanticCheckValue VisitStringValueNode(StringValueNode node)
-		{
-			// This is not a statement so it needs not to be actually checked here.
-			// So, we pass it to the TypeCheckerVisitor instead.
-			return node.Accept(this.typeChecker);
-		}
-
-		/// <summary>
-		/// Checks the static semantic constraints of an UnOpNode.
-		/// </summary>
-		/// <returns>An ISemanticCheckValue.</returns>
-		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitUnOpNode(UnOpNode node)
 		{
 			// This is not a statement so it needs not to be actually checked here.
 			// So, we pass it to the TypeCheckerVisitor instead.

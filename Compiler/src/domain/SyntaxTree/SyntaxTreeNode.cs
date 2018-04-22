@@ -5,14 +5,16 @@ namespace Compiler
 {
 	public abstract class SyntaxTreeNode
 	{
-		private Token token;
-		private string label;
-		private ILabelFactory labelFactory;
+		protected Token token;
+		protected string label;
+		protected INameFactory labelFactory;
+		protected Scope scope;
 
-		public SyntaxTreeNode (Token token, ILabelFactory labelFactory = null)
+		public SyntaxTreeNode (Token token, INameFactory labelFactory = null, Scope scope = null)
 		{
 			this.token = token;
 			this.labelFactory = labelFactory;
+			this.scope = scope;
 			this.label = null;
 		}
 
@@ -32,6 +34,11 @@ namespace Compiler
 
 				return label;
 			}
+		}
+
+		public Scope Scope
+		{
+			get { return scope; }
 		}
 	}
 }

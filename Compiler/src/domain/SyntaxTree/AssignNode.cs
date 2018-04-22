@@ -12,17 +12,15 @@ namespace Compiler
 	{
 		private VariableIdNode idNode;
 		private ExpressionNode assignValueExpression;
-		private Scope scope;
 
-		public AssignNode (VariableIdNode idNode, Scope scope)
-			: this (idNode, scope, null)
+		public AssignNode (VariableIdNode idNode, Scope scope, INameFactory nameFactory)
+			: this (idNode, scope, null, nameFactory)
 		{}
 
-		public AssignNode (VariableIdNode idNode, Scope scope, Token token, ExpressionNode assignValueExpression = null)
-			: base(token)
+		public AssignNode (VariableIdNode idNode, Scope scope, Token token, INameFactory nameFactory, ExpressionNode assignValueExpression = null)
+			: base(token, nameFactory, scope)
 		{
 			this.idNode = idNode;
-			this.scope = scope;
 			this.assignValueExpression = assignValueExpression;
 		}
 

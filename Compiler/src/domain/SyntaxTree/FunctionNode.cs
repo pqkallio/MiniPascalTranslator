@@ -7,14 +7,12 @@ namespace Compiler
 		private BlockNode block;
 		private ParametersNode parameters;
 		private TokenType returnType;
-		private Scope scope;
 
-		public FunctionNode (Token token, ILabelFactory labelFactory, VariableIdNode idNode, ParametersNode parametersNode, BlockNode block, Scope scope)
-			: base(token, labelFactory)
+		public FunctionNode (Token token, INameFactory nameFactory, VariableIdNode idNode, ParametersNode parametersNode, BlockNode block, Scope scope)
+			: base(token, nameFactory, scope)
 		{
 			this.block = block;
 			this.returnType = idNode.VariableType;
-			this.scope = scope;
 		}
 
 		public override ISemanticCheckValue Accept (INodeVisitor visitor)

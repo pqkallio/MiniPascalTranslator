@@ -71,6 +71,7 @@ namespace Compiler
 		public static readonly string INT_VAL_STR = "integer";
 		public static readonly string STR_VAL_STR = "string";
 		public static readonly string BOOL_VAL_STR = "boolean";
+		public static readonly string ID_LIST = "comma-separated list of identifiers";
 
 		// Expectation sets
 		public static readonly string[] EXPECTATION_SET_PROGRAM = new string[] 
@@ -82,6 +83,17 @@ namespace Compiler
 			TOKEN_TYPE_STRINGS[TokenType.ASSERT],
 			IDENTIFIER_STR,
 			EOF_STR
+		};
+
+		public static readonly string[] EXPECTATION_SET_DECLARATION = new string[]
+		{
+			ID_LIST,
+			TOKEN_TYPE_STRINGS[TokenType.SET_TYPE]
+		};
+
+		public static readonly string[] EXPECTATION_SET_IDS_FOR_READ = new string[]
+		{
+			ID_LIST
 		};
 
 		public static readonly string[] EXPECTATION_SET_FUNCTIONS_AND_PROCEDURES = new string[] 
