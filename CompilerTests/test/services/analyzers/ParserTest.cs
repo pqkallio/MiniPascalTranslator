@@ -304,6 +304,9 @@ namespace CompilerTests
 			InitParser (ParserTestInputs.declareAndAssignFunctionCall2);
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error error in parser.getErrors()) {
+				Console.WriteLine (error);
+			}
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
 
@@ -338,6 +341,102 @@ namespace CompilerTests
 		public void TestWriteStatement ()
 		{
 			InitParser (ParserTestInputs.writeStatement);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error error in parser.getErrors()) {
+				Console.WriteLine (error);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestAssertStatement ()
+		{
+			InitParser (ParserTestInputs.assertStatement);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error error in parser.getErrors()) {
+				Console.WriteLine (error);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestBlockInABlockStatement1 ()
+		{
+			InitParser (ParserTestInputs.blockInABlockStatement1);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error error in parser.getErrors()) {
+				Console.WriteLine (error);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestBlockInABlockStatement2 ()
+		{
+			InitParser (ParserTestInputs.blockInABlockStatement2);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error error in parser.getErrors()) {
+				Console.WriteLine (error);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestIfThenStatement ()
+		{
+			InitParser (ParserTestInputs.ifThenStatement);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error error in parser.getErrors()) {
+				Console.WriteLine (error);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestIfThenElseStatement ()
+		{
+			InitParser (ParserTestInputs.ifThenElseStatement);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error error in parser.getErrors()) {
+				Console.WriteLine (error);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestWhileStatement ()
+		{
+			InitParser (ParserTestInputs.whileStatement);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error error in parser.getErrors()) {
+				Console.WriteLine (error);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestAccessArraySize ()
+		{
+			InitParser (ParserTestInputs.accessArraySize);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error error in parser.getErrors()) {
+				Console.WriteLine (error);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestProcedureCall ()
+		{
+			InitParser (ParserTestInputs.procedureCall);
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			foreach (Error error in parser.getErrors()) {

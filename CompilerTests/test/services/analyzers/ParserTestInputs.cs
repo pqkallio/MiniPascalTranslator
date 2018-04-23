@@ -281,6 +281,85 @@ namespace CompilerTests
 			"writeln(x, 6 + z[0], -9, true);\n",
 			"end ."
 		};
+
+		public static readonly string[] assertStatement = {
+			"program empty;\n",
+			"begin\n",
+			"var x : string;\n",
+			"assert(x[9] % 9 < 6 / 5);\n",
+			"end ."
+		};
+
+		public static readonly string[] blockInABlockStatement1 = {
+			"program empty;\n",
+			"begin\n",
+			"var x : string;\n",
+			"assert(x[9] % 9 < 6 / 5);\n",
+			"begin\n",
+			"  writeln(\"is funny\");",
+			"  writeln(x)\n",
+			"end;\n",
+			"end ."
+		};
+
+		public static readonly string[] blockInABlockStatement2 = {
+			"program empty;\n",
+			"begin\n",
+			"var x : string;\n",
+			"assert(x[9] % 9 < 6 / 5);\n",
+			"begin\n",
+			"  writeln(\"is funny\");",
+			"  writeln(x);\n",
+			"end;\n",
+			"end ."
+		};
+
+		public static readonly string[] ifThenStatement = {
+			"program empty;\n",
+			"begin\n",
+			"if x > 5 then\n",
+			"x := 4;\n",
+			"end ."
+		};
+
+		public static readonly string[] ifThenElseStatement = {
+			"program empty;\n",
+			"begin\n",
+			"if x > 5 then\n",
+			"x := 4\n",
+			"else x := x - 1;\n",
+			"writeln(x)\n",
+			"end ."
+		};
+
+		public static readonly string[] whileStatement = {
+			"program empty;\n",
+			"begin\n",
+				"  var x : string;\n",
+			    "  x := 0;\n",
+				"  while x <= 10 do\n",
+				"    begin\n",
+				"      x := x + 1;\n",
+				"      writeln(\"x is now \", x)\n",
+				"    end\n",
+			"end ."
+		};
+
+		public static readonly string[] accessArraySize = {
+			"program empty;\n",
+			"begin\n",
+			"var x : array[5] of integer;\n",
+			"var y : integer;\n",
+			"y := x.size\n",
+			"end ."
+		};
+
+		public static readonly string[] procedureCall = {
+			"program empty;\n",
+			"begin\n",
+			"proc(\"supadupa\")\n",
+			"end ."
+		};
 	}
 }
 

@@ -389,8 +389,7 @@ namespace Compiler
 					Token nextNextToken = GetNextToken ();
 
 					if (nextNextToken.Type != TokenType.END) {
-						bufferedToken = nextNextToken;
-						ParseStatements (token, scope, statements);
+						ParseStatements (nextNextToken, scope, statements);
 					}
 
 					break;
@@ -425,8 +424,6 @@ namespace Compiler
 				default:
 					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_STATEMENTS);
 			}
-
-			match (GetNextToken (), TokenType.END_STATEMENT);
 
 			return statement;
 		}
@@ -785,10 +782,7 @@ namespace Compiler
 					}
 
 					break;
-				case TokenType.PARENTHESIS_RIGHT:
-				case TokenType.BRACKET_RIGHT:
-				case TokenType.COMMA:
-				case TokenType.END_STATEMENT:
+				default:
 					bufferedToken = token;
 					break;
 			}
