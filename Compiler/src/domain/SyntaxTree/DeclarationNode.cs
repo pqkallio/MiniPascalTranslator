@@ -10,9 +10,9 @@ namespace Compiler
 	public class DeclarationNode : StatementNode
 	{
 		private List<VariableIdNode> idsToDeclare;
-		private TokenType type;
+		private TypeNode type;
 
-		public DeclarationNode (Token token, INameFactory nameFactory, TokenType type, List<VariableIdNode> idsToDeclare)
+		public DeclarationNode (Token token, INameFactory nameFactory, TypeNode type, List<VariableIdNode> idsToDeclare)
 			: base(token, nameFactory)
 		{
 			this.type = type;

@@ -394,6 +394,9 @@ namespace Compiler
 					}
 
 					break;
+				default:
+					ParseStatements (nextToken, scope, statements);
+					break;
 			}
 		}
 
@@ -402,21 +405,21 @@ namespace Compiler
 			StatementNode statement = null;
 
 			switch (token.Type) {
-			case TokenType.ID:
-			case TokenType.RETURN:
-			case TokenType.READ:
-			case TokenType.WRITELN:
-			case TokenType.ASSERT:
-				statement = ParseSimpleStatement (scope, token);
-				break;
-			case TokenType.BEGIN:
-			case TokenType.IF:
-			case TokenType.WHILE_LOOP:
-				statement = ParseStructuredStatement (scope, token);
-				break;
-			case TokenType.VAR:
-				statement = ParseVarDeclaration (token, scope);
-				break;
+				case TokenType.ID:
+				case TokenType.RETURN:
+				case TokenType.READ:
+				case TokenType.WRITELN:
+				case TokenType.ASSERT:
+					statement = ParseSimpleStatement (scope, token);
+					break;
+				case TokenType.BEGIN:
+				case TokenType.IF:
+				case TokenType.WHILE_LOOP:
+					statement = ParseStructuredStatement (scope, token);
+					break;
+				case TokenType.VAR:
+					statement = ParseVarDeclaration (token, scope);
+					break;
 				case TokenType.END:
 					break;
 				default:
@@ -486,12 +489,11 @@ namespace Compiler
 		{
 			List<VariableIdNode> ids = new List<VariableIdNode> ();
 			ParseIdsToDeclare (ids, scope);
-			// SHOULD PARSE A TYPE NODE OR SOMETHING IN ORDER TO GET THE ARRAY TYPES ELEMENT TYPE AS WELL
-			TokenType type = ParseType ();
+			TypeNode type = ParseTypeNode (scope);
 
 			foreach (VariableIdNode idNode in ids) {
 				if (expectDeclared (idNode, scope, false)) {
-					switch (type) {
+					switch (type.PropertyType) {
 					case TokenType.TYPE_INTEGER:
 						scope.AddProperty (idNode.ID, new IntegerProperty ());
 						break;
@@ -505,9 +507,9 @@ namespace Compiler
 						scope.AddProperty (idNode.ID, new RealProperty ());
 						break;
 					case TokenType.TYPE_ARRAY:
-						scope.AddProperty (idNode.ID, new ArrayProperty(TokenType.UNDEFINED));
+						scope.AddProperty (idNode.ID, new ArrayProperty(type.ArrayElementType));
 						break;
-					} 
+					}
 				}
 			}
 
@@ -518,13 +520,35 @@ namespace Compiler
 			return null;
 		}
 
+		private TypeNode ParseTypeNode (Scope scope)
+		{
+			Token token = GetNextToken ();
+			switch (token.Type) {
+			case TokenType.TYPE_INTEGER:
+			case TokenType.TYPE_BOOLEAN:
+			case TokenType.TYPE_REAL:
+			case TokenType.TYPE_STRING:
+				return new TypeNode (token, token.Type);
+			case TokenType.TYPE_ARRAY:
+				match (GetNextToken (), TokenType.BRACKET_LEFT);
+				ExpressionNode arraySizeExpression = ParseExpression (scope);
+				match (GetNextToken (), TokenType.BRACKET_RIGHT);
+				match (GetNextToken (), TokenType.OF);
+				TokenType elementType = ParseType ();
+				return new ArrayTypeNode (token, token.Type, elementType, arraySizeExpression);
+			default:
+				throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_TYPE);
+			}
+		}
+
 		private void ParseIdsToDeclare (List<VariableIdNode> ids, Scope scope)
 		{
 			Token token = GetNextToken ();
 
 			switch (token.Type) {
 				case TokenType.ID:
-					ids.Add (ParseVarId (scope, token));
+					VariableIdNode idNode = ParseVarId (scope, token);
+					ids.Add (idNode);
 					ParseIdsToDeclare (ids, scope);
 					break;
 				case TokenType.COMMA:
@@ -762,7 +786,9 @@ namespace Compiler
 
 					break;
 				case TokenType.PARENTHESIS_RIGHT:
+				case TokenType.BRACKET_RIGHT:
 				case TokenType.COMMA:
+				case TokenType.END_STATEMENT:
 					bufferedToken = token;
 					break;
 			}
@@ -929,6 +955,8 @@ namespace Compiler
 
 			if (token.Type == TokenType.SIZE) {
 				return nodeBuilder.CreateArraySizeCheckNode (token, scope);
+			} else {
+				bufferedToken = token;
 			}
 
 			return null;
@@ -1022,12 +1050,16 @@ namespace Compiler
 
 		private Evaluee ParseArrayAccess (VariableIdNode idNode, Scope scope)
 		{
-			return null;
+			ExpressionNode arrayIndexExpression = ParseExpression (scope);
+			match (GetNextToken (), TokenType.BRACKET_RIGHT);
+			idNode.ArrayIndex = arrayIndexExpression;
+			return idNode;
 		}
 
 		private Evaluee ParseCallTail(VariableIdNode idNode, Scope scope, Token token)
 		{
 			ArgumentsNode arguments = ParseFunctionArguments (scope);
+			match (GetNextToken (), TokenType.PARENTHESIS_RIGHT);
 
 			if (SyntaxTreeBuilt) {
 				return nodeBuilder.CreateFunctionCallNode (idNode, arguments, token, scope, nameFactory);
@@ -1047,22 +1079,24 @@ namespace Compiler
 			Token token = GetNextToken ();
 
 			switch (token.Type) {
-				case TokenType.SIGN_MINUS:
-				case TokenType.SIGN_PLUS:
-				case TokenType.ID:
-				case TokenType.STRING_VAL:
-				case TokenType.INTEGER_VAL:
-				case TokenType.REAL_VAL:
-				case TokenType.BOOLEAN_VAL_FALSE:
-				case TokenType.BOOLEAN_VAL_TRUE:
-				case TokenType.PARENTHESIS_LEFT:
-				case TokenType.UNARY_OP_LOG_NEG:
+			case TokenType.SIGN_MINUS:
+			case TokenType.SIGN_PLUS:
+			case TokenType.ID:
+			case TokenType.STRING_VAL:
+			case TokenType.INTEGER_VAL:
+			case TokenType.REAL_VAL:
+			case TokenType.BOOLEAN_VAL_FALSE:
+			case TokenType.BOOLEAN_VAL_TRUE:
+			case TokenType.PARENTHESIS_LEFT:
+			case TokenType.UNARY_OP_LOG_NEG:
+				bufferedToken = token;
 					ExpressionNode argument = ParseExpression (scope);
 					arguments.Add (argument);
 					return ParseArguments (scope, arguments);
 				case TokenType.COMMA:
 					return ParseArguments (scope, arguments);
-				case TokenType.PARENTHESIS_RIGHT:
+			case TokenType.PARENTHESIS_RIGHT:
+				bufferedToken = token;
 					if (SyntaxTreeBuilt) {
 						return nodeBuilder.CreateArgumentsNode (scope, arguments, token);
 					}
@@ -1078,20 +1112,9 @@ namespace Compiler
 			Token token = idToken == null ? GetNextToken () : idToken;
 
 			switch (token.Type) {
-			case TokenType.ID:
-				Token next = GetNextToken ();
-				ExpressionNode arraySizeExpression = null;
-				TokenType elementType = TokenType.UNDEFINED;
-				if (next.Type == TokenType.BRACKET_LEFT) {
-					arraySizeExpression = ParseExpression (scope);
-					match (GetNextToken (), TokenType.BRACKET_RIGHT);
-					match (GetNextToken (), TokenType.OF);
-					elementType = ParseType ();
-				} else {
-					bufferedToken = next;
-				}
+				case TokenType.ID:
 					if (SyntaxTreeBuilt) {
-					return nodeBuilder.CreateIdNode (token, scope, arraySizeExpression: arraySizeExpression, arrayElementType: elementType);
+						return nodeBuilder.CreateIdNode (token, scope);
 					}
 					break;
 				default:

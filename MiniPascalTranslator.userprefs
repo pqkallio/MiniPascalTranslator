@@ -1,34 +1,26 @@
 ﻿<Properties StartupItem="Translator/Translator.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Translator/Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/src/services/analyzers/Parser.cs">
     <Files>
-      <File FileName="Compiler/src/services/CompilerFrontend.cs" Line="1" Column="1" />
-      <File FileName="CompilerTests/test/services/analyzers/ParserTest.cs" Line="1" Column="1" />
-      <File FileName="CompilerTests/test/services/analyzers/ScannerTest.cs" Line="1" Column="1" />
-      <File FileName="Compiler/src/services/analyzers/Parser.cs" Line="283" Column="31" />
-      <File FileName="Compiler/src/services/analyzers/Scanner.cs" Line="98" Column="1" />
-      <File FileName="Translator/Program.cs" Line="20" Column="20" />
-      <File FileName="Compiler/src/domain/Token/TokenType.cs" Line="49" Column="44" />
-      <File FileName="Compiler/src/domain/Errors/DeclarationException.cs" Line="1" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/ProgramNode.cs" Line="1" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/SyntaxTree.cs" Line="1" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/FunctionNode.cs" Line="1" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/IOReadNode.cs" Line="1" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/DeclarationNode.cs" Line="1" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/BlockNode.cs" Line="1" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/FunctionCallNode.cs" Line="1" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/ArgumentsNode.cs" Line="16" Column="33" />
-      <File FileName="Compiler/src/domain/SyntaxTree/IExpressionContainer.cs" Line="1" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/IExpressionNode.cs" Line="1" Column="1" />
-      <File FileName="Compiler/src/services/analyzers/ParserConstants.cs" Line="176" Column="51" NotebookId="1" />
-      <File FileName="Compiler/src/services/NodeBuilder.cs" Line="139" Column="57" NotebookId="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/AssignNode.cs" Line="1" Column="1" NotebookId="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/UnOpNode.cs" Line="1" Column="1" NotebookId="1" />
+      <File FileName="CompilerTests/test/services/analyzers/ParserTest.cs" Line="127" Column="9" />
+      <File FileName="Compiler/src/services/analyzers/Parser.cs" Line="1083" Column="1" />
+      <File FileName="Compiler/src/services/NodeBuilder.cs" Line="49" Column="112" />
+      <File FileName="CompilerTests/test/services/analyzers/ParserTestInputs.cs" Line="113" Column="20" NotebookId="1" />
+      <File FileName="Compiler/src/domain/SyntaxTree/VariableIdNode.cs" Line="34" Column="45" NotebookId="1" />
     </Files>
+    <Pads>
+      <Pad Id="MonoDevelop.NUnit.TestPad">
+        <State name="__root__">
+          <Node name="MiniPascalTranslator" expanded="True">
+            <Node name="CompilerTests" expanded="True" selected="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/src/services/analyzers/Parser.cs" line="68" column="1" />
+      <Breakpoint file="/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/src/services/analyzers/Parser.cs" line="113" column="38" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />

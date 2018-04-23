@@ -113,6 +113,174 @@ namespace CompilerTests
 			"var x : array[4] of string;\n",
 			"end ."
 		};
+
+		public static readonly string[] declareMultipleInteger = {
+			"program empty;\n",
+			"begin\n",
+			"var x, y : integer;\n",
+			"end ."
+		};
+
+		public static readonly string[] declareMultipleReal = {
+			"program empty;\n",
+			"begin\n",
+			"var x, y, z : real;\n",
+			"end ."
+		};
+
+		public static readonly string[] declareMultipleBoolean = {
+			"program empty;\n",
+			"begin\n",
+			"var x, y, z, k : Boolean;\n",
+			"end ."
+		};
+
+		public static readonly string[] declareMultipleString = {
+			"program empty;\n",
+			"begin\n",
+			"var x, y, z, k, l : string;\n",
+			"end ."
+		};
+
+		public static readonly string[] declareMultipleArrayOfInteger = {
+			"program empty;\n",
+			"begin\n",
+			"var x, y, z, k, l, m : array[1] of integer;\n",
+			"end ."
+		};
+
+		public static readonly string[] declareMultipleArrayOfReal = {
+			"program empty;\n",
+			"begin\n",
+			"var x, y, z, k, l, m, n : array[2] of real;\n",
+			"end ."
+		};
+
+		public static readonly string[] declareMultipleArrayOfBoolean = {
+			"program empty;\n",
+			"begin\n",
+			"var x, y, z, k, l, m, n, o : array[3] of Boolean;\n",
+			"end ."
+		};
+
+		public static readonly string[] declareMultipleArrayOfString = {
+			"program empty;\n",
+			"begin\n",
+			"var x, y, z, k, l, m, n, o, p : array[4] of string;\n",
+			"end ."
+		};
+
+		public static readonly string[] declareAndAssignInteger = {
+			"program empty;\n",
+			"begin\n",
+			"var x : integer;\n",
+			"x := 5;\n",
+			"end ."
+		};
+
+		public static readonly string[] declareAndAssignReal = {
+			"program empty;\n",
+			"begin\n",
+			"var x : real;\n",
+			"x := 5.68e-4;\n",
+			"end ."
+		};
+
+		public static readonly string[] declareAndAssignBoolean = {
+			"program empty;\n",
+			"begin\n",
+			"var x : Boolean;\n",
+			"x := true;\n",
+			"end ."
+		};
+
+		public static readonly string[] declareAndAssignString = {
+			"program empty;\n",
+			"begin\n",
+			"var x : string;\n",
+			"x := \"supadupa\";\n",
+			"end ."
+		};
+
+		public static readonly string[] declareAndAssignArrayOfInteger = {
+			"program empty;\n",
+			"begin\n",
+			"var x : array[1] of integer;\n",
+			"x[0] := 5;\n",
+			"end ."
+		};
+
+		public static readonly string[] declareAndAssignArrayOfReal = {
+			"program empty;\n",
+			"begin\n",
+			"var x : array[2] of real;\n",
+			"x[1] := 0.68;\n",
+			"end ."
+		};
+
+		public static readonly string[] declareAndAssignArrayOfBoolean = {
+			"program empty;\n",
+			"begin\n",
+			"var x : array[3] of Boolean;\n",
+			"x[0] := true;\n",
+			"x[1] := false;\n",
+			"end ."
+		};
+
+		public static readonly string[] declareAndAssignArrayOfString = {
+			"program empty;\n",
+			"begin\n",
+			"var x : array[4] of string;\n",
+			"x[3] := \"supadupa\";\n",
+			"end ."
+		};
+
+		public static readonly string[] declareAndAssignFunctionCall1 = {
+			"program empty;\n",
+			"begin\n",
+			"var x : string;\n",
+			"x := func();\n",
+			"end ."
+		};
+
+		public static readonly string[] declareAndAssignFunctionCall2 = {
+			"program empty;\n",
+			"begin\n",
+			"var x : string;\n",
+			"x := func(3, 5 + 8, true);\n",
+			"end ."
+		};
+
+		public static readonly string[] returnStatement1 = {
+			"program empty;\n",
+			"begin\n",
+			"var x : string;\n",
+			"return x;\n",
+			"end ."
+		};
+
+		public static readonly string[] returnStatement2 = {
+			"program empty;\n",
+			"begin\n",
+			"return;\n",
+			"end ."
+		};
+
+		public static readonly string[] readStatement = {
+			"program empty;\n",
+			"begin\n",
+			"var x : string;\n",
+			"read(x, y, zeta);\n",
+			"end ."
+		};
+
+		public static readonly string[] writeStatement = {
+			"program empty;\n",
+			"begin\n",
+			"var x : string;\n",
+			"writeln(x, 6 + z[0], -9, true);\n",
+			"end ."
+		};
 	}
 }
 

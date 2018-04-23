@@ -141,6 +141,210 @@ namespace CompilerTests
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
+
+		[Test]
+		public void TestDeclareMultipleInteger ()
+		{
+			InitParser (ParserTestInputs.declareMultipleInteger);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareMultipleReal ()
+		{
+			InitParser (ParserTestInputs.declareMultipleReal);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareMultipleString ()
+		{
+			InitParser (ParserTestInputs.declareMultipleString);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareMultipleBoolean ()
+		{
+			InitParser (ParserTestInputs.declareMultipleBoolean);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareMultipleArrayOfInteger ()
+		{
+			InitParser (ParserTestInputs.declareMultipleArrayOfInteger);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error error in parser.getErrors()) {
+				Console.WriteLine (error);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareMultipleArrayOfReal ()
+		{
+			InitParser (ParserTestInputs.declareMultipleArrayOfReal);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareMultipleArrayOfString ()
+		{
+			InitParser (ParserTestInputs.declareMultipleArrayOfString);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareMultipleArrayOfBoolean ()
+		{
+			InitParser (ParserTestInputs.declareMultipleArrayOfBoolean);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareAndAssignInteger ()
+		{
+			InitParser (ParserTestInputs.declareAndAssignInteger);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareAndAssignReal ()
+		{
+			InitParser (ParserTestInputs.declareAndAssignReal);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareAndAssignString ()
+		{
+			InitParser (ParserTestInputs.declareAndAssignString);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareAndAssignBoolean ()
+		{
+			InitParser (ParserTestInputs.declareAndAssignBoolean);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareAndAssignArrayOfInteger ()
+		{
+			InitParser (ParserTestInputs.declareAndAssignArrayOfInteger);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareAndAssignArrayOfReal ()
+		{
+			InitParser (ParserTestInputs.declareAndAssignArrayOfReal);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareAndAssignArrayOfString ()
+		{
+			InitParser (ParserTestInputs.declareAndAssignArrayOfString);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareAndAssignArrayOfBoolean ()
+		{
+			InitParser (ParserTestInputs.declareAndAssignArrayOfBoolean);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareAndAssignFunctionCall1 ()
+		{
+			InitParser (ParserTestInputs.declareAndAssignFunctionCall1);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestDeclareAndAssignFunctionCall2 ()
+		{
+			InitParser (ParserTestInputs.declareAndAssignFunctionCall2);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestReturnStatement1 ()
+		{
+			InitParser (ParserTestInputs.returnStatement1);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestReturnStatement2 ()
+		{
+			InitParser (ParserTestInputs.returnStatement2);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestReadStatement ()
+		{
+			InitParser (ParserTestInputs.readStatement);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestWriteStatement ()
+		{
+			InitParser (ParserTestInputs.writeStatement);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error error in parser.getErrors()) {
+				Console.WriteLine (error);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
 	}
 }
 

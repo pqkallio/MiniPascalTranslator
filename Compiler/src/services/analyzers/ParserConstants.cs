@@ -211,6 +211,15 @@ namespace Compiler
 			TOKEN_TYPE_STRINGS[TokenType.END],
 			TOKEN_TYPE_STRINGS[TokenType.ELSE]
 		};
+
+		public static readonly string[] EXPECTATION_SET_TYPE = new string[]
+		{
+			TOKEN_TYPE_STRINGS[TokenType.TYPE_STRING],
+			TOKEN_TYPE_STRINGS[TokenType.TYPE_INTEGER],
+			TOKEN_TYPE_STRINGS[TokenType.TYPE_REAL],
+			TOKEN_TYPE_STRINGS[TokenType.TYPE_BOOLEAN],
+			TOKEN_TYPE_STRINGS[TokenType.TYPE_ARRAY]
+		};
 	}
 }
 
