@@ -17,6 +17,11 @@ namespace Compiler
 		{
 			return new VoidProperty ();
 		}
+
+		public List<StatementNode> Statements
+		{
+			get { return statements; }
+		}
 	}
 }
 

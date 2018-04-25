@@ -26,7 +26,7 @@ namespace Compiler
 		{}
 
 		public VariableIdNode (string id, Scope scope, Token token, ExpressionNode arrayIndexNode = null, ExpressionNode arraySizeExpression = null, TokenType arrayElementType = TokenType.UNDEFINED)
-			: base(token, scope: scope)
+			: base(token, scope: scope, isVariable: true)
 		{
 			this.id = id;
 			this.arrayIndexNode = arrayIndexNode;
@@ -40,10 +40,9 @@ namespace Compiler
 		/// to the id string in the symbol table.
 		/// </summary>
 		/// <value>The type of the evaluation.</value>
-		public TokenType EvaluationType
+		public override TokenType EvaluationType
 		{
 			get { return scope.GetProperty (id).GetTokenType (); }
-			set { }
 		}
 
 		public string ID {

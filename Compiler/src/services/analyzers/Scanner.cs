@@ -295,7 +295,6 @@ namespace Compiler
 		{
 			sb.Append (readStream ());		// the next char is the decimal point
 
-			char c;
 			/*
 			 * MUST STILL HANDLE THE CASE WHERE THERE'S NO
 			 * INTEGER AFTER THE DECIMAL POINT!!!

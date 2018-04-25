@@ -10,7 +10,8 @@ namespace Compiler
 	{
 		private SemanticAnalyzer analyzer;			// the parent analyzer to notify the errors to
 		private TypeCheckingVisitor typeChecker;	// checks a given nodes evaluation type
-		private VoidProperty voidProperty;			
+		private VoidProperty voidProperty;
+		private List<ReturnStatement> returnStatements;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Compiler.StatementCheckVisitor"/> class.
@@ -20,6 +21,7 @@ namespace Compiler
 		{
 			this.analyzer = analyzer;
 			this.typeChecker = new TypeCheckingVisitor (analyzer);
+			this.returnStatements = new List<ReturnStatement> ();
 
 			// We tend to return a lot of VoidProperties here,
 			// but since we don't do anything with them, we
@@ -35,7 +37,6 @@ namespace Compiler
 		/// <param name="node">Node.</param>
 		public ISemanticCheckValue VisitAssignNode(AssignNode node)
 		{
-
 			return voidProperty;
 		}
 
@@ -72,41 +73,6 @@ namespace Compiler
 			// This is not a statement so it needs not to be actually checked here.
 			// So, we pass it to the TypeCheckerVisitor instead.
 			return node.Accept(this.typeChecker);
-		}
-
-		/// <summary>
-		/// Checks the static semantic constraints of a RootNode.
-		/// </summary>
-		/// <returns>An ISemanticCheckValue.</returns>
-		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitRootNode(RootNode node)
-		{
-			// checks the static semantic constraints of the program's first statement,
-			// if any
-			if (node.Sequitor != null) {
-				node.Sequitor.Accept (this);
-			}
-
-			return voidProperty;
-		}
-
-		/// <summary>
-		/// Checks the static semantic constraints of a StatementsNode.
-		/// </summary>
-		/// <returns>An ISemanticCheckValue.</returns>
-		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitStatementsNode(StatementsNode node)
-		{
-			// first check the node's statement, then the following StatementsNode
-			if (node.Statement != null) {
-				node.Statement.Accept (this);
-			}
-
-			if (node.Sequitor != null) {
-				node.Sequitor.Accept (this);
-			}
-
-			return voidProperty;
 		}
 
 		/// <summary>
@@ -172,15 +138,124 @@ namespace Compiler
 			return null;
 		}
 
-		/// <summary>
-		/// A private helper method to check for an IIdentifierContainer's
-		/// VariableIdNode.
-		/// </summary>
-		/// <returns>An IProperty.</returns>
-		/// <param name="node">Node.</param>
-		private Property getVariableProperty(IIdentifierContainer node)
+		public ISemanticCheckValue VisitArrayAssignNode(ArrayAssignStatement node)
 		{
-			return null;
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitArrayAccessNode(ArrayAccessNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitRealValueNode(RealValueNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitTypeNode(TypeNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitBlockNode(BlockNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitBooleanNegation(BooleanNegation node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitExpressionNode(ExpressionNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitExpressionTail(ExpressionTail node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitFactorNode(Factor node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitFactorMain(FactorMain node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitFactorTail(FactorTail node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitFunctionNode(FunctionNode node)
+		{
+			node.Parameters.Accept (this);
+			node.Block.Accept (this);
+
+			foreach (ReturnStatement returnStatement in returnStatements) {
+				if (returnStatement.EvaluationType != node.ReturnType) {
+					analyzer.notifyError(new InvalidReturnValueError (returnStatement, node.ReturnType));
+				}
+			}
+
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitFunctionCallNode(FunctionCallNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitIfNode(IfNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitWhileLoopNode(WhileNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitParametersNode(ParametersNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitArgumentsNode(ArgumentsNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitProgramNode(ProgramNode node)
+		{
+			foreach (FunctionNode func in node.Functions.Values) {
+				func.Accept (this);
+			}
+
+			node.MainBlock.Accept (this);
+
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitReturnStatement(ReturnStatement node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitTermNode(TermNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitTermTailNode(TermTail node)
+		{
+			return voidProperty;
 		}
 
 		/// <summary>

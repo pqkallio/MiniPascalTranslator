@@ -10,13 +10,11 @@ namespace Compiler
 	public class IOReadNode : StatementNode
 	{
 		private List<VariableIdNode> idNodes;
-		private Token token;
 
-		public IOReadNode (List<VariableIdNode> idNodes, Scope scope, Token t, INameFactory nameFactory)
-			: base(t, nameFactory, scope)
+		public IOReadNode (List<VariableIdNode> idNodes, Scope scope, Token token, INameFactory nameFactory)
+			: base(token, nameFactory, scope)
 		{
 			this.idNodes = idNodes;
-			this.token = t;
 		}
 
 		public List<VariableIdNode> IDNodes

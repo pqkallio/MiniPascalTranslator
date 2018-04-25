@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Compiler
 {
@@ -7,12 +8,15 @@ namespace Compiler
 	/// </summary>
 	public class ErrorConstants
 	{
+		private static readonly Dictionary<TokenType, string> TOKEN_TYPE_STRINGS = StringFormattingConstants.TOKEN_TYPE_STRINGS;
+
 		public static readonly string SCANNER_ERROR_TITLE = "Scanner error";
 		public static readonly string SYNTAX_ERROR_TITLE = "Syntax error";
 		public static readonly string SEMANTIC_ERROR_TITLE = "Semantic error";
 		public static readonly string INTEGER_OVERFLOW_ERROR_TITLE = "Integer overflow error";
 		public static readonly string RUNTIME_EXCEPTION_TITLE = "Runtime exception";
 		public static readonly string DIVISION_BY_ZERO_TITLE = "Division by zero";
+		public static readonly string INVALID_RETURN_VALUE_TITLE = "Invalid return value";
 
 		public static readonly string STRING_LITERAL_ERROR_MESSAGE = "error while scanning string literal";
 		public static readonly string TOKEN_ERROR_MESSAGE = "error while scanning token";
@@ -33,6 +37,11 @@ namespace Compiler
 		public static readonly string INVALID_IDENTIFIER_MESSAGE = "the identifiers must begin with a letter followed by zero or more numbers, letters and underscores";
 		public static readonly string INVALID_ID_MESSAGE = "reserved keyword used as variable identifier";
 		public static readonly string INVALID_REAL_NUM_MESSAGE = "a real number's exponent part must be one of the following forms: e<digits>, e+<digits> or e-<digits>";
+
+		public static string INVALID_RETURN_VALUE_MSG(ReturnStatement node, TokenType requiredType)
+		{
+			return String.Format ("the required return value type is {0}, but instead {1} was given", TOKEN_TYPE_STRINGS[requiredType], TOKEN_TYPE_STRINGS[node.EvaluationType]);
+		}
 	}
 }
 

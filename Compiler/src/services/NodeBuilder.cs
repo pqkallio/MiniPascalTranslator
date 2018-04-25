@@ -20,24 +20,6 @@ namespace Compiler
 			return new FunctionNode (token, labelFactory, idNode, parameters, blockNode, scope);
 		}
 
-		public RootNode CreateRootNode ()
-		{
-			return new RootNode ();
-		}
-
-		public StatementsNode CreateStatementsNode (Token token)
-		{
-			return new StatementsNode (token);
-		}
-
-		public StatementsNode CreateStatementsNode (IStatementsContainer parentNode, Token token)
-		{
-			StatementsNode statementsNode = new StatementsNode (token);
-			parentNode.Sequitor = statementsNode;
-
-			return statementsNode;
-		}
-
 		public VariableIdNode CreateIdNode (Scope scope)
 		{
 			return new VariableIdNode (scope);
@@ -47,11 +29,6 @@ namespace Compiler
 		{
 			string value = token.Value;
 			return new VariableIdNode (value, scope, token, arraySizeExpression: arraySizeExpression, arrayElementType: arrayElementType);
-		}
-
-		public DeclarationNode CreateDeclarationNode (VariableIdNode idNode, Scope scope, StatementsNode statementsNode, Token t)
-		{
-			return null;
 		}
 
 		public AssignNode CreateAssignNode (VariableIdNode idNode, Scope scope, Token token, INameFactory nameFactory, ExpressionNode expression=null)
@@ -71,16 +48,6 @@ namespace Compiler
 		public ReturnStatement CreateReturnStatement (Token token, ExpressionNode expression)
 		{
 			return new ReturnStatement (token, expression);
-		}
-
-		public IOReadNode CreateIOReadNode (VariableIdNode idNode, StatementsNode statementsNode, Scope scope, Token t)
-		{
-			return null;
-		}
-
-		public IOPrintNode CreateIOPrintNode (StatementsNode statementsNode, Token t)
-		{
-			return null;
 		}
 
 		public ArgumentsNode CreateArgumentsNode (Scope scope, List<ExpressionNode> arguments, Token token)

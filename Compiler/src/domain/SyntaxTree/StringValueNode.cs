@@ -20,10 +20,9 @@ namespace Compiler
 			this.value = value;
 		}
 
-		public TokenType EvaluationType
+		public override TokenType EvaluationType
 		{
 			get { return TokenType.STRING_VAL; }
-			set { }
 		}
 
 		public string Value {

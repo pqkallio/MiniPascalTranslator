@@ -97,28 +97,6 @@ namespace Compiler
 		}
 
 		/// <summary>
-		/// Visits the root node.
-		/// </summary>
-		/// <returns>An ISemanticValue.</returns>
-		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitRootNode(RootNode node)
-		{
-			// nothing to evaluate here
-			return voidProperty;
-		}
-
-		/// <summary>
-		/// Visits the statements node.
-		/// </summary>
-		/// <returns>An ISemanticCheckValue.</returns>
-		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitStatementsNode(StatementsNode node)
-		{
-			// nothing to evaluate here
-			return voidProperty;
-		}
-
-		/// <summary>
 		/// Visits the string value node.
 		/// </summary>
 		/// <returns>the node itself.</returns>
@@ -155,8 +133,9 @@ namespace Compiler
 		/// </summary>
 		/// <returns>An IProperty of the operation's type.</returns>
 		/// <param name="node">Node.</param>
-		private Property VisitOperationNode (IExpressionNode node)
+		private Property VisitOperationNode (ExpressionNode node)
 		{
+			/*
 			// evaluate the IExpressionNode's expressions
 			Property evaluationType = getEvaluation(node.GetExpressions());
 
@@ -169,17 +148,113 @@ namespace Compiler
 				}
 				return evaluationType;
 			}
+			*/
 			return new ErrorProperty ();
 		}
 
-		/// <summary>
-		/// A private helper method to evaluate the type of a set of IExpressionNodes.
-		/// </summary>
-		/// <returns>The evaluation.</returns>
-		/// <param name="expressions">Expressions.</param>
-		private Property getEvaluation(params IExpressionNode[] expressions)
+		public ISemanticCheckValue VisitArrayAssignNode(ArrayAssignStatement node)
 		{
-			return null;
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitArrayAccessNode(ArrayAccessNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitRealValueNode(RealValueNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitTypeNode(TypeNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitBlockNode(BlockNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitBooleanNegation(BooleanNegation node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitExpressionNode(ExpressionNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitExpressionTail(ExpressionTail node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitFactorNode(Factor node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitFactorMain(FactorMain node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitFactorTail(FactorTail node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitFunctionNode(FunctionNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitFunctionCallNode(FunctionCallNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitIfNode(IfNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitWhileLoopNode(WhileNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitParametersNode(ParametersNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitArgumentsNode(ArgumentsNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitProgramNode(ProgramNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitReturnStatement(ReturnStatement node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitTermNode(TermNode node)
+		{
+			return voidProperty;
+		}
+
+		public ISemanticCheckValue VisitTermTailNode(TermTail node)
+		{
+			return voidProperty;
 		}
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace Compiler
 {
-	public class TermNode : SyntaxTreeNode
+	public class TermNode : Evaluee
 	{
 		private Factor factorNode;
 		private TermTail termTailNode;
@@ -11,23 +11,32 @@ namespace Compiler
 			: base(token)
 		{}
 
-		public IExpressionNode[] GetExpressions ()
-		{
-			return null;
-		}
-
-		TokenType Operation { 
-			get { return TokenType.UNDEFINED; }
-			set { }
-		}
-		TokenType EvaluationType {
-			get { return TokenType.UNDEFINED; }
-			set { }
-		}
-
 		public override ISemanticCheckValue Accept(INodeVisitor visitor)
 		{
 			return null;
+		}
+
+		public override TokenType EvaluationType
+		{
+			get {
+				if (evaluationType != TokenType.UNDEFINED) {
+					return evaluationType;
+				}
+
+				TokenType factorEval = factorNode.EvaluationType;
+
+				if (termTailNode != null) {
+					TokenType tailEval = termTailNode.EvaluationType;
+
+					if (!LegitOperationChecker.IsLegitOperationForEvaluations(termTailNode.Operation, factorEval, tailEval)) {
+						factorEval = TokenType.ERROR;
+					}
+				}
+
+				evaluationType = factorEval;
+
+				return evaluationType;
+			}
 		}
 	}
 }

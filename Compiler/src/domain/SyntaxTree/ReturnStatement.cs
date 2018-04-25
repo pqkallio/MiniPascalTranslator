@@ -7,7 +7,7 @@ namespace Compiler
 		private ExpressionNode returnValue;
 
 		public ReturnStatement (Token token, ExpressionNode returnValue = null)
-			: base(token)
+			: base(token, returns: true)
 		{
 			this.returnValue = returnValue;
 		}
@@ -15,6 +15,22 @@ namespace Compiler
 		public override ISemanticCheckValue Accept(INodeVisitor visitor)
 		{
 			return null;
+		}
+
+		public ExpressionNode ReturnValue
+		{
+			get { return returnValue; }
+		}
+
+		public TokenType EvaluationType
+		{
+			get { 
+				if (returnValue == null) {
+					return TokenType.VOID;
+				}
+
+				return returnValue.EvaluationType;
+			}
 		}
 	}
 }

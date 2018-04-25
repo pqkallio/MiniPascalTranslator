@@ -2,7 +2,7 @@
 
 namespace Compiler
 {
-	public class ExpressionTail : SyntaxTreeNode
+	public class ExpressionTail : Evaluee
 	{
 		private TokenType operation;
 		private SimpleExpression rightHandSide;
@@ -14,9 +14,22 @@ namespace Compiler
 			this.rightHandSide = rightHandSide;
 		}
 
+		public SimpleExpression RightHandSide {
+			get { return rightHandSide; }
+		}
+
 		public override ISemanticCheckValue Accept (INodeVisitor visitor)
 		{
 			return null;
+		}
+
+		public override TokenType EvaluationType {
+			get { return TokenType.BOOLEAN_VAL; }
+		}
+
+		public TokenType Operation
+		{
+			get { return operation; }
 		}
 	}
 }

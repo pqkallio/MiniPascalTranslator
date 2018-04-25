@@ -12,10 +12,9 @@ namespace Compiler
 			this.value = value;
 		}
 
-		public TokenType EvaluationType
+		public override TokenType EvaluationType
 		{
 			get { return TokenType.REAL_VAL; }
-			set { }
 		}
 
 		public float Value {

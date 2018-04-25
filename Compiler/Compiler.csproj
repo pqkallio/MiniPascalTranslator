@@ -137,5 +137,8 @@
     <Compile Include="src\domain\SyntaxTree\BooleanNegation.cs" />
     <Compile Include="src\services\INameFactory.cs" />
     <Compile Include="src\services\MiniPascalNameFactory.cs" />
+    <Compile Include="src\domain\Errors\FunctionDoesntReturnError.cs" />
+    <Compile Include="src\domain\Errors\InvalidReturnValueError.cs" />
+    <Compile Include="src\utils\LegitOperationChecker.cs" />
   </ItemGroup>
 </Project>

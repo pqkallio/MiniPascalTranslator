@@ -36,9 +36,8 @@ namespace Compiler
 			set { idNode = value; }
 		}
 
-		public TokenType EvaluationType {
+		public override TokenType EvaluationType {
 			get { return idNode.EvaluationType; }
-			set {  }
 		}
 
 		public override ISemanticCheckValue Accept(INodeVisitor visitor)

@@ -16,6 +16,21 @@ namespace Compiler
 		{
 			return null;
 		}
+
+		public override TokenType EvaluationType
+		{
+			get {
+				if (evaluationType != TokenType.UNDEFINED) {
+					return evaluationType;
+				}
+
+				TokenType factorEval = factor.EvaluationType;
+
+				evaluationType = factorEval != TokenType.BOOLEAN_VAL ? factorEval : TokenType.ERROR;
+
+				return evaluationType;
+			}
+		}
 	}
 }
 

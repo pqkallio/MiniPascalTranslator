@@ -171,7 +171,7 @@ namespace Compiler
 				// first check that the program scope hasn't got a function or procedure with the same name
 				// declared already
 				if (expectDeclared (idNode, programScope, false)) {
-					programScope.AddProperty (idNode.ID, new FunctionProperty ());
+					programScope.AddProperty (idNode.ID.ToLower(), new FunctionProperty ());
 				}
 
 				match(GetNextToken(), TokenType.PARENTHESIS_LEFT);
@@ -293,7 +293,7 @@ namespace Compiler
 			}
 
 			if (expectDeclared (idNode, scope, false)) {
-				scope.AddProperty (idNode.ID, property);
+				scope.AddProperty (idNode.ID.ToLower(), property);
 			}
 
 			if (SyntaxTreeBuilt) {
@@ -489,22 +489,24 @@ namespace Compiler
 			TypeNode type = ParseTypeNode (scope);
 
 			foreach (VariableIdNode idNode in ids) {
+				string id = idNode.ID.ToLower ();
+
 				if (expectDeclared (idNode, scope, false)) {
 					switch (type.PropertyType) {
 					case TokenType.TYPE_INTEGER:
-						scope.AddProperty (idNode.ID, new IntegerProperty ());
+						scope.AddProperty (id, new IntegerProperty ());
 						break;
 					case TokenType.TYPE_STRING:
-						scope.AddProperty (idNode.ID, new StringProperty ());
+						scope.AddProperty (id, new StringProperty ());
 						break;
 					case TokenType.TYPE_BOOLEAN:
-						scope.AddProperty (idNode.ID, new BooleanProperty ());
+						scope.AddProperty (id, new BooleanProperty ());
 						break;
 					case TokenType.TYPE_REAL:
-						scope.AddProperty (idNode.ID, new RealProperty ());
+						scope.AddProperty (id, new RealProperty ());
 						break;
 					case TokenType.TYPE_ARRAY:
-						scope.AddProperty (idNode.ID, new ArrayProperty(type.ArrayElementType));
+						scope.AddProperty (id, new ArrayProperty(type.ArrayElementType));
 						break;
 					}
 				}
@@ -1005,8 +1007,6 @@ namespace Compiler
 			default:
 				throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_LITERAL);
 			}
-
-			return null;
 		}
 
 		/// <summary>
@@ -1098,8 +1098,6 @@ namespace Compiler
 				default:
 					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_ARGUMENTS);
 			}
-
-			return null;
 		}
 
 		private VariableIdNode ParseVarId(Scope scope, Token idToken=null) {

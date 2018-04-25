@@ -2,7 +2,7 @@
 
 namespace Compiler
 {
-	public class FactorMain : SyntaxTreeNode
+	public class FactorMain : Evaluee
 	{
 		private Evaluee evaluee;
 
@@ -15,6 +15,17 @@ namespace Compiler
 		public override ISemanticCheckValue Accept(INodeVisitor visitor)
 		{
 			return null;
+		}
+
+		public override TokenType EvaluationType
+		{
+			get {
+				if (evaluationType == TokenType.UNDEFINED) {
+					evaluationType = evaluee.EvaluationType;
+				}
+
+				return evaluationType;
+			}
 		}
 	}
 }

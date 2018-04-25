@@ -6,12 +6,10 @@ namespace Compiler
 	public class ArgumentsNode : SyntaxTreeNode
 	{
 		private List<ExpressionNode> arguments;
-		private Scope scope;
 
 		public ArgumentsNode (Token token, Scope scope, List<ExpressionNode> expressions)
 			: base(token, scope: scope)
 		{
-			this.scope = scope;
 			this.arguments = expressions;
 		}
 

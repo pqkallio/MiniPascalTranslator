@@ -12,18 +12,29 @@ namespace Compiler
 			: base(token, nameFactory, scope)
 		{
 			this.block = block;
+			this.parameters = parametersNode;
 			this.returnType = idNode.VariableType;
 		}
 
 		public override ISemanticCheckValue Accept (INodeVisitor visitor)
 		{
-			return new VoidProperty ();
+			return visitor.VisitFunctionNode (this);
 		}
 
 		public virtual TokenType ReturnType
 		{
 			get { return returnType; }
 			set { returnType = value; }
+		}
+
+		public BlockNode Block
+		{
+			get { return block; }
+		}
+
+		public ParametersNode Parameters
+		{
+			get { return parameters; }
 		}
 	}
 }
