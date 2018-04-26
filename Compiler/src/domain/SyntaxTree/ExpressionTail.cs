@@ -20,7 +20,7 @@ namespace Compiler
 
 		public override ISemanticCheckValue Accept (INodeVisitor visitor)
 		{
-			return null;
+			return visitor.VisitExpressionTail (this);
 		}
 
 		public override TokenType EvaluationType {

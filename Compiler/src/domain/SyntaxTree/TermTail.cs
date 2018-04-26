@@ -26,6 +26,16 @@ namespace Compiler
 			return null;
 		}
 
+		public Factor Factor
+		{
+			get { return factor; }
+		}
+
+		public TermTail ChildTermTail
+		{
+			get { return termTail; }
+		}
+
 		public override TokenType EvaluationType
 		{
 			get {
@@ -50,4 +60,3 @@ namespace Compiler
 		}
 	}
 }
-

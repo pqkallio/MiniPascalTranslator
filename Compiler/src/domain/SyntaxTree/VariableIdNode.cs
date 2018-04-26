@@ -42,7 +42,17 @@ namespace Compiler
 		/// <value>The type of the evaluation.</value>
 		public override TokenType EvaluationType
 		{
-			get { return scope.GetProperty (id).GetTokenType (); }
+			get {
+				Property prop = scope.GetProperty (id);
+
+				if (prop.GetTokenType () == TokenType.TYPE_ARRAY) {
+					return ((ArrayProperty)prop).ArrayElementType;
+				} else if (ArrayRequestSize) {
+					return TokenType.INTEGER_VAL;
+				}
+
+				return prop.GetTokenType ();
+			}
 		}
 
 		public string ID {

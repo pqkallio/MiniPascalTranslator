@@ -17,6 +17,11 @@ namespace Compiler
 			return null;
 		}
 
+		public Factor Factor
+		{
+			get { return factor; }
+		}
+
 		public override TokenType EvaluationType
 		{
 			get {

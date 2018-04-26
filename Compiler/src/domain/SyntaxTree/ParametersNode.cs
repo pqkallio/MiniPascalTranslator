@@ -35,7 +35,7 @@ namespace Compiler
 
 		public override ISemanticCheckValue Accept(INodeVisitor visitor)
 		{
-			return null;
+			return visitor.VisitParametersNode (this);
 		}
 	}
 }

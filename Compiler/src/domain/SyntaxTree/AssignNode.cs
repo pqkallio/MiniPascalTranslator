@@ -29,19 +29,9 @@ namespace Compiler
 			set { idNode = value; }
 		}
 
-		public ExpressionNode ExprNode {
+		public ExpressionNode AssignValueExpression {
 			get { return assignValueExpression; }
 			set { assignValueExpression = value; }
-		}
-
-		public void AddExpression(ExpressionNode expressionNode)
-		{
-			this.assignValueExpression = expressionNode;
-		}
-
-		public override string ToString ()
-		{
-			return "ASSIGN";
 		}
 
 		public override ISemanticCheckValue Accept(INodeVisitor visitor) {

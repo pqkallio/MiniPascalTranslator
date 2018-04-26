@@ -13,7 +13,17 @@ namespace Compiler
 
 		public override ISemanticCheckValue Accept(INodeVisitor visitor)
 		{
-			return null;
+			return visitor.VisitTermNode (this);
+		}
+
+		public Factor Factor
+		{
+			get { return factorNode; }
+		}
+
+		public TermTail TermTail
+		{
+			get { return termTailNode; }
 		}
 
 		public override TokenType EvaluationType

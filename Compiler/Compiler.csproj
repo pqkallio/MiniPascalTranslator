@@ -140,5 +140,11 @@
     <Compile Include="src\domain\Errors\FunctionDoesntReturnError.cs" />
     <Compile Include="src\domain\Errors\InvalidReturnValueError.cs" />
     <Compile Include="src\utils\LegitOperationChecker.cs" />
+    <Compile Include="src\domain\Errors\AllCodePathsDontReturnError.cs" />
+    <Compile Include="src\domain\Errors\IllegalArrayAccessError.cs" />
+    <Compile Include="src\domain\Errors\IllegalArrayIndexError.cs" />
+    <Compile Include="src\domain\Errors\NotAValidFunctionError.cs" />
+    <Compile Include="src\domain\Errors\InvalidArgumentCountError.cs" />
+    <Compile Include="src\domain\Errors\InvalidArgumentError.cs" />
   </ItemGroup>
 </Project>

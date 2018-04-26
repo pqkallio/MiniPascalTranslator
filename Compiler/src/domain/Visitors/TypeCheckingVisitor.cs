@@ -212,6 +212,11 @@ namespace Compiler
 			return voidProperty;
 		}
 
+		public ISemanticCheckValue VisitProcedureNode(ProcedureNode node)
+		{
+			return voidProperty;
+		}
+
 		public ISemanticCheckValue VisitFunctionCallNode(FunctionCallNode node)
 		{
 			return voidProperty;

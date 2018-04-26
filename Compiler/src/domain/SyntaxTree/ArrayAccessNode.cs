@@ -4,10 +4,10 @@ namespace Compiler
 {
 	public class ArrayAccessNode : SyntaxTreeNode, ISemanticCheckValue
 	{
-		private string arrayId;
+		private VariableIdNode arrayId;
 		private ExpressionNode index;
 
-		public ArrayAccessNode (string arrayId, Token token, Scope scope, ExpressionNode index)
+		public ArrayAccessNode (VariableIdNode arrayId, Token token, Scope scope, ExpressionNode index)
 			: base(token, scope: scope)
 		{
 			this.arrayId = arrayId;
@@ -16,12 +16,22 @@ namespace Compiler
 
 		public override ISemanticCheckValue Accept(INodeVisitor visitor)
 		{
-			return null;
+			return visitor.VisitArrayAccessNode (this);
 		}
 
 		public Property asProperty ()
 		{
 			return new ErrorProperty ();
+		}
+
+		public VariableIdNode ArrayIdNode
+		{
+			get { return arrayId; }
+		}
+
+		public ExpressionNode ArrayIndexExpression
+		{
+			get { return this.index; }
 		}
 	}
 }

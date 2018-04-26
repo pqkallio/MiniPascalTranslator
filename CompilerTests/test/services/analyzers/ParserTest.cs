@@ -22,13 +22,22 @@ namespace CompilerTests
 			this.parser = new Parser (scanner);
 		}
 
+		private void CheckScopeContainsVariables (Scope scope, params string[] ids)
+		{
+			foreach (string id in ids) {
+				Assert.IsTrue (scope.ContainsKey (id));
+			}
+		}
+
 		[Test]
 		public void TestEmptyProgram ()
 		{
 			InitParser (ParserTestInputs.emptyProgram);
-			parser.Parse ();
+			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+			Assert.AreEqual (tree.ProgramName, "prog");
+			Assert.AreEqual (tree.RootScope.Children.Count, 1);
 		}
 
 		[Test]
@@ -38,6 +47,9 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+			Assert.IsTrue (tree.Root.Functions.ContainsKey ("func"));
+			Assert.AreEqual (tree.Root.Functions.Count, 1);
+			Assert.AreEqual (tree.RootScope.Children.Count, 2);
 		}
 
 		[Test]
@@ -65,6 +77,17 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+			CheckScopeContainsVariables (tree.Root.Functions ["func"].Scope, "i", "ii", "str", "ary");
+		}
+
+		[Test]
+		public void TestProcedureWithParams ()
+		{
+			InitParser (ParserTestInputs.procedureWithParams);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+			CheckScopeContainsVariables (tree.Root.Functions ["proc"].Scope, "i", "ii", "str", "ary");
 		}
 
 		[Test]
@@ -109,9 +132,6 @@ namespace CompilerTests
 			InitParser (ParserTestInputs.declareArrayOfInteger);
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
-			foreach (Error error in parser.getErrors()) {
-				Console.WriteLine (error);
-			}
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
 
@@ -184,9 +204,6 @@ namespace CompilerTests
 			InitParser (ParserTestInputs.declareMultipleArrayOfInteger);
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
-			foreach (Error error in parser.getErrors()) {
-				Console.WriteLine (error);
-			}
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
 
@@ -304,9 +321,6 @@ namespace CompilerTests
 			InitParser (ParserTestInputs.declareAndAssignFunctionCall2);
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
-			foreach (Error error in parser.getErrors()) {
-				Console.WriteLine (error);
-			}
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
 
@@ -343,9 +357,6 @@ namespace CompilerTests
 			InitParser (ParserTestInputs.writeStatement);
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
-			foreach (Error error in parser.getErrors()) {
-				Console.WriteLine (error);
-			}
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
 
@@ -355,9 +366,6 @@ namespace CompilerTests
 			InitParser (ParserTestInputs.assertStatement);
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
-			foreach (Error error in parser.getErrors()) {
-				Console.WriteLine (error);
-			}
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
 
@@ -367,9 +375,6 @@ namespace CompilerTests
 			InitParser (ParserTestInputs.blockInABlockStatement1);
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
-			foreach (Error error in parser.getErrors()) {
-				Console.WriteLine (error);
-			}
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
 
@@ -379,9 +384,6 @@ namespace CompilerTests
 			InitParser (ParserTestInputs.blockInABlockStatement2);
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
-			foreach (Error error in parser.getErrors()) {
-				Console.WriteLine (error);
-			}
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
 
@@ -391,9 +393,6 @@ namespace CompilerTests
 			InitParser (ParserTestInputs.ifThenStatement);
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
-			foreach (Error error in parser.getErrors()) {
-				Console.WriteLine (error);
-			}
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
 
@@ -403,9 +402,6 @@ namespace CompilerTests
 			InitParser (ParserTestInputs.ifThenElseStatement);
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
-			foreach (Error error in parser.getErrors()) {
-				Console.WriteLine (error);
-			}
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
 
@@ -415,9 +411,6 @@ namespace CompilerTests
 			InitParser (ParserTestInputs.whileStatement);
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
-			foreach (Error error in parser.getErrors()) {
-				Console.WriteLine (error);
-			}
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
 
@@ -427,21 +420,24 @@ namespace CompilerTests
 			InitParser (ParserTestInputs.accessArraySize);
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
-			foreach (Error error in parser.getErrors()) {
-				Console.WriteLine (error);
-			}
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
 
 		[Test]
-		public void TestProcedureCall ()
+		public void TestProcedureCall1 ()
 		{
-			InitParser (ParserTestInputs.procedureCall);
+			InitParser (ParserTestInputs.procedureCall1);
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
-			foreach (Error error in parser.getErrors()) {
-				Console.WriteLine (error);
-			}
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestProcedureCall2 ()
+		{
+			InitParser (ParserTestInputs.procedureCall2);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
 	}

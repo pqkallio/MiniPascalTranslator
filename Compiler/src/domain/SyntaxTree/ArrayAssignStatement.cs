@@ -4,17 +4,20 @@ namespace Compiler
 {
 	public class ArrayAssignStatement : AssignNode
 	{
-		private ExpressionNode indexExpression;
-
 		public ArrayAssignStatement (VariableIdNode idNode, Scope scope, Token token, INameFactory nameFactory, ExpressionNode indexExpression, ExpressionNode assignValueExpression)
 			: base(idNode, scope, token, nameFactory, assignValueExpression)
 		{
-			this.indexExpression = indexExpression;
+			idNode.ArrayIndex = indexExpression;
 		}
 
 		public override ISemanticCheckValue Accept (INodeVisitor visitor)
 		{
-			return null;
+			return visitor.VisitArrayAssignNode (this);
+		}
+
+		public ExpressionNode IndexExpression
+		{
+			get { return IDNode.ArrayIndex; }
 		}
 	}
 }

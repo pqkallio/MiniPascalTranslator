@@ -106,6 +106,31 @@ namespace Compiler
 			}
 		};
 
+		private static readonly Dictionary<TokenType, Dictionary<TokenType, string>> assignmentCompatibility = new Dictionary<TokenType, Dictionary<TokenType, string>> ()
+		{
+			{TokenType.BOOLEAN_VAL, new Dictionary<TokenType, string> ()
+				{
+					{TokenType.BOOLEAN_VAL, null}
+				}
+			},
+			{TokenType.INTEGER_VAL, new Dictionary<TokenType, string> ()
+				{
+					{TokenType.INTEGER_VAL, null}
+				}
+			},
+			{TokenType.REAL_VAL, new Dictionary<TokenType, string> ()
+				{
+					{TokenType.REAL_VAL, null},
+					{TokenType.INTEGER_VAL, null}
+				}
+			},
+			{TokenType.STRING_VAL, new Dictionary<TokenType, string> ()
+				{
+					{TokenType.STRING_VAL, null}
+				}
+			}
+		};
+
 		public static bool IsLegitOperationForEvaluations (TokenType operation, TokenType firstOperand, TokenType secondOperand = TokenType.UNDEFINED)
 		{
 			if (unaryOps.ContainsKey (operation)) {
@@ -123,6 +148,15 @@ namespace Compiler
 		{
 			if (tailCalls.ContainsKey (tailCall)) {
 				return tailCalls [tailCall].ContainsKey (evaluation);
+			}
+
+			return false;
+		}
+
+		public static bool isAssignCompatible (TokenType variableType, TokenType expressionType)
+		{
+			if (assignmentCompatibility.ContainsKey (variableType)) {
+				return assignmentCompatibility[variableType].ContainsKey (expressionType);
 			}
 
 			return false;

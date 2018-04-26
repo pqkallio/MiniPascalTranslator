@@ -24,6 +24,7 @@ namespace Compiler
 		ISemanticCheckValue VisitFactorMain(FactorMain node);
 		ISemanticCheckValue VisitFactorTail(FactorTail node);
 		ISemanticCheckValue VisitFunctionNode(FunctionNode node);
+		ISemanticCheckValue VisitProcedureNode(ProcedureNode node);
 		ISemanticCheckValue VisitFunctionCallNode(FunctionCallNode node);
 		ISemanticCheckValue VisitIfNode(IfNode node);
 		ISemanticCheckValue VisitWhileLoopNode(WhileNode node);

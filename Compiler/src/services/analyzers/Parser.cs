@@ -200,7 +200,14 @@ namespace Compiler
 
 				// if all went well, add a new FunctionNode to the dictionary
 				if (SyntaxTreeBuilt) {
-					FunctionNode functionNode = nodeBuilder.CreateFunctionNode(token, nameFactory, idNode, parameters, blockNode, functionScope);
+					FunctionNode functionNode = null;
+
+					if (procedure) {
+						functionNode = new ProcedureNode(token, nameFactory, idNode, parameters, blockNode, functionScope);
+					} else {
+						functionNode = nodeBuilder.CreateFunctionNode(token, nameFactory, idNode, parameters, blockNode, functionScope);
+					}
+
 					functions[idNode.ID] = functionNode;
 				}
 			} catch (UnexpectedTokenException ex) {
@@ -285,7 +292,7 @@ namespace Compiler
 
 			match (GetNextToken (), TokenType.SET_TYPE);
 
-			Property property = ParsePropertyForParam ();
+			Property property = ParsePropertyForParam (scope);
 
 			if (property.GetTokenType () == TokenType.TYPE_ARRAY
 				|| property.GetTokenType() == TokenType.STRING_VAL) {
@@ -303,7 +310,7 @@ namespace Compiler
 			return null;
 		}
 
-		private Property ParsePropertyForParam ()
+		private Property ParsePropertyForParam (Scope scope)
 		{
 			TokenType type = ParseType ();
 
@@ -317,15 +324,28 @@ namespace Compiler
 				case TokenType.TYPE_STRING:
 					return new StringProperty ();
 				case TokenType.TYPE_ARRAY:
-					return ParseArrayPropertyForParam ();
+					return ParseArrayPropertyForParam (scope);
 				default:
 					return new ErrorProperty ();
 			}
 		}
 
-		private Property ParseArrayPropertyForParam ()
+		private Property ParseArrayPropertyForParam (Scope scope)
 		{
 			match (GetNextToken (), TokenType.BRACKET_LEFT);
+
+			Token token = GetNextToken ();
+
+			switch (token.Type) {
+			case TokenType.BRACKET_RIGHT:
+				bufferedToken = token;
+				break;
+			default:
+				bufferedToken = token;
+				ExpressionNode expression = ParseExpression (scope);
+				break;
+			}
+
 			match (GetNextToken (), TokenType.BRACKET_RIGHT);
 			match (GetNextToken (), TokenType.OF);
 
@@ -543,8 +563,9 @@ namespace Compiler
 		private void ParseIdsToDeclare (List<VariableIdNode> ids, Scope scope)
 		{
 			Token token = GetNextToken ();
+			TokenType type = idType (token.Type);
 
-			switch (token.Type) {
+			switch (type) {
 				case TokenType.ID:
 					VariableIdNode idNode = ParseVarId (scope, token);
 					ids.Add (idNode);
@@ -634,10 +655,11 @@ namespace Compiler
 		private void ParseIdsForReadStatement (Scope scope, List<VariableIdNode> ids)
 		{
 			Token token = GetNextToken ();
+			TokenType type = idType(token.Type);
 
-			switch (token.Type) {
+			switch (type) {
 			case TokenType.ID:
-				VariableIdNode idNode = parseVariable (scope, token);
+				VariableIdNode idNode = ParseVariable (scope, token);
 				ids.Add (idNode);
 				ParseIdsForReadStatement (scope, ids);
 				break;
@@ -652,7 +674,15 @@ namespace Compiler
 			}
 		}
 
-		private VariableIdNode parseVariable (Scope scope, Token token)
+		private TokenType idType(TokenType type) {
+			if (type == TokenType.ID || (ScannerConstants.RESERVED_SEQUENCES.ContainsValue (type) && !ScannerConstants.KEYWORDS.ContainsValue (type))) {
+				return TokenType.ID;
+			}
+
+			return type;
+		}
+
+		private VariableIdNode ParseVariable (Scope scope, Token token)
 		{
 			Token next = GetNextToken ();
 
@@ -1102,6 +1132,7 @@ namespace Compiler
 
 		private VariableIdNode ParseVarId(Scope scope, Token idToken=null) {
 			Token token = idToken == null ? GetNextToken () : idToken;
+			TokenType type = idType (token.Type);
 
 			switch (token.Type) {
 				case TokenType.ID:

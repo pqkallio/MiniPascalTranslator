@@ -24,7 +24,7 @@ namespace Compiler
 
 		public TokenType EvaluationType
 		{
-			get { 
+			get {
 				if (returnValue == null) {
 					return TokenType.VOID;
 				}

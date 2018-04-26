@@ -72,6 +72,11 @@ namespace Compiler
 
 			return newScope;
 		}
+
+		public List<Scope> Children
+		{
+			get { return childScopes; }
+		}
 	}
 }
 

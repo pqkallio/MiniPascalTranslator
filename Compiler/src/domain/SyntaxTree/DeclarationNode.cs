@@ -19,6 +19,16 @@ namespace Compiler
 			this.idsToDeclare = idsToDeclare;
 		}
 
+		public List<VariableIdNode> IDsToDeclare
+		{
+			get { return this.idsToDeclare; }
+		}
+
+		public TypeNode DeclarationType
+		{
+			get { return this.type; }
+		}
+
 		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return visitor.VisitDeclarationNode (this);
 		}

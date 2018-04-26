@@ -19,6 +19,11 @@ namespace Compiler
 		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return visitor.VisitAssertNode (this);
 		}
+
+		public ExpressionNode AssertExpression
+		{
+			get { return expression; }
+		}
 	}
 }
 

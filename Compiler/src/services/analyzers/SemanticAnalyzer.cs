@@ -27,6 +27,11 @@ namespace Compiler
 			this.errors = new List<Error> ();
 		}
 
+		public SyntaxTree SyntaxTree
+		{
+			get { return syntaxTree; }
+		}
+
 		/// <summary>
 		/// Call to analyze the AST.
 		/// </summary>

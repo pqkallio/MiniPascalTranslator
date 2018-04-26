@@ -19,6 +19,11 @@ namespace Compiler
 		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return visitor.VisitIOPrintNode (this);
 		}
+
+		public ArgumentsNode Arguments
+		{
+			get { return arguments; }
+		}
 	}
 }
 

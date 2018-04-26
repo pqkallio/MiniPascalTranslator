@@ -37,10 +37,25 @@ namespace Compiler
 		public static readonly string INVALID_IDENTIFIER_MESSAGE = "the identifiers must begin with a letter followed by zero or more numbers, letters and underscores";
 		public static readonly string INVALID_ID_MESSAGE = "reserved keyword used as variable identifier";
 		public static readonly string INVALID_REAL_NUM_MESSAGE = "a real number's exponent part must be one of the following forms: e<digits>, e+<digits> or e-<digits>";
+		public static readonly string ALL_CODE_PATHS_DONT_RETURN_MSG = "some of the functions execution paths don't return a value";
+		public static readonly string FUNCTION_DOESNT_RETURN_MSG = "the function doesn't return a value";
+		public static readonly string ILLEGAL_ARRAY_ACCESS_ERROR_MSG = "the variable is not an array";
+		public static readonly string ILLEGAL_ARRAY_INDEX_ERROR_MSG = "the array-indexing expression must evaluate to an integer";
+		public static readonly string NOT_A_VALID_FUNCTION_ERROR_MSG = "the identifier doesn't point to a valid function";
+		public static readonly string INVALID_ARG_COUNT_ERROR_MSG = "the amount of arguments given doesn't match with the amount requested";
 
 		public static string INVALID_RETURN_VALUE_MSG(ReturnStatement node, TokenType requiredType)
 		{
 			return String.Format ("the required return value type is {0}, but instead {1} was given", TOKEN_TYPE_STRINGS[requiredType], TOKEN_TYPE_STRINGS[node.EvaluationType]);
+		}
+
+		public static string INVALID_ARGUMENT_ERROR_MSG (int position, TokenType parameterEvaluation, TokenType argumentEvaluation)
+		{
+			if (parameterEvaluation == TokenType.UNDEFINED || argumentEvaluation == TokenType.UNDEFINED) {
+				return String.Format ("argument {0} needs to be a variable reference", position);
+			}
+
+			return String.Format ("argument {0} is expected to be {1}, but instead a {2} was given", position, TOKEN_TYPE_STRINGS[parameterEvaluation], TOKEN_TYPE_STRINGS[argumentEvaluation]);
 		}
 	}
 }

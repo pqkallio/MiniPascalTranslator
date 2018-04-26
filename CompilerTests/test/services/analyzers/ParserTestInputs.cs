@@ -1,365 +1,376 @@
 ﻿using System;
+using System.Linq;
 
 namespace CompilerTests
 {
 	public class ParserTestInputs
 	{
-		public static readonly string[] emptyProgram = {
-			"program empty;\n",
-			"begin\n",
-			"end ."
+		public static readonly string[] progHeader = {
+			"program prog;\n"
 		};
 
-		public static readonly string[] oneFunction = {
-			"program oneFunction;\n",
-			"function func() : string;\n",
-			"begin\n",
-			"end;\n",
-			"begin\n",
-			"end ."
+		public static readonly string[] blockStart = {
+			"begin\n"
 		};
 
-		public static readonly string[] oneProcedure = {
-			"program oneProcedure;\n",
-			"procedure proc();\n",
-			"begin\n",
-			"end;\n",
-			"begin\n",
-			"end ."
+		public static readonly string[] blockEnd = {
+			"end;\n"
 		};
 
-		public static readonly string[] functionAndProcedure = {
-			"program oneProcedure;\n",
-			"function func() : string;\n",
-			"begin\n",
-			"end;\n",
-			"procedure proc();\n",
-			"begin\n",
-			"end;\n",
-			"begin\n",
-			"end ."
+		public static readonly string[] mainBlockEnd = {
+			"end .\n"
 		};
 
-		public static readonly string[] functionWithParams = {
-			"program oneFunction;\n",
-			"function func(var i : integer, ii : real, str : string, ary : array[] of Boolean) : string;\n",
-			"begin\n",
-			"end;\n",
-			"begin\n",
-			"end ."
+		public static readonly string[] functionHeaderStart = {
+			"function func("
 		};
 
-		public static readonly string[] procedureWithParams = {
-			"program oneFunction;\n",
-			"procedure proc(var i : integer, ii : real, str : string, ary : array[] of Boolean);\n",
-			"begin\n",
-			"end;\n",
-			"begin\n",
-			"end ."
+		public static readonly string[] functionHeaderEnd = {
+			") : string;\n"
 		};
 
-		public static readonly string[] declareInteger = {
-			"program empty;\n",
-			"begin\n",
-			"var x : integer;\n",
-			"end ."
+		public static readonly string[] procedureHeaderStart = {
+			"procedure proc("
 		};
 
-		public static readonly string[] declareReal = {
-			"program empty;\n",
-			"begin\n",
-			"var x : real;\n",
-			"end ."
+		public static readonly string[] procedureHeaderEnd = {
+			");\n"
 		};
 
-		public static readonly string[] declareBoolean = {
-			"program empty;\n",
-			"begin\n",
-			"var x : Boolean;\n",
-			"end ."
-		};
+		public static string[] assembleFunction(string name = "func", string returnType = "string", string parameters = null, string[] block = null)
+		{
+			string[] header = {"function " + name + "("};
 
-		public static readonly string[] declareString = {
-			"program empty;\n",
-			"begin\n",
-			"var x : string;\n",
-			"end ."
-		};
+			if (parameters != null) {
+				header[0] += parameters;
+			}
 
-		public static readonly string[] declareArrayOfInteger = {
-			"program empty;\n",
-			"begin\n",
-			"var x : array[1] of integer;\n",
-			"end ."
-		};
+			header[0] += ") : " + returnType + ";\n";
 
-		public static readonly string[] declareArrayOfReal = {
-			"program empty;\n",
-			"begin\n",
-			"var x : array[2] of real;\n",
-			"end ."
-		};
+			string[] functionBlock;
 
-		public static readonly string[] declareArrayOfBoolean = {
-			"program empty;\n",
-			"begin\n",
-			"var x : array[3] of Boolean;\n",
-			"end ."
-		};
+			if (block != null) {
+				functionBlock = blockStart.Concat (block).Concat (blockEnd).ToArray ();
+			} else {
+				functionBlock = blockStart.Concat (blockEnd).ToArray ();
+			}
 
-		public static readonly string[] declareArrayOfString = {
-			"program empty;\n",
-			"begin\n",
-			"var x : array[4] of string;\n",
-			"end ."
-		};
+			return header.Concat (functionBlock).ToArray ();
+		}
 
-		public static readonly string[] declareMultipleInteger = {
-			"program empty;\n",
-			"begin\n",
-			"var x, y : integer;\n",
-			"end ."
-		};
+		public static string[] assembleProcedure(string name = "proc", string parameters = null, string[] block = null)
+		{
+			string[] header = {"procedure " + name + "("};
 
-		public static readonly string[] declareMultipleReal = {
-			"program empty;\n",
-			"begin\n",
-			"var x, y, z : real;\n",
-			"end ."
-		};
+			if (parameters != null) {
+				header[0] += parameters;
+			}
 
-		public static readonly string[] declareMultipleBoolean = {
-			"program empty;\n",
-			"begin\n",
-			"var x, y, z, k : Boolean;\n",
-			"end ."
-		};
+			header[0] += ");\n";
 
-		public static readonly string[] declareMultipleString = {
-			"program empty;\n",
-			"begin\n",
-			"var x, y, z, k, l : string;\n",
-			"end ."
-		};
+			string[] procedureBlock;
 
-		public static readonly string[] declareMultipleArrayOfInteger = {
-			"program empty;\n",
-			"begin\n",
-			"var x, y, z, k, l, m : array[1] of integer;\n",
-			"end ."
-		};
+			if (block != null) {
+				procedureBlock = blockStart.Concat (block).Concat (blockEnd).ToArray ();
+			} else {
+				procedureBlock = blockStart.Concat (blockEnd).ToArray ();
+			}
 
-		public static readonly string[] declareMultipleArrayOfReal = {
-			"program empty;\n",
-			"begin\n",
-			"var x, y, z, k, l, m, n : array[2] of real;\n",
-			"end ."
-		};
+			return header.Concat (procedureBlock).ToArray ();
+		}
 
-		public static readonly string[] declareMultipleArrayOfBoolean = {
-			"program empty;\n",
-			"begin\n",
-			"var x, y, z, k, l, m, n, o : array[3] of Boolean;\n",
-			"end ."
-		};
+		public static string[] assembleProgramCode(string[] functions = null, string[] mainBlock = null)
+		{
+			string [] ret = functions == null ? progHeader : progHeader.Concat (functions).ToArray ();
+			ret = ret.Concat (blockStart).ToArray ();
+			ret = mainBlock == null ? ret : ret.Concat (mainBlock).ToArray ();
 
-		public static readonly string[] declareMultipleArrayOfString = {
-			"program empty;\n",
-			"begin\n",
-			"var x, y, z, k, l, m, n, o, p : array[4] of string;\n",
-			"end ."
-		};
+			return ret.Concat (mainBlockEnd).ToArray ();
+		}
 
-		public static readonly string[] declareAndAssignInteger = {
-			"program empty;\n",
-			"begin\n",
-			"var x : integer;\n",
-			"x := 5;\n",
-			"end ."
-		};
+		public static string[] emptyProgram {
+			get { return assembleProgramCode(); }
+		}
 
-		public static readonly string[] declareAndAssignReal = {
-			"program empty;\n",
-			"begin\n",
-			"var x : real;\n",
-			"x := 5.68e-4;\n",
-			"end ."
-		};
+		public static string[] oneFunction {
+			get { return assembleProgramCode (assembleFunction ()); }
+		}
 
-		public static readonly string[] declareAndAssignBoolean = {
-			"program empty;\n",
-			"begin\n",
-			"var x : Boolean;\n",
-			"x := true;\n",
-			"end ."
-		};
+		public static string[] oneProcedure {
+			get { return assembleProgramCode (assembleProcedure ()); }
+		}
 
-		public static readonly string[] declareAndAssignString = {
-			"program empty;\n",
-			"begin\n",
-			"var x : string;\n",
-			"x := \"supadupa\";\n",
-			"end ."
-		};
+		public static string[] functionAndProcedure {
+			get {
+				string[] functions = assembleFunction().Concat(assembleProcedure()).ToArray();
+				return assembleProgramCode (functions);
+			}
+		}
 
-		public static readonly string[] declareAndAssignArrayOfInteger = {
-			"program empty;\n",
-			"begin\n",
-			"var x : array[1] of integer;\n",
-			"x[0] := 5;\n",
-			"end ."
-		};
+		public static string[] functionWithParams {
+			get {
+				string parameters = "var i : integer, ii : real, str : string, ary : array[] of Boolean";
+				return assembleProgramCode (assembleFunction (parameters: parameters));
+			}
+		}
 
-		public static readonly string[] declareAndAssignArrayOfReal = {
-			"program empty;\n",
-			"begin\n",
-			"var x : array[2] of real;\n",
-			"x[1] := 0.68;\n",
-			"end ."
-		};
+		public static string[] procedureWithParams {
+			get {
+				string parameters = "var i : integer, ii : real, str : string, ary : array[5] of Boolean";
+				return assembleProgramCode(assembleProcedure(parameters: parameters));
+			}
+		}
 
-		public static readonly string[] declareAndAssignArrayOfBoolean = {
-			"program empty;\n",
-			"begin\n",
-			"var x : array[3] of Boolean;\n",
-			"x[0] := true;\n",
-			"x[1] := false;\n",
-			"end ."
-		};
+		public static string[] declareInteger {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : integer;\n" });
+			}
+		}
 
-		public static readonly string[] declareAndAssignArrayOfString = {
-			"program empty;\n",
-			"begin\n",
-			"var x : array[4] of string;\n",
-			"x[3] := \"supadupa\";\n",
-			"end ."
-		};
+		public static string[] declareReal {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : real;\n" });
+			}
+		}
 
-		public static readonly string[] declareAndAssignFunctionCall1 = {
-			"program empty;\n",
-			"begin\n",
-			"var x : string;\n",
-			"x := func();\n",
-			"end ."
-		};
+		public static string[] declareBoolean {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : Boolean;\n" });
+			}
+		}
 
-		public static readonly string[] declareAndAssignFunctionCall2 = {
-			"program empty;\n",
-			"begin\n",
-			"var x : string;\n",
-			"x := func(3, 5 + 8, true);\n",
-			"end ."
-		};
+		public static string[] declareString {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : string;\n" });
+			}
+		}
 
-		public static readonly string[] returnStatement1 = {
-			"program empty;\n",
-			"begin\n",
-			"var x : string;\n",
-			"return x;\n",
-			"end ."
-		};
+		public static string[] declareArrayOfInteger {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : array[1] of integer;\n" });
+			}
+		}
 
-		public static readonly string[] returnStatement2 = {
-			"program empty;\n",
-			"begin\n",
-			"return;\n",
-			"end ."
-		};
+		public static string[] declareArrayOfReal {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : array[2] of real;\n" });
+			}
+		}
 
-		public static readonly string[] readStatement = {
-			"program empty;\n",
-			"begin\n",
-			"var x : string;\n",
-			"read(x, y, zeta);\n",
-			"end ."
-		};
+		public static string[] declareArrayOfBoolean {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : array[3] of Boolean;\n" });
+			}
+		}
 
-		public static readonly string[] writeStatement = {
-			"program empty;\n",
-			"begin\n",
-			"var x : string;\n",
-			"writeln(x, 6 + z[0], -9, true);\n",
-			"end ."
-		};
+		public static string[] declareArrayOfString {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : array[4] of string;\n" });
+			}
+		}
 
-		public static readonly string[] assertStatement = {
-			"program empty;\n",
-			"begin\n",
-			"var x : string;\n",
-			"assert(x[9] % 9 < 6 / 5);\n",
-			"end ."
-		};
+		public static string[] declareMultipleInteger {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x, y : integer;\n" });
+			}
+		}
 
-		public static readonly string[] blockInABlockStatement1 = {
-			"program empty;\n",
-			"begin\n",
-			"var x : string;\n",
-			"assert(x[9] % 9 < 6 / 5);\n",
-			"begin\n",
-			"  writeln(\"is funny\");",
-			"  writeln(x)\n",
-			"end;\n",
-			"end ."
-		};
+		public static string[] declareMultipleReal {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x,y,z : real;\n" });
+			}
+		}
 
-		public static readonly string[] blockInABlockStatement2 = {
-			"program empty;\n",
-			"begin\n",
-			"var x : string;\n",
-			"assert(x[9] % 9 < 6 / 5);\n",
-			"begin\n",
-			"  writeln(\"is funny\");",
-			"  writeln(x);\n",
-			"end;\n",
-			"end ."
-		};
+		public static string[] declareMultipleBoolean {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x,y,z,k : Boolean;\n" });
+			}
+		}
 
-		public static readonly string[] ifThenStatement = {
-			"program empty;\n",
-			"begin\n",
-			"if x > 5 then\n",
-			"x := 4;\n",
-			"end ."
-		};
+		public static string[] declareMultipleString {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x,y,z,k,l : string;\n" });
+			}
+		}
 
-		public static readonly string[] ifThenElseStatement = {
-			"program empty;\n",
-			"begin\n",
-			"if x > 5 then\n",
-			"x := 4\n",
-			"else x := x - 1;\n",
-			"writeln(x)\n",
-			"end ."
-		};
+		public static string[] declareMultipleArrayOfInteger {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x,y,z,k,l,m : array[10] of integer;\n" });
+			}
+		}
 
-		public static readonly string[] whileStatement = {
-			"program empty;\n",
-			"begin\n",
-				"  var x : string;\n",
-			    "  x := 0;\n",
-				"  while x <= 10 do\n",
-				"    begin\n",
-				"      x := x + 1;\n",
-				"      writeln(\"x is now \", x)\n",
-				"    end\n",
-			"end ."
-		};
+		public static string[] declareMultipleArrayOfReal {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x,y,z,k,l,m,n : array[11] of real;\n" });
+			}
+		}
 
-		public static readonly string[] accessArraySize = {
-			"program empty;\n",
-			"begin\n",
-			"var x : array[5] of integer;\n",
-			"var y : integer;\n",
-			"y := x.size\n",
-			"end ."
-		};
+		public static string[] declareMultipleArrayOfBoolean {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x,y,z,k,l,m,n,o : array[12] of Boolean;\n" });
+			}
+		}
 
-		public static readonly string[] procedureCall = {
-			"program empty;\n",
-			"begin\n",
-			"proc(\"supadupa\")\n",
-			"end ."
-		};
+		public static string[] declareMultipleArrayOfString {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x,y,z,k,l,m,n,o,p : array[13] of string;\n" });
+			}
+		}
+
+		public static string[] declareAndAssignInteger {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : integer;\n", "x := 5;\n" });
+			}
+		}
+
+		public static string[] declareAndAssignReal {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : real;\n", "x := 5.68e-4;\n" });
+			}
+		}
+
+		public static string[] declareAndAssignBoolean {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : Boolean;\n", "x := true;\n" });
+			}
+		}
+
+		public static string[] declareAndAssignString {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : string;\n", "x := \"supadupa\";\n" });
+			}
+		}
+
+		public static string[] declareAndAssignArrayOfInteger {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : array[1] of integer;\n", "x[0] := 5;\n" });
+			}
+		}
+
+		public static string[] declareAndAssignArrayOfReal {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : array[2] of real;\n", "x[1] := 0.68;\n" });
+			}
+		}
+
+		public static string[] declareAndAssignArrayOfBoolean {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : array[3] of Boolean;\n", "x[0] := true;\n", "x[1] := false;\n" });
+			}
+		}
+
+		public static string[] declareAndAssignArrayOfString {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : array[4] of string;\n", "x[3] := \"supadupa\";\n" });
+			}
+		}
+
+		public static string[] declareAndAssignFunctionCall1 {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : string;\n", "x := func();\n" });
+			}
+		}
+
+		public static string[] declareAndAssignFunctionCall2 {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : string;\n", "x := func(3, 5 + 8, true);\n" });
+			}
+		}
+
+		public static string[] returnStatement1 {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : string;\n", "return x;\n" });
+			}
+		}
+
+		public static string[] returnStatement2 {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : string;\n", "return;\n" });
+			}
+		}
+
+		public static string[] readStatement {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : string;\n", "read(x, y, zeta);\n" });
+			}
+		}
+
+		public static string[] writeStatement {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : string;\n", "writeln(x, 6 + z[0], -9, true);\n" });
+			}
+		}
+
+		public static string[] assertStatement {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "assert(x[9] % 9 < 6 / 5);\n" });
+			}
+		}
+
+		public static string[] blockInABlockStatement1 {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "begin\n",
+					"  writeln(\"is funny\");",
+					"  writeln(x)\n",
+					"end;\n" });
+			}
+		}
+
+		public static string[] blockInABlockStatement2 {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "begin\n",
+					"  writeln(\"is funny\");",
+					"  writeln(x);\n",
+					"end;\n" });
+			}
+		}
+
+		public static string[] ifThenStatement {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "if x > 5 then\n", "x := 4;\n" });
+			}
+		}
+
+		public static string[] ifThenElseStatement {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "if x > 5 then\n", 
+					"x := 4\n", 
+					"else x := x - 1;\n",
+					"writeln(x)\n" });
+			}
+		}
+
+		public static string[] whileStatement {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "  var x : string;\n",
+					"  x := 0;\n",
+					"  while x <= 10 do\n",
+					"    begin\n",
+					"      x := x + 1;\n",
+					"      writeln(\"x is now \", x)\n",
+					"    end\n" });
+			}
+		}
+
+		public static string[] accessArraySize {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "var x : array[5] of integer;\n",
+					"var y : integer;\n",
+					"y := x.size\n" });
+			}
+		}
+
+		public static string[] procedureCall1 {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "proc(\"supadupa\")\n" });
+			}
+		}
+
+		public static string[] procedureCall2 {
+			get {
+				return assembleProgramCode (mainBlock: new [] { "proc()\n" });
+			}
+		}
 	}
 }
 
