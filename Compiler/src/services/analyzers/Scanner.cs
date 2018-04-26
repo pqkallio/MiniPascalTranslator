@@ -195,20 +195,11 @@ namespace Compiler
 
 			string val = sb.ToString ();
 
-			if (ScannerConstants.RESERVED_SEQUENCES.ContainsKey (val)) {						// if the value is a reserved keyword
-				/*
-				 * MUST CHECK THE OTHER CONDITIONS FOR ERRORING HERE
-				 * AS WELL IN ADDITION TO FOLLOWING JUST VAR!!!
-				 */
-				if (previous != null && previous.Type == TokenType.VAR && ScannerConstants.KEYWORDS.ContainsKey(val)) {				// and a declaration was made using it as an id
-					token.Value = val;
-					notifyError (new TokenError (token, ErrorConstants.INVALID_ID_MESSAGE));	// report an error
-				} else {
-					token.Type = ScannerConstants.RESERVED_SEQUENCES [val];						// else, we set the type to match the keyword
-				}
-			} else {																			// if it wasn't a keyword, save the value as id
-				token.Value = val;
+			if (ScannerConstants.RESERVED_SEQUENCES.ContainsKey (val)) {						// if the value is a reserved 
+				token.Type = ScannerConstants.RESERVED_SEQUENCES [val];						// else, we set the type to match the keyword
 			}
+
+			token.Value = val;
 		}
 
 		/// <summary>
@@ -225,23 +216,6 @@ namespace Compiler
 			token = null;
 			screenMultilineComment ();
 		}
-
-		/*
-		 * We probabaly don't need this anymore
-		 * 
-		/// <summary>
-		/// Screens a single line comment.
-		/// </summary>
-		private void parseSingleLineComment ()
-		{
-			while (!endOfStream) {						// keep reading the character stream until an end of line or an end of file
-				char c = readStream ();					// or an end of file is read
-				if (c == ScannerConstants.NEWLINE) {
-					break;
-				}
-			}
-		}
-		*/
 
 		/// <summary>
 		/// Screens a multiline comment.

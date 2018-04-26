@@ -4,8 +4,8 @@ namespace Compiler
 {
 	public class FunctionProperty : Property
 	{
-		public FunctionProperty ()
-			: base(true)
+		public FunctionProperty (int declarationRow = int.MaxValue)
+			: base(declarationRow, true)
 		{}
 
 		public override TokenType GetTokenType ()

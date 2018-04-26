@@ -43,6 +43,10 @@ namespace Compiler
 		public override TokenType EvaluationType
 		{
 			get {
+				if (evaluationType != TokenType.UNDEFINED) {
+					return evaluationType;
+				}
+
 				Property prop = scope.GetProperty (id);
 
 				if (prop.GetTokenType () == TokenType.TYPE_ARRAY) {
@@ -53,6 +57,11 @@ namespace Compiler
 
 				return prop.GetTokenType ();
 			}
+		}
+
+		public void SetEvaluationType(TokenType type)
+		{
+			evaluationType = type;
 		}
 
 		public string ID {

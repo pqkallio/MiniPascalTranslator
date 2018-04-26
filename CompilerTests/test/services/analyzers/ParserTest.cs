@@ -22,21 +22,36 @@ namespace CompilerTests
 			this.parser = new Parser (scanner);
 		}
 
-		private void CheckScopeContainsVariables (Scope scope, params string[] ids)
+		private void CheckScopeContainsVariables (Scope scope, bool expected, params string[] ids)
 		{
 			foreach (string id in ids) {
-				Assert.IsTrue (scope.ContainsKey (id));
+				Assert.IsTrue (scope.ContainsKey (id) == expected);
 			}
+		}
+
+		[Test]
+		public void testProgramNameIsSet ()
+		{
+			InitParser (ParserTestInputs.emptyProgram);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (tree.ProgramName, "prog");
 		}
 
 		[Test]
 		public void TestEmptyProgram ()
 		{
 			InitParser (ParserTestInputs.emptyProgram);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
-			Assert.AreEqual (tree.ProgramName, "prog");
+		}
+
+		[Test]
+		public void TestRootScopeHasOneBlockScopeAsChild ()
+		{
+			InitParser (ParserTestInputs.emptyProgram);
+			SyntaxTree tree = parser.Parse ();
+			Assert.IsNotNull (tree.RootScope);
 			Assert.AreEqual (tree.RootScope.Children.Count, 1);
 		}
 
@@ -44,11 +59,26 @@ namespace CompilerTests
 		public void TestOneFunction ()
 		{
 			InitParser (ParserTestInputs.oneFunction);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
-			Assert.IsTrue (tree.Root.Functions.ContainsKey ("func"));
+		}
+
+		[Test]
+		public void TestRootHasOneFunction ()
+		{
+			InitParser (ParserTestInputs.oneFunction);
+			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (tree.Root.Functions.Count, 1);
+			Assert.IsTrue (tree.Root.Functions.ContainsKey ("func"));
+			Assert.AreEqual (tree.Root.Functions ["func"].ReturnType, TokenType.STRING_VAL);
+		}
+
+		[Test]
+		public void TestRootScopeHasBlockAndFunctionScopesAsChild ()
+		{
+			InitParser (ParserTestInputs.oneFunction);
+			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (tree.RootScope.Children.Count, 2);
 		}
 
@@ -56,18 +86,65 @@ namespace CompilerTests
 		public void TestOneProcedure ()
 		{
 			InitParser (ParserTestInputs.oneProcedure);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestRootHasOneProcedure ()
+		{
+			InitParser (ParserTestInputs.oneProcedure);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (tree.Root.Functions.Count, 1);
+			Assert.IsTrue (tree.Root.Functions.ContainsKey ("proc"));
+			Assert.AreEqual (tree.Root.Functions ["proc"].ReturnType, TokenType.VOID);
+		}
+
+		[Test]
+		public void TestRootScopeHasBlockAndProcedureScopesAsChild ()
+		{
+			InitParser (ParserTestInputs.oneProcedure);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (tree.RootScope.Children.Count, 2);
 		}
 
 		[Test]
 		public void TestFunctionAndProcedure ()
 		{
 			InitParser (ParserTestInputs.functionAndProcedure);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestRootHasOneFunctionAndOneProcedure ()
+		{
+			InitParser (ParserTestInputs.functionAndProcedure);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (tree.Root.Functions.Count, 2);
+			Assert.IsTrue (tree.Root.Functions.ContainsKey ("proc"));
+			Assert.AreEqual (tree.Root.Functions ["proc"].ReturnType, TokenType.VOID);
+			Assert.IsTrue (tree.Root.Functions.ContainsKey ("func"));
+			Assert.AreEqual (tree.Root.Functions ["func"].ReturnType, TokenType.REAL_VAL);
+		}
+
+		[Test]
+		public void TestRootScopeHasBlockAndFunctionAndProcedureScopesAsChild ()
+		{
+			InitParser (ParserTestInputs.functionAndProcedure);
+			SyntaxTree tree = parser.Parse ();
+			Assert.AreEqual (tree.RootScope.Children.Count, 3);
+		}
+
+		[Test]
+		public void TestFunctionsAndProceduresSeeEachOther ()
+		{
+			InitParser (ParserTestInputs.functionAndProcedure);
+			SyntaxTree tree = parser.Parse ();
+			CheckScopeContainsVariables (tree.Root.Functions ["proc"].Scope, true, "func");
+			CheckScopeContainsVariables (tree.Root.Functions ["func"].Scope, true, "proc");
 		}
 
 		[Test]
@@ -77,7 +154,18 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
-			CheckScopeContainsVariables (tree.Root.Functions ["func"].Scope, "i", "ii", "str", "ary");
+			CheckScopeContainsVariables (tree.Root.Functions ["func"].Scope, true, "i", "ii", "str", "ary");
+			CheckScopeContainsVariables (tree.Root.Functions ["func"].Scope.Children[0], true, "i", "ii", "str", "ary", "x");
+			CheckScopeContainsVariables (tree.Root.Functions ["func"].Scope, false, "y", "x");
+		}
+
+		[Test]
+		public void TestFunctionAndBlockScopesNotVisibleToRoot ()
+		{
+			InitParser (ParserTestInputs.functionWithParams);
+			SyntaxTree tree = parser.Parse ();
+			CheckScopeContainsVariables (tree.RootScope, false, "i", "ii", "str", "ary", "x");
+			CheckScopeContainsVariables (tree.RootScope, false, "y");
 		}
 
 		[Test]
@@ -87,7 +175,7 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
-			CheckScopeContainsVariables (tree.Root.Functions ["proc"].Scope, "i", "ii", "str", "ary");
+			CheckScopeContainsVariables (tree.Root.Functions ["proc"].Scope, true, "i", "ii", "str", "ary");
 		}
 
 		[Test]
@@ -97,6 +185,10 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsTrue (prop.Assigned == false);
+			Assert.IsTrue (prop.GetTokenType () == TokenType.INTEGER_VAL);
 		}
 
 		[Test]
@@ -106,6 +198,10 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsTrue (prop.Assigned == false);
+			Assert.IsTrue (prop.GetTokenType () == TokenType.REAL_VAL);
 		}
 
 		[Test]
@@ -115,6 +211,10 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsTrue (prop.Assigned == false);
+			Assert.IsTrue (prop.GetTokenType () == TokenType.STRING_VAL);
 		}
 
 		[Test]
@@ -124,6 +224,10 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsTrue (prop.Assigned == false);
+			Assert.IsTrue (prop.GetTokenType () == TokenType.BOOLEAN_VAL);
 		}
 
 		[Test]
@@ -133,6 +237,11 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsTrue (prop.Assigned == true);
+			Assert.IsTrue (prop.GetTokenType () == TokenType.TYPE_ARRAY);
+			Assert.AreEqual (((ArrayProperty)prop).ArrayElementType, TokenType.TYPE_INTEGER);
 		}
 
 		[Test]
@@ -142,6 +251,11 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsTrue (prop.Assigned == true);
+			Assert.IsTrue (prop.GetTokenType () == TokenType.TYPE_ARRAY);
+			Assert.AreEqual (((ArrayProperty)prop).ArrayElementType, TokenType.TYPE_REAL);
 		}
 
 		[Test]
@@ -151,6 +265,11 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsTrue (prop.Assigned == true);
+			Assert.IsTrue (prop.GetTokenType () == TokenType.TYPE_ARRAY);
+			Assert.AreEqual (((ArrayProperty)prop).ArrayElementType, TokenType.TYPE_STRING);
 		}
 
 		[Test]
@@ -160,13 +279,18 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsTrue (prop.Assigned == true);
+			Assert.IsTrue (prop.GetTokenType () == TokenType.TYPE_ARRAY);
+			Assert.AreEqual (((ArrayProperty)prop).ArrayElementType, TokenType.TYPE_BOOLEAN);
 		}
 
 		[Test]
 		public void TestDeclareMultipleInteger ()
 		{
 			InitParser (ParserTestInputs.declareMultipleInteger);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
@@ -175,7 +299,7 @@ namespace CompilerTests
 		public void TestDeclareMultipleReal ()
 		{
 			InitParser (ParserTestInputs.declareMultipleReal);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
@@ -184,7 +308,7 @@ namespace CompilerTests
 		public void TestDeclareMultipleString ()
 		{
 			InitParser (ParserTestInputs.declareMultipleString);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
@@ -193,7 +317,7 @@ namespace CompilerTests
 		public void TestDeclareMultipleBoolean ()
 		{
 			InitParser (ParserTestInputs.declareMultipleBoolean);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
@@ -202,7 +326,7 @@ namespace CompilerTests
 		public void TestDeclareMultipleArrayOfInteger ()
 		{
 			InitParser (ParserTestInputs.declareMultipleArrayOfInteger);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
@@ -211,7 +335,7 @@ namespace CompilerTests
 		public void TestDeclareMultipleArrayOfReal ()
 		{
 			InitParser (ParserTestInputs.declareMultipleArrayOfReal);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
@@ -220,7 +344,7 @@ namespace CompilerTests
 		public void TestDeclareMultipleArrayOfString ()
 		{
 			InitParser (ParserTestInputs.declareMultipleArrayOfString);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
@@ -229,7 +353,7 @@ namespace CompilerTests
 		public void TestDeclareMultipleArrayOfBoolean ()
 		{
 			InitParser (ParserTestInputs.declareMultipleArrayOfBoolean);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
@@ -241,6 +365,9 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsFalse (prop.Assigned);
 		}
 
 		[Test]
@@ -250,6 +377,9 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsFalse (prop.Assigned);
 		}
 
 		[Test]
@@ -259,6 +389,9 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsFalse (prop.Assigned);
 		}
 
 		[Test]
@@ -268,6 +401,9 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsFalse (prop.Assigned);
 		}
 
 		[Test]
@@ -277,6 +413,9 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsTrue (prop.Assigned);
 		}
 
 		[Test]
@@ -286,6 +425,9 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsTrue (prop.Assigned);
 		}
 
 		[Test]
@@ -295,6 +437,9 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsTrue (prop.Assigned);
 		}
 
 		[Test]
@@ -304,6 +449,9 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsTrue (prop.Assigned);
 		}
 
 		[Test]
@@ -313,6 +461,9 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsFalse (prop.Assigned);
 		}
 
 		[Test]
@@ -322,6 +473,9 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+
+			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
+			Assert.IsFalse (prop.Assigned);
 		}
 
 		[Test]
@@ -439,6 +593,24 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestValidIdDeclarations ()
+		{
+			InitParser (ParserTestInputs.validIdDeclarations);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void TestInvalidIdDeclarations ()
+		{
+			InitParser (ParserTestInputs.invalidIdDeclarations);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, ScannerConstants.KEYWORDS.Count);
 		}
 	}
 }

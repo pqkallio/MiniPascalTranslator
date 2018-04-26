@@ -43,6 +43,7 @@ namespace Compiler
 		public static readonly string ILLEGAL_ARRAY_INDEX_ERROR_MSG = "the array-indexing expression must evaluate to an integer";
 		public static readonly string NOT_A_VALID_FUNCTION_ERROR_MSG = "the identifier doesn't point to a valid function";
 		public static readonly string INVALID_ARG_COUNT_ERROR_MSG = "the amount of arguments given doesn't match with the amount requested";
+		public static readonly string UNDECLARED_VARIABLE_ERROR_MSG = "the variable has not been declared yet";
 
 		public static string INVALID_RETURN_VALUE_MSG(ReturnStatement node, TokenType requiredType)
 		{

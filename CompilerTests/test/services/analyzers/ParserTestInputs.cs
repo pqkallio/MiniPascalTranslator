@@ -1,4 +1,5 @@
 ﻿using System;
+using Compiler;
 using System.Linq;
 
 namespace CompilerTests
@@ -79,6 +80,13 @@ namespace CompilerTests
 			return header.Concat (procedureBlock).ToArray ();
 		}
 
+		public static string[] assembleBlock(string[] statements)
+		{
+			string[] block = statements != null ? blockStart.Concat (statements).Concat (blockEnd).ToArray () : blockStart.Concat (blockEnd).ToArray ();
+
+			return block;
+		}
+
 		public static string[] assembleProgramCode(string[] functions = null, string[] mainBlock = null)
 		{
 			string [] ret = functions == null ? progHeader : progHeader.Concat (functions).ToArray ();
@@ -102,7 +110,7 @@ namespace CompilerTests
 
 		public static string[] functionAndProcedure {
 			get {
-				string[] functions = assembleFunction().Concat(assembleProcedure()).ToArray();
+				string[] functions = assembleFunction(returnType: "real").Concat(assembleProcedure()).ToArray();
 				return assembleProgramCode (functions);
 			}
 		}
@@ -110,7 +118,7 @@ namespace CompilerTests
 		public static string[] functionWithParams {
 			get {
 				string parameters = "var i : integer, ii : real, str : string, ary : array[] of Boolean";
-				return assembleProgramCode (assembleFunction (parameters: parameters));
+				return assembleProgramCode (assembleFunction (parameters: parameters, block: new[]{"var x : Boolean;\n"}), new[]{"var y : Boolean;\n"});
 			}
 		}
 
@@ -369,6 +377,48 @@ namespace CompilerTests
 		public static string[] procedureCall2 {
 			get {
 				return assembleProgramCode (mainBlock: new [] { "proc()\n" });
+			}
+		}
+
+		public static string[] validIdDeclarations {
+			get {
+				string[] declarations = new string[ScannerConstants.RESERVED_SEQUENCES.Count - ScannerConstants.KEYWORDS.Count];
+				int i = 0;
+
+				foreach (string s in ScannerConstants.RESERVED_SEQUENCES.Keys) {
+					if (!ScannerConstants.KEYWORDS.ContainsKey (s)) {
+						declarations [i] = String.Format ("var {0} : integer;\n", s);
+						i++;
+					}
+				}
+
+				return assembleProgramCode (mainBlock: declarations);
+			}
+		}
+
+		public static string[] invalidIdDeclarations {
+			get {
+				string[] declarations = new string[ScannerConstants.KEYWORDS.Count];
+				int i = 0;
+
+				foreach (string s in ScannerConstants.KEYWORDS.Keys) {
+					declarations [i] = String.Format ("var {0} : integer;\n", s);
+					i++;
+				}
+
+				return assembleProgramCode (mainBlock: declarations);
+			}
+		}
+
+		public static string[] doubleDeclarationWithinScope {
+			get {
+				return null;
+			}
+		}
+
+		public static string[] doubleDeclarationNestedScopes {
+			get {
+				return null;
 			}
 		}
 	}

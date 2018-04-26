@@ -36,7 +36,7 @@ namespace Compiler
 
 		public Property asProperty ()
 		{
-			return new BooleanProperty ();
+			return new BooleanProperty (token.Row);
 		}
 
 		public override string ToString ()

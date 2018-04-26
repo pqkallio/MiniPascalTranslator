@@ -13,17 +13,24 @@ namespace Compiler
 	public abstract class Property : ISemanticCheckValue
 	{
 		private bool assigned;
+		private int declarationRow;
 
-		public Property (bool assigned = false)
+		public Property (int declarationRow = int.MaxValue, bool assigned = false)
 		{
 			this.assigned = assigned;
+			this.declarationRow = declarationRow;
 		}
 
 		public abstract TokenType GetTokenType ();	// returns the token type of the property
 
-		bool Assigned {
+		public bool Assigned {
 			get { return assigned; }
 			set { this.assigned = value; }
+		}
+
+		public int DeclarationRow
+		{
+			get { return this.declarationRow; }
 		}
 
 		public Property asProperty ()

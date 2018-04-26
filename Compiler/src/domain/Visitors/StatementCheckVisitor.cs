@@ -43,8 +43,21 @@ namespace Compiler
 			TokenType varEval = node.IDNode.EvaluationType;
 			TokenType exprEval = node.AssignValueExpression.EvaluationType;
 
+			bool assignable = node.IDNode.EvaluationType != TokenType.ERROR;
+			Property varProperty = node.Scope.GetProperty (node.IDNode.ID);
+
+			if (varProperty.DeclarationRow > node.Token.Row) {
+				analyzer.notifyError(new UndeclaredVariableError(node.IDNode));
+				assignable = false;
+			}
+
 			if (!LegitOperationChecker.isAssignCompatible (varEval, exprEval)) {
 				analyzer.notifyError(new IllegalAssignmentError(node));
+				assignable = false;
+			}
+
+			if (assignable) {
+				varProperty.Assigned = true;
 			}
 
 			return voidProperty;
@@ -114,6 +127,7 @@ namespace Compiler
 
 			if (prop.GetTokenType () == TokenType.ERROR) {
 				analyzer.notifyError (new UninitializedVariableError (node));
+				node.SetEvaluationType (TokenType.ERROR);
 				return voidProperty;
 			}
 

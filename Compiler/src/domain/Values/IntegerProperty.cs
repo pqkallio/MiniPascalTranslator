@@ -7,6 +7,10 @@ namespace Compiler
 	/// </summary>
 	public class IntegerProperty : Property
 	{
+		public IntegerProperty(int declarationRow = int.MaxValue)
+			: base(declarationRow)
+		{}
+
 		public override TokenType GetTokenType ()
 		{
 			return TokenType.INTEGER_VAL;

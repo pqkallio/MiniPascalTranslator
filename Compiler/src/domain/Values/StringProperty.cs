@@ -7,6 +7,10 @@ namespace Compiler
 	/// </summary>
 	public class StringProperty : Property
 	{
+		public StringProperty(int declarationRow = int.MaxValue)
+			: base(declarationRow)
+		{}
+
 		public override TokenType GetTokenType ()
 		{
 			return TokenType.STRING_VAL;

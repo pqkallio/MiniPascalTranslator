@@ -146,5 +146,6 @@
     <Compile Include="src\domain\Errors\NotAValidFunctionError.cs" />
     <Compile Include="src\domain\Errors\InvalidArgumentCountError.cs" />
     <Compile Include="src\domain\Errors\InvalidArgumentError.cs" />
+    <Compile Include="src\domain\Errors\UndeclaredVariableError.cs" />
   </ItemGroup>
 </Project>

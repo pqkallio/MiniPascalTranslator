@@ -9,25 +9,18 @@ namespace Compiler
 		private Dictionary<string, Property> symbolTable;
 		private List<Scope> childScopes;
 
-		public Scope (Scope parentScope=null)
+		public Scope (Scope parentScope = null)
 		{
 			this.parentScope = parentScope;
 			this.symbolTable = new Dictionary<string, Property> ();
 			this.childScopes = new List<Scope> ();
 		}
 
-		public bool ContainsKey (string key)
+		public bool ContainsKey (string key, bool searchAncestors = true)
 		{
-			Scope scope = this;
+			Property prop = GetProperty (key, searchAncestors);
 
-			while (scope != null) {
-				if (symbolTable.ContainsKey (key)) {
-					return true;
-				}
-				scope = scope.ParentScope;
-			}
-
-			return false;
+			return prop.GetTokenType () != TokenType.ERROR;
 		}
 
 		public bool TypeMatch (string key, TokenType type)
@@ -46,15 +39,22 @@ namespace Compiler
 			symbolTable.Add (key, property);
 		}
 
-		public Property GetProperty (string key)
+		public Property GetProperty (string key, bool searchAncestors = true)
 		{
-			Scope scope = this;
+			if (symbolTable.ContainsKey (key)) {
+				return symbolTable[key];
+			}
 
-			while (scope != null) {
-				if (symbolTable.ContainsKey (key)) {
-					return symbolTable[key];
+			if (searchAncestors) {
+				Scope scope = parentScope;
+
+				while (scope != null) {
+					if (scope.symbolTable.ContainsKey (key)) {
+						return scope.symbolTable[key];
+					}
+
+					scope = scope.ParentScope;
 				}
-				scope = scope.ParentScope;
 			}
 
 			return new ErrorProperty ();

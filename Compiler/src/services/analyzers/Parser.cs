@@ -101,6 +101,8 @@ namespace Compiler
 						this.programScope = new Scope(); // first we create the program's scope
 						
 						Token programIdToken = GetNextToken ();
+						// MUST CHECK FOR RESERVED KEYWORDS AS WELL!!!!!!!!!!!
+						// CAN'T USE MATCH!!!!!!!!!!!
 						match(programIdToken, TokenType.ID); // check the program has a valid id
 						
 						syntaxTree.ProgramName = programIdToken.Value; // save the program's id
@@ -171,7 +173,7 @@ namespace Compiler
 				// first check that the program scope hasn't got a function or procedure with the same name
 				// declared already
 				if (expectDeclared (idNode, programScope, false)) {
-					programScope.AddProperty (idNode.ID.ToLower(), new FunctionProperty ());
+					programScope.AddProperty (idNode.ID.ToLower(), new FunctionProperty (token.Row));
 				}
 
 				match(GetNextToken(), TokenType.PARENTHESIS_LEFT);
@@ -365,7 +367,7 @@ namespace Compiler
 				Scope newScope = scope.AddChildScope ();
 				Token token = GetNextToken ();
 				List<StatementNode> statements = new List<StatementNode> ();
-				ParseStatements (token, scope, statements);
+				ParseStatements (token, newScope, statements);
 
 				if (SyntaxTreeBuilt) {
 					return new BlockNode (token, newScope, nameFactory, statements);
@@ -391,15 +393,19 @@ namespace Compiler
 				case TokenType.IF:
 				case TokenType.WHILE_LOOP:
 				case TokenType.VAR:
+				try {
 					statement = ParseStatement (scope, token);
-					break;
+					statements.Add (statement);
+				} catch (UnexpectedTokenException ex) {
+					FastForwardToStatementEnd (ex);
+				}
+				break;
 				case TokenType.END:
 					return;
 				default:
 					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_STATEMENTS);
 			}
 
-			statements.Add (statement);
 			Token nextToken = GetNextToken ();
 
 			switch (nextToken.Type) {
@@ -513,21 +519,21 @@ namespace Compiler
 
 				if (expectDeclared (idNode, scope, false)) {
 					switch (type.PropertyType) {
-					case TokenType.TYPE_INTEGER:
-						scope.AddProperty (id, new IntegerProperty ());
-						break;
-					case TokenType.TYPE_STRING:
-						scope.AddProperty (id, new StringProperty ());
-						break;
-					case TokenType.TYPE_BOOLEAN:
-						scope.AddProperty (id, new BooleanProperty ());
-						break;
-					case TokenType.TYPE_REAL:
-						scope.AddProperty (id, new RealProperty ());
-						break;
-					case TokenType.TYPE_ARRAY:
-						scope.AddProperty (id, new ArrayProperty(type.ArrayElementType));
-						break;
+						case TokenType.TYPE_INTEGER:
+							scope.AddProperty (id, new IntegerProperty (token.Row));
+							break;
+						case TokenType.TYPE_STRING:
+							scope.AddProperty (id, new StringProperty (token.Row));
+							break;
+						case TokenType.TYPE_BOOLEAN:
+							scope.AddProperty (id, new BooleanProperty (token.Row));
+							break;
+						case TokenType.TYPE_REAL:
+							scope.AddProperty (id, new RealProperty (token.Row));
+							break;
+						case TokenType.TYPE_ARRAY:
+							scope.AddProperty (id, new ArrayProperty(type.ArrayElementType, declarationRow: token.Row));
+							break;
 					}
 				}
 			}
@@ -675,8 +681,13 @@ namespace Compiler
 		}
 
 		private TokenType idType(TokenType type) {
-			if (type == TokenType.ID || (ScannerConstants.RESERVED_SEQUENCES.ContainsValue (type) && !ScannerConstants.KEYWORDS.ContainsValue (type))) {
-				return TokenType.ID;
+			if (type == TokenType.ID) {
+				return type;
+			}
+			if (ScannerConstants.RESERVED_SEQUENCES.ContainsValue (type)) {
+				if (!ScannerConstants.KEYWORDS.ContainsValue (type)) {
+					return TokenType.ID;
+				}
 			}
 
 			return type;
@@ -1134,7 +1145,7 @@ namespace Compiler
 			Token token = idToken == null ? GetNextToken () : idToken;
 			TokenType type = idType (token.Type);
 
-			switch (token.Type) {
+			switch (type) {
 				case TokenType.ID:
 					if (SyntaxTreeBuilt) {
 						return nodeBuilder.CreateIdNode (token, scope);
@@ -1212,7 +1223,7 @@ namespace Compiler
 				syntaxTreeBuilt = false;
 
 				if (expected) {
-					notifyError (new UninitializedVariableError (idNode));
+					notifyError (new UndeclaredVariableError (idNode));
 				} else {
 					notifyError (new DeclarationError (idNode));
 				}
