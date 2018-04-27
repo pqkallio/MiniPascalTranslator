@@ -11,12 +11,12 @@ namespace CompilerTests
 
 		public static readonly Dictionary<string[], TokenType> singleTokens = new Dictionary<string[], TokenType> ()
 		{
-			{new[] {"var"}, TokenType.VAR},
-			{new[] {"false"}, TokenType.BOOLEAN_VAL_FALSE},
-			{new[] {"true"}, TokenType.BOOLEAN_VAL_TRUE},
-			{new[] {"end"}, TokenType.END},
-			{new[] {"integer"}, TokenType.TYPE_INTEGER},
-			{new[] {"do"}, TokenType.DO_WHILE},
+			{new[] {"Var"}, TokenType.VAR},
+			{new[] {"FALSE"}, TokenType.BOOLEAN_VAL_FALSE},
+			{new[] {"tRuE"}, TokenType.BOOLEAN_VAL_TRUE},
+			{new[] {"eNd"}, TokenType.END},
+			{new[] {"integeR"}, TokenType.TYPE_INTEGER},
+			{new[] {"DO"}, TokenType.DO_WHILE},
 			{new[] {"read"}, TokenType.READ},
 			{new[] {"writeln"}, TokenType.WRITELN},
 			{new[] {"string"}, TokenType.TYPE_STRING},

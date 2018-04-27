@@ -22,7 +22,7 @@ namespace Compiler
 			{"read", TokenType.READ},
 			{"writeln", TokenType.WRITELN},
 			{"string", TokenType.TYPE_STRING},
-			{"Boolean", TokenType.TYPE_BOOLEAN},
+			{"boolean", TokenType.TYPE_BOOLEAN},
 			{"assert", TokenType.ASSERT},
 			{"size", TokenType.SIZE},
 			{"array", TokenType.TYPE_ARRAY},

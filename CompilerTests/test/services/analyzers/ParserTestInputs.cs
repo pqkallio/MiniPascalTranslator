@@ -412,13 +412,13 @@ namespace CompilerTests
 
 		public static string[] doubleDeclarationWithinScope {
 			get {
-				return null;
+				return assembleProgramCode (null, new [] {"var x : integer;\n", "var x : string;\n"});
 			}
 		}
 
 		public static string[] doubleDeclarationNestedScopes {
 			get {
-				return null;
+				return assembleProgramCode (null, new [] {"var x : integer;\n"}.Concat(assembleBlock (new [] {"var x : string;\n"})).ToArray ());
 			}
 		}
 	}

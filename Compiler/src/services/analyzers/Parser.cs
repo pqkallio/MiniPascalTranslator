@@ -517,7 +517,7 @@ namespace Compiler
 			foreach (VariableIdNode idNode in ids) {
 				string id = idNode.ID.ToLower ();
 
-				if (expectDeclared (idNode, scope, false)) {
+				if (expectDeclared (idNode, scope, false, false)) {
 					switch (type.PropertyType) {
 						case TokenType.TYPE_INTEGER:
 							scope.AddProperty (id, new IntegerProperty (token.Row));
@@ -1012,7 +1012,7 @@ namespace Compiler
 			case TokenType.BOOLEAN_VAL_FALSE:
 			case TokenType.BOOLEAN_VAL_TRUE:
 			case TokenType.REAL_VAL:
-				evaluee = ParseLiteral (token);
+				evaluee = ParseLiteral (scope, token);
 				break;
 			case TokenType.PARENTHESIS_LEFT:
 				evaluee = ParseExpression (scope);
@@ -1033,8 +1033,9 @@ namespace Compiler
 			return null;
 		}
 
-		private Evaluee ParseLiteral (Token token)
+		private Evaluee ParseLiteral (Scope scope, Token token)
 		{
+			// etsi scopesta mahdolliset avainsaoja vastaavat muuttujat
 			switch (token.Type) {
 			case TokenType.STRING_VAL:
 				return nodeBuilder.CreateStringValueNode (token);
@@ -1217,9 +1218,9 @@ namespace Compiler
 			}
 		}
 
-		private bool expectDeclared (VariableIdNode idNode, Scope scope, bool expected = true)
+		private bool expectDeclared (VariableIdNode idNode, Scope scope, bool expected = true, bool searchAncestors = true)
 		{
-			if (scope.ContainsKey (idNode.ID) != expected) {
+			if (scope.ContainsKey (idNode.ID, searchAncestors) != expected) {
 				syntaxTreeBuilt = false;
 
 				if (expected) {

@@ -193,7 +193,7 @@ namespace Compiler
 				}
 			}
 
-			string val = sb.ToString ();
+			string val = sb.ToString ().ToLower ();
 
 			if (ScannerConstants.RESERVED_SEQUENCES.ContainsKey (val)) {						// if the value is a reserved 
 				token.Type = ScannerConstants.RESERVED_SEQUENCES [val];						// else, we set the type to match the keyword

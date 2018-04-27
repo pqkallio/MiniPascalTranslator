@@ -612,6 +612,24 @@ namespace CompilerTests
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, ScannerConstants.KEYWORDS.Count);
 		}
+
+		[Test]
+		public void TestDoubleDeclarationWithinScope ()
+		{
+			InitParser (ParserTestInputs.doubleDeclarationWithinScope);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void TestDoubleDeclarationNestedScopes ()
+		{
+			InitParser (ParserTestInputs.doubleDeclarationNestedScopes);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
 	}
 }
 
