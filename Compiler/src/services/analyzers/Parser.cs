@@ -584,12 +584,30 @@ namespace Compiler
 				case TokenType.ID:
 					VariableIdNode idNode = ParseVarId (scope, token);
 					ids.Add (idNode);
-					ParseIdsToDeclare (ids, scope);
+					ParseIdDelimiter (ids, scope);
 					break;
+				default:
+					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_DECLARATION);
+			}
+		}
+
+		private void ParseIdDelimiter (List<VariableIdNode> ids, Scope scope)
+		{
+			Token token = GetNextToken ();
+
+			switch (token.Type) {
 				case TokenType.COMMA:
+					Token next = GetNextToken ();
+					if (idType (next.Type) != TokenType.ID) {
+						notifyError (new SyntaxError (token, TokenType.ID, message: ErrorConstants.DANGLING_COMMA_ERROR_MSG));
+					}
+					bufferedToken = next;
 					ParseIdsToDeclare (ids, scope);
 					break;
 				case TokenType.SET_TYPE:
+					if (ids.Count == 0) {
+						notifyError(new SyntaxError(token, TokenType.ID, message: ErrorConstants.NO_IDS_TO_DECLARE_ERROR_MSG));
+					}
 					break;
 				default:
 					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_DECLARATION);

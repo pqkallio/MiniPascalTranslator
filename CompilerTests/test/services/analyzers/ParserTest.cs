@@ -923,9 +923,6 @@ namespace CompilerTests
 			InitParser (ParserTestInputs.procedureParamsMissingSetTypeColon);
 			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
-			foreach (Error e in parser.getErrors()) {
-				Console.WriteLine (e);
-			}
 			Assert.AreEqual (parser.getErrors ().Count, 1);
 		}
 
@@ -947,9 +944,117 @@ namespace CompilerTests
 			InitParser (ParserTestInputs.procedureParamsMissingType);
 			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void VarDeclarationMissingVarKeyword ()
+		{
+			InitParser (ParserTestInputs.varDeclarationMissingVar);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void VarDeclarationMissingId ()
+		{
+			InitParser (ParserTestInputs.varDeclarationMissingId);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void VarDeclarationMissingSetTypeColon ()
+		{
+			InitParser (ParserTestInputs.varDeclarationMissingSetTypeColon);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void VarDeclarationMissingSetTypeColonAndType ()
+		{
+			InitParser (ParserTestInputs.varDeclarationMissingSetTypeColonAndType);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void VarDeclarationMissingType ()
+		{
+			InitParser (ParserTestInputs.varDeclarationMissingType);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			foreach (Error e in parser.getErrors()) {
 				Console.WriteLine (e);
 			}
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void VarDeclarationMissingEndStatement ()
+		{
+			InitParser (ParserTestInputs.varDeclarationMissingEndStatement);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void VarDeclarationMissingComma ()
+		{
+			InitParser (ParserTestInputs.varDeclarationMissingComma);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void VarDeclarationNestedArrayType ()
+		{
+			InitParser (ParserTestInputs.varDeclarationNestedArrayType);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void VarDeclarationIllegalType ()
+		{
+			InitParser (ParserTestInputs.varDeclarationIllegalType);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void VarDeclarationArrayTypeMissingBrackets ()
+		{
+			InitParser (ParserTestInputs.varDeclarationArrayTypeMissingBrackets);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void VarDeclarationArrayTypeMissingOfKeyword ()
+		{
+			InitParser (ParserTestInputs.varDeclarationArrayTypeMissingOfKeyword);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void VarDeclarationArrayTypeIllegalElementType ()
+		{
+			InitParser (ParserTestInputs.varDeclarationArrayTypeIllegalElementType);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 1);
 		}
 	}

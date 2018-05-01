@@ -44,6 +44,8 @@ namespace Compiler
 		public static readonly string NOT_A_VALID_FUNCTION_ERROR_MSG = "the identifier doesn't point to a valid function";
 		public static readonly string INVALID_ARG_COUNT_ERROR_MSG = "the amount of arguments given doesn't match with the amount requested";
 		public static readonly string UNDECLARED_VARIABLE_ERROR_MSG = "the variable has not been declared yet";
+		public static readonly string NO_IDS_TO_DECLARE_ERROR_MSG = "the 'var' keyword must be followed by a comma separated list of one or more identifiers";
+		public static readonly string DANGLING_COMMA_ERROR_MSG = "a comma should must be followed by an identifier";
 
 		public static string INVALID_RETURN_VALUE_MSG(ReturnStatement node, TokenType requiredType)
 		{

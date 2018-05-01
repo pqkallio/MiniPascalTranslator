@@ -18,8 +18,8 @@ namespace Compiler
 			: this(token, expectedType, null)
 		{}
 
-		public SyntaxError (Token token, TokenType expectedType, string[] expectationSet) 
-			: base(ErrorConstants.SYNTAX_ERROR_TITLE, ErrorConstants.SYNTAX_ERROR_MESSAGE, token)
+		public SyntaxError (Token token, TokenType expectedType = TokenType.UNDEFINED, string[] expectationSet = null, string message = null) 
+			: base(ErrorConstants.SYNTAX_ERROR_TITLE, message == null ? ErrorConstants.SYNTAX_ERROR_MESSAGE : message, token)
 		{
 			this.expectedType = expectedType;
 			this.expectationSet = expectationSet;

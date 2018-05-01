@@ -634,6 +634,90 @@ namespace CompilerTests
 				return assembleProgramCode (new[] {"procedure fofo (var coco : integer);\n"});
 			}
 		}
+
+		public static string[] varDeclarationMissingVar
+		{
+			get {
+				return assembleProgramCode (null, new[] {"fofo : integer;\n"});
+			}
+		}
+
+		public static string[] varDeclarationMissingId
+		{
+			get {
+				return assembleProgramCode (null, new[] {"var : integer;\n"});
+			}
+		}
+
+		public static string[] varDeclarationMissingSetTypeColon
+		{
+			get {
+				return assembleProgramCode (null, new[] {"var fofo  integer;\n"});
+			}
+		}
+
+		public static string[] varDeclarationMissingType
+		{
+			get {
+				return assembleProgramCode (null, new[] {"var babs :;\n"});
+			}
+		}
+
+		public static string[] varDeclarationMissingSetTypeColonAndType
+		{
+			get {
+				return assembleProgramCode (null, new[] {"var fofo;\n"});
+			}
+		}
+
+		public static string[] varDeclarationMissingEndStatement
+		{
+			get {
+				return assembleProgramCode (null, new[] {"var fofo : real\n"});
+			}
+		}
+
+		public static string[] varDeclarationMissingComma
+		{
+			get {
+				return assembleProgramCode (null, new[] {"var fofo baba : real;\n"});
+			}
+		}
+
+		public static string[] varDeclarationIllegalType
+		{
+			get {
+				return assembleProgramCode (null, new[] {"var fofo : regal;\n"});
+			}
+		}
+
+		public static string[] varDeclarationArrayTypeMissingBrackets
+		{
+			get {
+				return assembleProgramCode (null, new[] {"var fofo : array of string;\n"});
+			}
+		}
+
+		public static string[] varDeclarationArrayTypeMissingOfKeyword
+		{
+			get {
+				return assembleProgramCode (null, new[] {"var fofo : array[5] string;\n"});
+			}
+		}
+
+		public static string[] varDeclarationArrayTypeIllegalElementType
+		{
+			get {
+				return assembleProgramCode (null, new[] {"var fofo : array[5] of strnig;\n"});
+			}
+		}
+
+		public static string[] varDeclarationNestedArrayType
+		{
+			get {
+				return assembleProgramCode (null, new[] {"var fofo : array[5] of array[3] of string;\n"});
+			}
+		}
 	}
 }
 
