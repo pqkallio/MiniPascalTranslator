@@ -421,6 +421,219 @@ namespace CompilerTests
 				return assembleProgramCode (null, new [] {"var x : integer;\n"}.Concat(assembleBlock (new [] {"var x : string;\n"})).ToArray ());
 			}
 		}
+
+		public static readonly string[] programMissingId = new[]
+		{
+			"program;\n",
+			"end ."
+		};
+
+		public static readonly string[] programMissingProgramKeyword = new[]
+		{
+			"banana;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] programMissingEndKeyword = new[]
+		{
+			"program banana;\n",
+			".\n"
+		};
+
+		public static readonly string[] programMissingColonInHeader = new[]
+		{
+			"program banana\n",
+			"end .\n"
+		};
+
+		public static readonly string[] programMissingLastDot = new[]
+		{
+			"program banana;\n",
+			"end \n"
+		};
+
+		public static string[] functionMissingFunctionKeyword
+		{
+			get {
+				return assembleProgramCode (new[] {"fofo() : string;\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] functionMissingId
+		{
+			get {
+				return assembleProgramCode (new[] {"function () : string;\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] functionMissingParams
+		{
+			get {
+				return assembleProgramCode (new[] {"function fofo : string;\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] functionParamsMissingLeftParenthesis
+		{
+			get {
+				return assembleProgramCode (new[] {"function fofo var coco : integer) : string;\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] functionParamsMissingRightParenthesis
+		{
+			get {
+				return assembleProgramCode (new[] {"function fofo (var coco : integer : string;\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] functionParamsMissingSetTypeColon
+		{
+			get {
+				return assembleProgramCode (new[] {"function fofo (var coco integer) : string;\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] functionParamsMissingType
+		{
+			get {
+				return assembleProgramCode (new[] {"function fofo (var coco :) : string;\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] functionParamsMissingSetTypeColonAndType
+		{
+			get {
+				return assembleProgramCode (new[] {"function fofo (var coco) : string;\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] functionParamsMissingComma
+		{
+			get {
+				return assembleProgramCode (new[] {"function fofo (var coco : integer var it : real) : string;\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] functionParamsMissingReturnTypeColon
+		{
+			get {
+				return assembleProgramCode (new[] {"function fofo (var coco : integer)  string;\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] functionParamsMissingReturnType
+		{
+			get {
+				return assembleProgramCode (new[] {"function fofo (var coco : integer) :;\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] functionParamsMissingReturnTypeColonAndReturnType
+		{
+			get {
+				return assembleProgramCode (new[] {"function fofo (var coco : integer);\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] functionHeaderMissingEndStatement
+		{
+			get {
+				return assembleProgramCode (new[] {"function fofo (var coco : integer) : integer\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] functionMissingBlock
+		{
+			get {
+				return assembleProgramCode (new[] {"function fofo (var coco : integer) : integer;\n"});
+			}
+		}
+
+		// PROCEDURES
+		public static string[] procedureMissingProcedureKeyword
+		{
+			get {
+				return assembleProgramCode (new[] {"fofo();\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] procedureMissingId
+		{
+			get {
+				return assembleProgramCode (new[] {"procedure ();\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] procedureMissingParams
+		{
+			get {
+				return assembleProgramCode (new[] {"procedure fofo;\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] procedureParamsMissingLeftParenthesis
+		{
+			get {
+				return assembleProgramCode (new[] {"procedure fofo var coco : integer);\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] procedureParamsMissingRightParenthesis
+		{
+			get {
+				return assembleProgramCode (new[] {"procedure fofo (var coco : integer;\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] procedureParamsMissingSetTypeColon
+		{
+			get {
+				return assembleProgramCode (new[] {"procedure fofo (var coco integer);\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] procedureParamsMissingType
+		{
+			get {
+				return assembleProgramCode (new[] {"procedure fofo (var coco :);\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] procedureParamsMissingSetTypeColonAndType
+		{
+			get {
+				return assembleProgramCode (new[] {"procedure fofo (var coco);\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] procedureParamsMissingComma
+		{
+			get {
+				return assembleProgramCode (new[] {"procedure fofo (var coco : integer var it : real);\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] procedureHasReturnType
+		{
+			get {
+				return assembleProgramCode (new[] {"procedure fofo (var coco : integer) : integer;\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] procedureHeaderMissingEndStatement
+		{
+			get {
+				return assembleProgramCode (new[] {"procedure fofo (var coco : integer)\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] procedureMissingBlock
+		{
+			get {
+				return assembleProgramCode (new[] {"procedure fofo (var coco : integer);\n"});
+			}
+		}
 	}
 }
 

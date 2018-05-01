@@ -630,6 +630,328 @@ namespace CompilerTests
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
+
+		[Test]
+		public void ProgramMissingId ()
+		{
+			InitParser (ParserTestInputs.programMissingId);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void ProgramMissingProgramKeyword ()
+		{
+			InitParser (ParserTestInputs.programMissingProgramKeyword);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void ProgramMissingEndKeyword ()
+		{
+			InitParser (ParserTestInputs.programMissingEndKeyword);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void ProgramMissingColonInHeader ()
+		{
+			InitParser (ParserTestInputs.programMissingColonInHeader);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void ProgramMissingLasDot ()
+		{
+			InitParser (ParserTestInputs.programMissingLastDot);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void FunctionMissingFunctionKeyword ()
+		{
+			InitParser (ParserTestInputs.functionMissingFunctionKeyword);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void FunctionMissingId ()
+		{
+			InitParser (ParserTestInputs.functionMissingId);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void FunctionMissingParams ()
+		{
+			InitParser (ParserTestInputs.functionMissingParams);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void FunctionParamsMissingLeftParenthesis ()
+		{
+			InitParser (ParserTestInputs.functionParamsMissingLeftParenthesis);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void FunctionParamsMissingRightParenthesis ()
+		{
+			InitParser (ParserTestInputs.functionParamsMissingRightParenthesis);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void FunctionParamsMissingSetTypeColon ()
+		{
+			InitParser (ParserTestInputs.functionParamsMissingSetTypeColon);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void FunctionParamsMissingType ()
+		{
+			InitParser (ParserTestInputs.functionParamsMissingType);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void FunctionParamsMissingSetTypeColonAndType ()
+		{
+			InitParser (ParserTestInputs.functionParamsMissingSetTypeColonAndType);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void FunctionParamsMissingComma ()
+		{
+			InitParser (ParserTestInputs.functionParamsMissingComma);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void FunctionParamsMissingReturnTypeColon ()
+		{
+			InitParser (ParserTestInputs.functionParamsMissingReturnTypeColon);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void FunctionParamsMissingReturnType ()
+		{
+			InitParser (ParserTestInputs.functionParamsMissingReturnType);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void FunctionParamsMissingReturnTypeColonAndReturnType ()
+		{
+			InitParser (ParserTestInputs.functionParamsMissingReturnTypeColonAndReturnType);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void FunctionHeaderMissingEndStatement ()
+		{
+			InitParser (ParserTestInputs.functionHeaderMissingEndStatement);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error e in parser.getErrors()) {
+				Console.WriteLine (e);
+			}
+			Assert.AreNotEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void FunctionMissingBlock ()
+		{
+			InitParser (ParserTestInputs.functionMissingBlock);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error e in parser.getErrors()) {
+				Console.WriteLine (e);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 2);
+		}
+
+		// PROCEDURES
+		[Test]
+		public void ProcedureMissingBlock ()
+		{
+			InitParser (ParserTestInputs.procedureMissingBlock);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error e in parser.getErrors()) {
+				Console.WriteLine (e);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 2);
+		}
+
+		[Test]
+		public void ProcedureHasReturnType ()
+		{
+			InitParser (ParserTestInputs.procedureHasReturnType);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error e in parser.getErrors()) {
+				Console.WriteLine (e);
+			}
+			Assert.AreNotEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void ProcedureHeaderMissingEndStatement ()
+		{
+			InitParser (ParserTestInputs.procedureHeaderMissingEndStatement);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error e in parser.getErrors()) {
+				Console.WriteLine (e);
+			}
+			Assert.AreNotEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void ProcedureMissingId ()
+		{
+			InitParser (ParserTestInputs.procedureMissingId);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error e in parser.getErrors()) {
+				Console.WriteLine (e);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void ProcedureMissingParams ()
+		{
+			InitParser (ParserTestInputs.procedureMissingParams);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error e in parser.getErrors()) {
+				Console.WriteLine (e);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void ProcedureMissingProcedureKeyword ()
+		{
+			InitParser (ParserTestInputs.procedureMissingProcedureKeyword);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error e in parser.getErrors()) {
+				Console.WriteLine (e);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void ProcedureParamsMissingComma ()
+		{
+			InitParser (ParserTestInputs.procedureParamsMissingComma);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error e in parser.getErrors()) {
+				Console.WriteLine (e);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void ProcedureParamsMissingLeftParenthesis ()
+		{
+			InitParser (ParserTestInputs.procedureParamsMissingLeftParenthesis);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error e in parser.getErrors()) {
+				Console.WriteLine (e);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void ProcedureParamsMissingRightParenthesis ()
+		{
+			InitParser (ParserTestInputs.procedureParamsMissingRightParenthesis);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error e in parser.getErrors()) {
+				Console.WriteLine (e);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void ProcedureParamsMissingSetTypeColon ()
+		{
+			InitParser (ParserTestInputs.procedureParamsMissingSetTypeColon);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error e in parser.getErrors()) {
+				Console.WriteLine (e);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void ProcedureParamsMissingSetTypeColonAndType ()
+		{
+			InitParser (ParserTestInputs.procedureParamsMissingSetTypeColonAndType);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error e in parser.getErrors()) {
+				Console.WriteLine (e);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void ProcedureParamsMissingType ()
+		{
+			InitParser (ParserTestInputs.procedureParamsMissingType);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			foreach (Error e in parser.getErrors()) {
+				Console.WriteLine (e);
+			}
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
 	}
 }
 

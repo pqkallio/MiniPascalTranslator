@@ -127,6 +127,9 @@ namespace Compiler
 					}
 
 					break;
+				default:
+					notifyError (new SyntaxError (token, TokenType.PROGRAM));
+					break;
 			}
 
 			// if something went wrong, return null instead of a valid node
@@ -187,10 +190,16 @@ namespace Compiler
 					match(GetNextToken(), TokenType.SET_TYPE);
 					ParseType (idNode);
 				}
-
+			} catch (UnexpectedTokenException ex) {
+				FastForwardToStatementEnd (ex);
+			}
+				
+			try {
 				match(GetNextToken(), TokenType.END_STATEMENT);
 			} catch (UnexpectedTokenException ex) {
 				FastForwardToStatementEnd (ex);
+				notifyError (new SyntaxError (ex.Token, ex.ExpectedType, ex.ExpectationSet));
+				match(GetNextToken(), TokenType.END_STATEMENT);
 			}
 
 			try {
@@ -1002,6 +1011,7 @@ namespace Compiler
 		private FactorMain ParseFactorMain (Scope scope, Token token)
 		{
 			Evaluee evaluee = null;
+
 			switch (token.Type) {
 			case TokenType.ID:
 				VariableIdNode idNode = ParseVarId (scope, token);
@@ -1272,6 +1282,8 @@ namespace Compiler
 			while (!tokenTypes.ContainsKey(token.Type)) {
 				token = GetNextToken ();
 			}
+
+			bufferedToken = token;
 		}
 
 		/// <summary>
