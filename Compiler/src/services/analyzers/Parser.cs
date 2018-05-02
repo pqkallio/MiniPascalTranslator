@@ -1029,6 +1029,11 @@ namespace Compiler
 		private FactorMain ParseFactorMain (Scope scope, Token token)
 		{
 			Evaluee evaluee = null;
+			TokenType possibleId = idType (token.Type);
+
+			if (possibleId == TokenType.ID && scope.ContainsKey (token.Value)) {
+				token.Type = TokenType.ID;
+			}
 
 			switch (token.Type) {
 			case TokenType.ID:

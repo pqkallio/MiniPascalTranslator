@@ -718,6 +718,75 @@ namespace CompilerTests
 				return assembleProgramCode (null, new[] {"var fofo : array[5] of array[3] of string;\n"});
 			}
 		}
+
+		public static string[] blockNotEnded
+		{
+			get {
+				return assembleProgramCode (null, new[] {"begin\n"});
+			}
+		}
+
+		public static string[] blockNotBegun
+		{
+			get {
+				return assembleProgramCode (null, new[] {"end;\n"});
+			}
+		}
+
+		public static string[] blockEndWithoutEndStatement
+		{
+			get {
+				return assembleProgramCode (null, new[] {"begin\n", "end\n"});
+			}
+		}
+
+		public static string[] idIsNotAStatement {
+			get {
+				return assembleProgramCode (null, new[] {"idid;\n"});
+			}
+		}
+
+		public static string[] arrayAccessorIsNotAStatement {
+			get {
+				return assembleProgramCode (null, new[] {"idid[3];\n"});
+			}
+		}
+
+		public static string[] assignmentMissingAssignmentSymbol1 {
+			get {
+				return assembleProgramCode (null, new[] {"idid[3] 4;\n"});
+			}
+		}
+
+		public static string[] assignmentMissingAssignmentSymbol2 {
+			get {
+				return assembleProgramCode (null, new[] {"idid 4;\n"});
+			}
+		}
+
+		public static string[] assignmentMissingAssignee1 {
+			get {
+				return assembleProgramCode (null, new[] {"idid[3] := ;\n"});
+			}
+		}
+
+		public static string[] assignmentMissingAssignee2 {
+			get {
+				return assembleProgramCode (null, new[] {"idid := ;\n"});
+			}
+		}
+
+		public static string[] assignmentMissingArrayAccessorExpression {
+			get {
+				return assembleProgramCode (null, new[] {"idid[] := 4;\n"});
+			}
+		}
+
+		public static string[] assigneeMissingArrayAccessorExpression {
+			get {
+				return assembleProgramCode (null, new[] {"idid := baba[];\n"});
+			}
+		}
 	}
 }
 

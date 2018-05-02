@@ -989,9 +989,6 @@ namespace CompilerTests
 			InitParser (ParserTestInputs.varDeclarationMissingType);
 			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
-			foreach (Error e in parser.getErrors()) {
-				Console.WriteLine (e);
-			}
 			Assert.AreEqual (parser.getErrors ().Count, 1);
 		}
 
@@ -1057,6 +1054,107 @@ namespace CompilerTests
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 1);
 		}
+
+		[Test]
+		public void BlockNotBegun ()
+		{
+			InitParser (ParserTestInputs.blockNotBegun);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void BlockNotEnded ()
+		{
+			InitParser (ParserTestInputs.blockNotEnded);
+			parser.Parse ();
+			foreach (Error e in parser.getErrors()) {
+				Console.WriteLine (e);
+			}
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreNotEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void BlockEndWithoutEndStatement ()
+		{
+			InitParser (ParserTestInputs.blockEndWithoutEndStatement);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 0);
+		}
+
+		[Test]
+		public void idIsNotAStatement ()
+		{
+			InitParser (ParserTestInputs.idIsNotAStatement);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void arrayAccessorIsNotAStatement ()
+		{
+			InitParser (ParserTestInputs.arrayAccessorIsNotAStatement);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void assignmentMissingAssignmentSymbol1 ()
+		{
+			InitParser (ParserTestInputs.assignmentMissingAssignmentSymbol1);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void assignmentMissingAssignmentSymbol2 ()
+		{
+			InitParser (ParserTestInputs.assignmentMissingAssignmentSymbol2);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void assignmentMissingAssignee1 ()
+		{
+			InitParser (ParserTestInputs.assignmentMissingAssignee1);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void assignmentMissingAssignee2 ()
+		{
+			InitParser (ParserTestInputs.assignmentMissingAssignee2);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void assignmentMissingArrayAccessorExpression ()
+		{
+			InitParser (ParserTestInputs.assignmentMissingArrayAccessorExpression);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void assigneeMissingArrayAccessorExpression ()
+		{
+			InitParser (ParserTestInputs.assigneeMissingArrayAccessorExpression);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
 	}
 }
-
