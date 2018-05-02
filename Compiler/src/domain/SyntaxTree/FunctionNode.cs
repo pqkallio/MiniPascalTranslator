@@ -7,6 +7,7 @@ namespace Compiler
 		private BlockNode block;
 		private ParametersNode parameters;
 		private TokenType returnType;
+		private VariableIdNode idNode;
 
 		public FunctionNode (Token token, INameFactory nameFactory, VariableIdNode idNode, ParametersNode parametersNode, BlockNode block, Scope scope)
 			: base(token, nameFactory, scope)
@@ -14,6 +15,7 @@ namespace Compiler
 			this.block = block;
 			this.parameters = parametersNode;
 			this.returnType = idNode.VariableType;
+			this.idNode = idNode;
 		}
 
 		public override ISemanticCheckValue Accept (INodeVisitor visitor)
@@ -35,6 +37,11 @@ namespace Compiler
 		public ParametersNode Parameters
 		{
 			get { return parameters; }
+		}
+
+		public VariableIdNode IDNode
+		{
+			get { return this.idNode; }
 		}
 	}
 }

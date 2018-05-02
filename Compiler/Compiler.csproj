@@ -135,8 +135,6 @@
     <Compile Include="src\domain\SyntaxTree\ArrayAssignStatement.cs" />
     <Compile Include="src\domain\SyntaxTree\StatementNode.cs" />
     <Compile Include="src\domain\SyntaxTree\BooleanNegation.cs" />
-    <Compile Include="src\services\INameFactory.cs" />
-    <Compile Include="src\services\MiniPascalNameFactory.cs" />
     <Compile Include="src\domain\Errors\FunctionDoesntReturnError.cs" />
     <Compile Include="src\domain\Errors\InvalidReturnValueError.cs" />
     <Compile Include="src\utils\LegitOperationChecker.cs" />
@@ -147,5 +145,15 @@
     <Compile Include="src\domain\Errors\InvalidArgumentCountError.cs" />
     <Compile Include="src\domain\Errors\InvalidArgumentError.cs" />
     <Compile Include="src\domain\Errors\UndeclaredVariableError.cs" />
+    <Compile Include="src\domain\Visitors\CTranslationVisitor.cs" />
+    <Compile Include="src\services\translators\ITargetCodeTranslator.cs" />
+    <Compile Include="src\services\translators\SimplifiedCTranslator.cs" />
+    <Compile Include="src\services\translators\name_factories\CNameFactory.cs" />
+    <Compile Include="src\services\translators\name_factories\INameFactory.cs" />
+    <Compile Include="src\services\translators\CTranslatorConstants.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\services\translators\" />
+    <Folder Include="src\services\translators\name_factories\" />
   </ItemGroup>
 </Project>

@@ -59,6 +59,17 @@ namespace Compiler
 			}
 		}
 
+		public TokenType ArrayElementType
+		{
+			get { return arrayElementType; }
+			set { arrayElementType = value; }
+		}
+
+		public ExpressionNode ArraySizeExpression
+		{
+			get { return arraySizeExpression; }
+		}
+
 		public void SetEvaluationType(TokenType type)
 		{
 			evaluationType = type;

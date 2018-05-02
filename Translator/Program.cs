@@ -15,9 +15,35 @@ namespace Translator
 
 			SourceBuffer buf = new SourceBuffer(@args[0]);
 			string[] sourceLines = buf.SourceLines;
+
 			Scanner sc = new Scanner (sourceLines);
 			Parser parser = new Parser (sc);
 			parser.Parse ();
+
+			if (sc.getErrors ().Count == 0 && parser.getErrors ().Count == 0) {
+				SemanticAnalyzer analyzer = new SemanticAnalyzer (parser.SyntaxTree);
+				analyzer.Analyze ();
+
+				if (analyzer.getErrors ().Count == 0) {
+					ITargetCodeTranslator translator = new SimplifiedCTranslator (analyzer.SyntaxTree);
+					List<string> translation = translator.Translate ();
+					foreach (string line in translation) {
+						Console.Write (line);
+					}
+				} else {
+					foreach (Error e in analyzer.getErrors()) {
+						Console.WriteLine(StringFormatter.formatError(e, sourceLines));
+					}
+				}
+			} else {
+				foreach (Error e in sc.getErrors()) {
+					Console.WriteLine(StringFormatter.formatError(e, sourceLines));
+				}
+
+				foreach (Error e in parser.getErrors()) {
+					Console.WriteLine(StringFormatter.formatError(e, sourceLines));
+				}
+			}
 		}
 	}
 }

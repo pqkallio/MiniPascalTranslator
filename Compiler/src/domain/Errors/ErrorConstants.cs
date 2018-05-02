@@ -24,7 +24,7 @@ namespace Compiler
 		public static readonly string SEMANTIC_ERROR_MESSAGE = "undefined semantic error";
 		public static readonly string UNINITIALIZED_VARIABLE_ERROR_MESSAGE = "Uninitialized variable";
 		public static readonly string ILLEGAL_TYPE_ERROR_MESSAGE = "the type is not supported by this expression";
-		public static readonly string ILLEGAL_ASSIGNMENT_ERROR_MESSAGE = "the for-loop's control variable cannot be reassigned inside the loop";
+		public static readonly string ILLEGAL_ASSIGNMENT_ERROR_MESSAGE = "the variable's and the expression's types don't match";
 		public static readonly string ILLEGAL_ARRAY_ELEMENT_TYPE_ERROR_MSG = "arrays can contain only string, integer, real or boolean values";
 		public static readonly string DECLARATION_ERROR_MESSAGE = "the variable has already been declared";
 		public static readonly string INTEGER_OVERFLOW_ERROR_MESSAGE = "integer values must be within a range of -2147483648 to 2147483647 (32-bit integer)";

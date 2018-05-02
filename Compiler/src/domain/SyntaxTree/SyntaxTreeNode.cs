@@ -7,6 +7,7 @@ namespace Compiler
 	{
 		protected Token token;
 		protected string label;
+		protected string location;
 		protected INameFactory labelFactory;
 		protected Scope scope;
 
@@ -16,6 +17,7 @@ namespace Compiler
 			this.labelFactory = labelFactory;
 			this.scope = scope;
 			this.label = null;
+			this.location = null;
 		}
 
 		public abstract ISemanticCheckValue Accept(INodeVisitor visitor);
@@ -27,13 +29,14 @@ namespace Compiler
 
 		public string Label
 		{
-			get {
-				if (label == null && labelFactory != null) {
-					label = labelFactory.GetLabel ();
-				}
+			get { return this.label; }
+			set { this.label = value; }
+		}
 
-				return label;
-			}
+		public string Location
+		{
+			get { return this.location; }
+			set { this.location = value; }
 		}
 
 		public Scope Scope

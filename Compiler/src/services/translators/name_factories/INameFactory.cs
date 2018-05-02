@@ -6,6 +6,7 @@ namespace Compiler
 	{
 		string GetLabel ();
 		string GetTempVarId (Object objet = null);
+		string GetCName (string function);
 	}
 }
 

@@ -13,5 +13,10 @@ namespace Compiler
 			get { return TokenType.VOID; }
 			set { base.ReturnType = TokenType.VOID; }
 		}
+
+		public override ISemanticCheckValue Accept (INodeVisitor visitor)
+		{
+			return visitor.VisitProcedureNode (this);
+		}
 	}
 }

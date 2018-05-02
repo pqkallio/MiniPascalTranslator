@@ -10,7 +10,6 @@ namespace Compiler
 	public class SemanticAnalyzer : IErrorAggregator
 	{
 		private List<Error> errors;					// a list of errors found during analysis
-		Dictionary<string, Property> symbolTable;	// the global symbol table common to all compiling phases
 		private SyntaxTree syntaxTree;				// the earlier built AST
 
 		/// <summary>
@@ -18,12 +17,11 @@ namespace Compiler
 		/// </summary>
 		/// <param name="syntaxTree">Syntax tree.</param>
 		/// <param name="symbolTable">Symbol table.</param>
-		public SemanticAnalyzer (SyntaxTree syntaxTree, Dictionary<string, Property> symbolTable)
+		public SemanticAnalyzer (SyntaxTree syntaxTree)
 		{
 			// at this point of the analysis the symbol table and the AST is assumed to be
 			// built in order to be able to check the static semantic constraints of the source program
 			this.syntaxTree = syntaxTree;
-			this.symbolTable = symbolTable;
 			this.errors = new List<Error> ();
 		}
 
@@ -59,11 +57,6 @@ namespace Compiler
 		public List<Error> getErrors ()
 		{
 			return this.errors;
-		}
-
-		public Dictionary<string, Property> SymbolicTable
-		{
-			get { return this.symbolTable; }
 		}
 	}
 }

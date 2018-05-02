@@ -34,7 +34,7 @@ namespace Compiler
 			this.scanner = scanner;
 			this.programScope = null;
 			this.bufferedToken = null;
-			this.nameFactory = new MiniPascalNameFactory ();
+			this.nameFactory = new CNameFactory ();
 		}
 
 		public Scanner Scanner {
@@ -119,7 +119,7 @@ namespace Compiler
 							
 						// if the parsing went well, return the program's root node 
 						if (SyntaxTreeBuilt) {
-							return nodeBuilder.CreateProgramNode (token, functions, blockNode, this.programScope);
+						return nodeBuilder.CreateProgramNode (token, functions, blockNode, this.programScope);
 						}
 					} catch (UnexpectedTokenException ex) {
 						notifyError (new SyntaxError (ex.Token, ex.ExpectedType, ex.ExpectationSet));
@@ -305,8 +305,13 @@ namespace Compiler
 
 			Property property = ParsePropertyForParam (scope);
 
-			if (property.GetTokenType () == TokenType.TYPE_ARRAY
-				|| property.GetTokenType() == TokenType.STRING_VAL) {
+			if (property.GetTokenType () == TokenType.TYPE_ARRAY) {
+				ArrayProperty arrayProp = (ArrayProperty)property;
+				idNode.ArrayElementType = arrayProp.ArrayElementType;
+				reference = true;
+			}
+
+			if (property.GetTokenType () == TokenType.STRING_VAL) {
 				reference = true;
 			}
 

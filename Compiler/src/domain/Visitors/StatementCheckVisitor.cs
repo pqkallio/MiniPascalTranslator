@@ -9,7 +9,6 @@ namespace Compiler
 	public class StatementCheckVisitor : INodeVisitor
 	{
 		private SemanticAnalyzer analyzer;			// the parent analyzer to notify the errors to
-		private TypeCheckingVisitor typeChecker;	// checks a given nodes evaluation type
 		private VoidProperty voidProperty;
 		private List<ReturnStatement> returnStatements;
 
@@ -20,7 +19,6 @@ namespace Compiler
 		public StatementCheckVisitor (SemanticAnalyzer analyzer)
 		{
 			this.analyzer = analyzer;
-			this.typeChecker = new TypeCheckingVisitor (analyzer);
 			this.returnStatements = new List<ReturnStatement> ();
 
 			// We tend to return a lot of VoidProperties here,

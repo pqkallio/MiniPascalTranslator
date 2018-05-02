@@ -2,13 +2,13 @@
 
 namespace Compiler
 {
-	public class MiniPascalNameFactory : INameFactory
+	public class CNameFactory : INameFactory
 	{
 		private string labelBaseString;
 		private string genericTempBaseString;
 		private int counter;
 
-		public MiniPascalNameFactory ()
+		public CNameFactory ()
 		{
 			this.labelBaseString = "L";
 			this.genericTempBaseString = "temp";
@@ -22,6 +22,11 @@ namespace Compiler
 			return labelBaseString + counter.ToString ();
 		}
 
+		public string GetCName (string function)
+		{
+			return "_" + function;
+		}
+
 		public string GetTempVarId (Object objet = null)
 		{
 			counter++;
@@ -31,6 +36,11 @@ namespace Compiler
 			}
 
 			return GetName (objet.GetType ().Name);
+		}
+
+		public string GetSizeVariableForArray (string arrayId)
+		{
+			return "_" + GetCName(arrayId) + "_SIZE";
 		}
 
 		private string GetName (string baseStr)

@@ -138,7 +138,7 @@ namespace Compiler
 			}
 
 			if (binaryOps.ContainsKey (operation) && binaryOps [operation].ContainsKey (firstOperand)) {
-				return binaryOps [operation] [operation].ContainsKey (secondOperand);
+				return binaryOps [operation] [firstOperand].ContainsKey (secondOperand);
 			}
 			
 			return false;

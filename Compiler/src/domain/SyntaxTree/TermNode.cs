@@ -7,9 +7,12 @@ namespace Compiler
 		private Factor factorNode;
 		private TermTail termTailNode;
 
-		public TermNode (Token token, Factor factorNode, TermTail termTailNode)
+		public TermNode (Token token, Factor factorNode, TermTail termTailNode = null)
 			: base(token)
-		{}
+		{
+			this.factorNode = factorNode;
+			this.termTailNode = termTailNode;
+		}
 
 		public override ISemanticCheckValue Accept(INodeVisitor visitor)
 		{

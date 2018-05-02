@@ -15,7 +15,7 @@ namespace Compiler
 
 		public override ISemanticCheckValue Accept(INodeVisitor visitor)
 		{
-			return new VoidProperty ();
+			return visitor.VisitBlockNode (this);
 		}
 
 		public List<StatementNode> Statements
