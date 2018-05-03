@@ -34,11 +34,6 @@ namespace Compiler
 			return visitor.VisitBoolValueNode (this);
 		}
 
-		public Property asProperty ()
-		{
-			return new BooleanProperty (token.Row);
-		}
-
 		public override string ToString ()
 		{
 			return Value.ToString ();

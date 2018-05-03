@@ -67,8 +67,7 @@ namespace Compiler
 
 		public IntValueNode CreateIntValueNode(Token token)
 		{
-			int value = StringUtils.parseToInt (token.Value);
-			return new IntValueNode (value, token);
+			return new IntValueNode (token.Value, token);
 		}
 
 		public StringValueNode CreateStringValueNode (Token token)
@@ -84,11 +83,9 @@ namespace Compiler
 			return new BoolValueNode (value, t);
 		}
 
-		public RealValueNode CreateRealValueNode (Token t)
+		public RealValueNode CreateRealValueNode (Token token)
 		{
-			float value = float.Parse(t.Value);
-
-			return new RealValueNode (value, t);
+			return new RealValueNode (token.Value, token);
 		}
 	}
 }

@@ -40,11 +40,6 @@ namespace Compiler
 			return visitor.VisitStringValueNode (this);
 		}
 
-		public Property asProperty ()
-		{
-			return new StringProperty ();
-		}
-
 		public override string ToString ()
 		{
 			return '\"' + Value + '\"';

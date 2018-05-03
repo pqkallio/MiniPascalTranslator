@@ -489,6 +489,16 @@ namespace Compiler
 			return voidProperty;
 		}
 
+		public ISemanticCheckValue VisitSimpleExpression(SimpleExpression node)
+		{
+			return null;
+		}
+
+		public ISemanticCheckValue VisitSimpleExpressionTail(SimpleExpressionTail node)
+		{
+			return null;
+		}
+
 		private void CompareParamsAndArgs (FunctionCallNode callNode, List<Parameter> parameters, List<ExpressionNode> arguments) {
 			if (parameters.Count != arguments.Count) {
 				analyzer.notifyError (new InvalidArgumentCountError (callNode));

@@ -21,6 +21,16 @@ namespace Compiler
 			get { return operation; }
 		}
 
+		public TermNode Term
+		{
+			get { return this.term; }
+		}
+
+		public SimpleExpressionTail Tail
+		{
+			get { return this.tail; }
+		}
+
 		public override ISemanticCheckValue Accept(INodeVisitor visitor)
 		{
 			return null;

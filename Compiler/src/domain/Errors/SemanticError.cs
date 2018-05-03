@@ -22,11 +22,6 @@ namespace Compiler
 		public SemanticError (SyntaxTreeNode node)
 			: this (ErrorConstants.SEMANTIC_ERROR_TITLE, ErrorConstants.SEMANTIC_ERROR_MESSAGE, node)
 		{}
-
-		public Property asProperty ()
-		{
-			return null;
-		}
 	}
 }
 

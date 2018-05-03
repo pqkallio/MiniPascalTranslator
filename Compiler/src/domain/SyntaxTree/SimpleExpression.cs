@@ -19,7 +19,22 @@ namespace Compiler
 
 		public override ISemanticCheckValue Accept(INodeVisitor visitor)
 		{
-			return null;
+			return visitor.VisitSimpleExpression (this);
+		}
+
+		public TermNode Term
+		{
+			get { return this.term; }
+		}
+
+		public SimpleExpressionTail Tail
+		{
+			get { return this.tail; }
+		}
+
+		public bool AdditiveInverse
+		{
+			get { return this.additiveInverse; }
 		}
 
 		public override TokenType EvaluationType

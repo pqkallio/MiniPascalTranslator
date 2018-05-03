@@ -4,9 +4,9 @@ namespace Compiler
 {
 	public class RealValueNode : Evaluee, ISemanticCheckValue
 	{
-		private float value;
+		private string value;
 
-		public RealValueNode (float value, Token token)
+		public RealValueNode (string value, Token token)
 			: base(token)
 		{
 			this.value = value;
@@ -17,18 +17,13 @@ namespace Compiler
 			get { return TokenType.REAL_VAL; }
 		}
 
-		public float Value {
+		public string Value {
 			get { return this.value; }
 			set { this.value = value; }
 		}
 
 		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
 			return null;
-		}
-
-		public Property asProperty ()
-		{
-			return new RealProperty();
 		}
 
 		public override string ToString ()

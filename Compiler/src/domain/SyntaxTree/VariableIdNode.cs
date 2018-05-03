@@ -49,7 +49,7 @@ namespace Compiler
 
 				Property prop = scope.GetProperty (id);
 
-				if (prop.GetTokenType () == TokenType.TYPE_ARRAY) {
+				if (prop.GetTokenType () == TokenType.TYPE_ARRAY && arrayIndexNode != null) {
 					return ((ArrayProperty)prop).ArrayElementType;
 				} else if (ArrayRequestSize) {
 					return TokenType.INTEGER_VAL;

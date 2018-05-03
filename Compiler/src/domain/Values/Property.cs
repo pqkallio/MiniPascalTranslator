@@ -32,11 +32,6 @@ namespace Compiler
 		{
 			get { return this.declarationRow; }
 		}
-
-		public Property asProperty ()
-		{
-			return this;
-		}
 	}
 }
 

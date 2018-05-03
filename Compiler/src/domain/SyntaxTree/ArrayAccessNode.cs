@@ -19,11 +19,6 @@ namespace Compiler
 			return visitor.VisitArrayAccessNode (this);
 		}
 
-		public Property asProperty ()
-		{
-			return new ErrorProperty ();
-		}
-
 		public VariableIdNode ArrayIdNode
 		{
 			get { return arrayId; }

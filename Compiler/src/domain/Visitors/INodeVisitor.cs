@@ -35,6 +35,8 @@ namespace Compiler
 		ISemanticCheckValue VisitTermNode(TermNode node);
 		ISemanticCheckValue VisitTermTailNode(TermTail node);
 		ISemanticCheckValue VisitVariableIdNode(VariableIdNode node);
+		ISemanticCheckValue VisitSimpleExpression(SimpleExpression node);
+		ISemanticCheckValue VisitSimpleExpressionTail(SimpleExpressionTail node);
 	}
 }
 

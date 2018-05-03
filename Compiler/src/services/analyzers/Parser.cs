@@ -145,8 +145,8 @@ namespace Compiler
 			Token token = GetNextToken ();
 
 			switch (token.Type) {
-			case TokenType.FUNCTION:
-				ParseFunction (token, functions);
+				case TokenType.FUNCTION:
+					ParseFunction (token, functions);
 					break;
 				case TokenType.PROCEDURE:
 					ParseFunction (token, functions, procedure: true);
@@ -187,8 +187,8 @@ namespace Compiler
 					idNode.VariableType = TokenType.VOID;
 				} else {
 					// otherwise, parse the type
-					match(GetNextToken(), TokenType.SET_TYPE);
-					ParseType (idNode);
+					match (GetNextToken(), TokenType.SET_TYPE);
+					ParseType (idNode, functionScope);
 				}
 			} catch (UnexpectedTokenException ex) {
 				FastForwardToStatementEnd (ex);
@@ -528,32 +528,32 @@ namespace Compiler
 			ParseIdsToDeclare (ids, scope);
 			TypeNode type = ParseTypeNode (scope);
 
-			foreach (VariableIdNode idNode in ids) {
-				string id = idNode.ID.ToLower ();
+			if (SyntaxTreeBuilt) {
+				foreach (VariableIdNode idNode in ids) {
+					string id = idNode.ID.ToLower ();
 
-				if (expectDeclared (idNode, scope, false, false)) {
-					switch (type.PropertyType) {
-						case TokenType.TYPE_INTEGER:
-							scope.AddProperty (id, new IntegerProperty (token.Row));
-							break;
-						case TokenType.TYPE_STRING:
-							scope.AddProperty (id, new StringProperty (token.Row));
-							break;
-						case TokenType.TYPE_BOOLEAN:
-							scope.AddProperty (id, new BooleanProperty (token.Row));
-							break;
-						case TokenType.TYPE_REAL:
-							scope.AddProperty (id, new RealProperty (token.Row));
-							break;
-						case TokenType.TYPE_ARRAY:
-							scope.AddProperty (id, new ArrayProperty(type.ArrayElementType, declarationRow: token.Row));
-							break;
+					if (expectDeclared (idNode, scope, false, false)) {
+						switch (type.PropertyType) {
+							case TokenType.TYPE_INTEGER:
+								scope.AddProperty (id, new IntegerProperty (token.Row));
+								break;
+							case TokenType.TYPE_STRING:
+								scope.AddProperty (id, new StringProperty (token.Row));
+								break;
+							case TokenType.TYPE_BOOLEAN:
+								scope.AddProperty (id, new BooleanProperty (token.Row));
+								break;
+							case TokenType.TYPE_REAL:
+								scope.AddProperty (id, new RealProperty (token.Row));
+								break;
+							case TokenType.TYPE_ARRAY:
+								scope.AddProperty (id, new ArrayProperty(type.ArrayElementType, declarationRow: token.Row));
+								break;
+						}
 					}
 				}
-			}
 
-			if (SyntaxTreeBuilt) {
-				return new DeclarationNode (token, nameFactory, type, ids);
+				return new DeclarationNode (token, nameFactory, scope, type, ids);
 			}
 
 			return null;
@@ -1197,7 +1197,7 @@ namespace Compiler
 			return null;
 		}
 
-		private void ParseType (VariableIdNode idNode)
+		private void ParseType (VariableIdNode idNode, Scope scope)
 		{
 			Token token = GetNextToken ();
 
@@ -1219,8 +1219,41 @@ namespace Compiler
 				case TokenType.TYPE_REAL:
 					idNode.VariableType = TokenType.REAL_VAL;
 					break;
+				case TokenType.TYPE_ARRAY:
+					ParseArrayPropertyForId (scope, idNode);
+					break;
 				default:
 					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_DECLARATION_TYPE);
+			}
+		}
+
+		private void ParseArrayPropertyForId (Scope scope, VariableIdNode idNode)
+		{
+			idNode.VariableType = TokenType.TYPE_ARRAY;
+			match (GetNextToken (), TokenType.BRACKET_LEFT);
+
+			Token token = GetNextToken ();
+
+			switch (token.Type) {
+			case TokenType.BRACKET_RIGHT:
+				bufferedToken = token;
+				break;
+			default:
+				bufferedToken = token;
+				ParseExpression (scope);
+				break;
+			}
+
+			match (GetNextToken (), TokenType.BRACKET_RIGHT);
+			match (GetNextToken (), TokenType.OF);
+
+			TokenType type = ParseType ();
+
+			if (ParserConstants.SIMPLE_TYPES.ContainsKey (type)) {
+				idNode.ArrayElementType = type;
+			} else {
+				idNode.ArrayElementType = TokenType.ERROR;
+				notifyError (new IllegalArrayElementTypeError ());
 			}
 		}
 

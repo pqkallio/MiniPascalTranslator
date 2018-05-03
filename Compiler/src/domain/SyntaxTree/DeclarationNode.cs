@@ -12,8 +12,8 @@ namespace Compiler
 		private List<VariableIdNode> idsToDeclare;
 		private TypeNode type;
 
-		public DeclarationNode (Token token, INameFactory nameFactory, TypeNode type, List<VariableIdNode> idsToDeclare)
-			: base(token, nameFactory)
+		public DeclarationNode (Token token, INameFactory nameFactory, Scope scope, TypeNode type, List<VariableIdNode> idsToDeclare)
+			: base (token, nameFactory, scope)
 		{
 			this.type = type;
 			this.idsToDeclare = idsToDeclare;
