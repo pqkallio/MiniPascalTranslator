@@ -20,11 +20,6 @@ namespace Compiler
 			this.value = value;
 		}
 
-		public override TokenType EvaluationType
-		{
-			get { return TokenType.BOOLEAN_VAL; }
-		}
-
 		public bool Value {
 			get { return this.value; }
 			set { this.value = value; }

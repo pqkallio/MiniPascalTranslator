@@ -6,7 +6,7 @@ namespace Compiler
 	/// <summary>
 	/// Represents a string value in the AST
 	/// </summary>
-	public class StringValueNode : Evaluee, ISemanticCheckValue
+	public class StringValueNode : Evaluee
 	{
 		private string value;
 
@@ -18,11 +18,6 @@ namespace Compiler
 			: base (token, null)
 		{
 			this.value = value;
-		}
-
-		public override TokenType EvaluationType
-		{
-			get { return TokenType.STRING_VAL; }
 		}
 
 		public string Value {

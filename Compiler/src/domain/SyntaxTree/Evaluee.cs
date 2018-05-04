@@ -16,8 +16,9 @@ namespace Compiler
 			this.subTotal = null;
 		}
 
-		public abstract TokenType EvaluationType {
-			get;
+		public TokenType EvaluationType {
+			get { return this.evaluationType; }
+			set { this.evaluationType = value; }
 		}
 
 		public bool Variable
@@ -29,6 +30,11 @@ namespace Compiler
 		{
 			get { return this.subTotal; }
 			set { this.subTotal = value; }
+		}
+
+		public bool HasAlreadyBeenEvaluated
+		{
+			get { return evaluationType != TokenType.UNDEFINED; }
 		}
 	}
 }

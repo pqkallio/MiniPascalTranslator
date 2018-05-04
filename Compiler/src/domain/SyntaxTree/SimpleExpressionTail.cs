@@ -33,30 +33,7 @@ namespace Compiler
 
 		public override ISemanticCheckValue Accept(INodeVisitor visitor)
 		{
-			return null;
-		}
-
-		public override TokenType EvaluationType
-		{
-			get {
-				if (evaluationType != TokenType.UNDEFINED) {
-					return evaluationType;
-				}
-
-				TokenType termEval = term.EvaluationType;
-
-				if (tail != null) {
-					TokenType tailEval = tail.EvaluationType;
-
-					if (!LegitOperationChecker.IsLegitOperationForEvaluations(tail.Operation, termEval, tailEval)) {
-						termEval = TokenType.ERROR;
-					}
-				}
-
-				evaluationType = termEval;
-
-				return evaluationType;
-			}
+			return visitor.VisitSimpleExpressionTail (this);
 		}
 	}
 }

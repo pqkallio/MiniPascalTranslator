@@ -2,7 +2,7 @@
 
 namespace Compiler
 {
-	public class ArrayAccessNode : SyntaxTreeNode, ISemanticCheckValue
+	public class ArrayAccessNode : Evaluee
 	{
 		private VariableIdNode arrayId;
 		private ExpressionNode index;

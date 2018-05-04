@@ -11,6 +11,7 @@ namespace Compiler
 		private SemanticAnalyzer analyzer;			// the parent analyzer to notify the errors to
 		private VoidProperty voidProperty;
 		private List<ReturnStatement> returnStatements;
+		private TypeCheckingVisitor typeChecker;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Compiler.StatementCheckVisitor"/> class.
@@ -20,6 +21,7 @@ namespace Compiler
 		{
 			this.analyzer = analyzer;
 			this.returnStatements = new List<ReturnStatement> ();
+			this.typeChecker = new TypeCheckingVisitor (analyzer);
 
 			// We tend to return a lot of VoidProperties here,
 			// but since we don't do anything with them, we
@@ -99,6 +101,7 @@ namespace Compiler
 		{
 			// This is not a statement so it needs not to be actually checked here.
 			// So, we pass it to the TypeCheckerVisitor instead.
+			TokenType eh = node.EvaluationType;
 			return voidProperty;
 		}
 
@@ -111,6 +114,7 @@ namespace Compiler
 		{
 			// This is not a statement so it needs not to be actually checked here.
 			// So, we pass it to the TypeCheckerVisitor instead.
+			TokenType eh = node.EvaluationType;
 			return voidProperty;
 		}
 
@@ -221,11 +225,15 @@ namespace Compiler
 		public ISemanticCheckValue VisitArrayAccessNode(ArrayAccessNode node)
 		{
 			// NOT IN USE, AT LEAST NOT YET
+			node.ArrayIdNode.Accept (this);
+			node.ArrayIndexExpression.Accept (this);
+			TokenType eh = node.EvaluationType;
 			return voidProperty;
 		}
 
 		public ISemanticCheckValue VisitRealValueNode(RealValueNode node)
 		{
+			TokenType eh = node.EvaluationType;
 			return voidProperty;
 		}
 
@@ -491,11 +499,24 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitSimpleExpression(SimpleExpression node)
 		{
+			node.Term.Accept (this);
+
+			if (node.Tail != null) {
+				node.Tail.Accept (this);
+			}
+
+			if (node.AdditiveInverse) {
+				if (node.EvaluationType != TokenType.INTEGER_VAL && node.EvaluationType != TokenType.REAL_VAL) {
+					analyzer.notifyError (new IllegalTypeError (node));
+				}
+			}
 			return null;
 		}
 
 		public ISemanticCheckValue VisitSimpleExpressionTail(SimpleExpressionTail node)
 		{
+			node.Term.Accept (this);
+
 			return null;
 		}
 

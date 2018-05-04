@@ -1115,19 +1115,21 @@ namespace Compiler
 			case (TokenType.PARENTHESIS_LEFT):
 				return ParseCallTail(idNode, scope, token);
 			case (TokenType.BRACKET_LEFT):
-				return ParseArrayAccess (idNode, scope);
+				return ParseArrayAccess (idNode, scope, token);
 			default:
 				bufferedToken = token;
 				return idNode;
 			}
 		}
 
-		private Evaluee ParseArrayAccess (VariableIdNode idNode, Scope scope)
+		private Evaluee ParseArrayAccess (VariableIdNode idNode, Scope scope, Token token)
 		{
 			ExpressionNode arrayIndexExpression = ParseExpression (scope);
 			match (GetNextToken (), TokenType.BRACKET_RIGHT);
-			idNode.ArrayIndex = arrayIndexExpression;
-			return idNode;
+			if (SyntaxTreeBuilt) {
+				return new ArrayAccessNode (idNode, token, scope, arrayIndexExpression);
+			}
+			return null;
 		}
 
 		private Evaluee ParseCallTail(VariableIdNode idNode, Scope scope, Token token)

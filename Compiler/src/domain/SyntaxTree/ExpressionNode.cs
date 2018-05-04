@@ -28,30 +28,6 @@ namespace Compiler
 		{
 			get { return tail; }
 		}
-
-		public override TokenType EvaluationType {
-			get {
-				if (this.evaluationType != TokenType.UNDEFINED) {
-					return this.evaluationType;
-				}
-
-				TokenType expressionEvaluation = expression.EvaluationType;
-
-				if (tail != null) {
-					TokenType tailEvaluation = tail.RightHandSide.EvaluationType;
-
-					if (!LegitOperationChecker.IsLegitOperationForEvaluations(tail.Operation, expressionEvaluation, tailEvaluation)) {
-						expressionEvaluation = TokenType.ERROR;
-					} else {
-						expressionEvaluation = tail.EvaluationType;
-					}
-				}
-
-				this.evaluationType = expressionEvaluation;
-
-				return this.evaluationType;
-			}
-		}
 	}
 }
 

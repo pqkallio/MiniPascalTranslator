@@ -21,17 +21,6 @@ namespace Compiler
 		{
 			get { return evaluee; }
 		}
-
-		public override TokenType EvaluationType
-		{
-			get {
-				if (evaluationType == TokenType.UNDEFINED) {
-					evaluationType = evaluee.EvaluationType;
-				}
-
-				return evaluationType;
-			}
-		}
 	}
 }
 

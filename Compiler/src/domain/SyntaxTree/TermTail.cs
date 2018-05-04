@@ -35,28 +35,5 @@ namespace Compiler
 		{
 			get { return termTail; }
 		}
-
-		public override TokenType EvaluationType
-		{
-			get {
-				if (evaluationType != TokenType.UNDEFINED) {
-					return evaluationType;
-				}
-
-				TokenType factorEval = factor.EvaluationType;
-
-				if (termTail != null) {
-					TokenType tailEval = termTail.EvaluationType;
-
-					if (!LegitOperationChecker.IsLegitOperationForEvaluations (termTail.Operation, factorEval, tailEval)) {
-						factorEval = TokenType.ERROR;
-					}
-				}
-
-				evaluationType = factorEval;
-
-				return evaluationType;
-			}
-		}
 	}
 }

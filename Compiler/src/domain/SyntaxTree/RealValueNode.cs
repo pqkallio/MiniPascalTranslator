@@ -12,11 +12,6 @@ namespace Compiler
 			this.value = value;
 		}
 
-		public override TokenType EvaluationType
-		{
-			get { return TokenType.REAL_VAL; }
-		}
-
 		public string Value {
 			get { return this.value; }
 			set { this.value = value; }

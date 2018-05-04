@@ -23,10 +23,6 @@ namespace Compiler
 			return visitor.VisitExpressionTail (this);
 		}
 
-		public override TokenType EvaluationType {
-			get { return TokenType.BOOLEAN_VAL; }
-		}
-
 		public TokenType Operation
 		{
 			get { return operation; }

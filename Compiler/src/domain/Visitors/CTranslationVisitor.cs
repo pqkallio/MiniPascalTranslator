@@ -70,9 +70,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitIntValueNode(IntValueNode node)
 		{	
-			if (node.Location == null) {
-				node.Location = nameFactory.GetTempVarId ();
-			}
+			setNodeLocation (node);
 
 			addAssignment (typeNames[node.EvaluationType], node.Location, node.Value);
 
@@ -81,9 +79,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitRealValueNode(RealValueNode node)
 		{
-			if (node.Location == null) {
-				node.Location = nameFactory.GetTempVarId ();
-			}
+			setNodeLocation (node);
 
 			addAssignment (typeNames[node.EvaluationType], node.Location, node.Value);
 
@@ -92,9 +88,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitBoolValueNode(BoolValueNode node)
 		{
-			if (node.Location == null) {
-				node.Location = nameFactory.GetTempVarId ();
-			}
+			setNodeLocation (node);
 
 			string strVal = node.Value ? "1" : "0";
 
@@ -105,9 +99,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitStringValueNode(StringValueNode node)
 		{
-			if (node.Location == null) {
-				node.Location = nameFactory.GetTempVarId ();
-			}
+			setNodeLocation (node);
 
 			string strVal = unspaced (CTranslatorConstants.STRING_DELIMITER, node.Value, CTranslatorConstants.STRING_DELIMITER);
 
@@ -163,9 +155,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitExpressionNode(ExpressionNode node)
 		{
-			if (node.Location == null) {
-				node.Location = nameFactory.GetTempVarId ();
-			}
+			setNodeLocation (node);
 
 			node.SimpleExpression.Location = node.Location;
 			node.SimpleExpression.Accept (this);
@@ -180,9 +170,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitSimpleExpression (SimpleExpression node)
 		{
-			if (node.Location == null) {
-				node.Location = nameFactory.GetTempVarId ();
-			}
+			setNodeLocation (node);
 
 			node.Term.Location = node.Location;
 			node.Term.Accept (this);
@@ -201,14 +189,12 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitSimpleExpressionTail (SimpleExpressionTail node)
 		{
-			if (node.Location == null) {
-				node.Location = nameFactory.GetTempVarId ();
-			}
+			setNodeLocation (node);
 
 			node.Term.Location = node.Location;
 			node.Term.Accept (this);
 
-			addAssignment (typeNames[node.EvaluationType], node.SubTotal, node.SubTotal, CTranslatorConstants.OPERATION_STRINGS [node.Operation], node.Location);
+			addAssignment (typeNames[node.EvaluationType], node.SubTotal, node.SubTotal, opStrings [node.Operation], node.Location);
 
 			if (node.Tail != null) {
 				node.Tail.SubTotal = node.SubTotal;
@@ -220,16 +206,33 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitExpressionTail(ExpressionTail node)
 		{
+			setNodeLocation (node);
+			node.RightHandSide.Accept (this);
+			addAssignment (typeNames[node.EvaluationType], node.Location, node.Location, opStrings[node.Operation], node.RightHandSide.Location);
+
 			return null;
 		}
 
 		public ISemanticCheckValue VisitFactorNode(Factor node)
 		{
+			setNodeLocation (node);
+			node.FactorMain.Location = node.Location;
+			node.FactorMain.Accept (this);
+
+			if (node.FactorTail != null) {
+				// DO SUMTHIN!!!!
+			}
+
 			return null;
 		}
 
 		public ISemanticCheckValue VisitFactorMain(FactorMain node)
 		{
+			setNodeLocation (node);
+
+			node.Evaluee.Location = node.Location;
+			node.Evaluee.Accept (this);
+
 			return null;
 		}
 
@@ -547,6 +550,12 @@ namespace Compiler
 				addToTranslation (statement (spaced (type, target, assignment, firstOperand, operation, secondOperand)));
 			} else {
 				addToTranslation (statement (spaced (type, target, assignment, firstOperand)));
+			}
+		}
+
+		private void setNodeLocation(SyntaxTreeNode node) {
+			if (node.Location == null) {
+				node.Location = nameFactory.GetTempVarId ();
 			}
 		}
 	}

@@ -35,30 +35,6 @@ namespace Compiler
 			this.arrayRequestSize = false;
 		}
 
-		/// <summary>
-		/// The evaluation type is the type of the IProperty corresponding
-		/// to the id string in the symbol table.
-		/// </summary>
-		/// <value>The type of the evaluation.</value>
-		public override TokenType EvaluationType
-		{
-			get {
-				if (evaluationType != TokenType.UNDEFINED) {
-					return evaluationType;
-				}
-
-				Property prop = scope.GetProperty (id);
-
-				if (prop.GetTokenType () == TokenType.TYPE_ARRAY && arrayIndexNode != null) {
-					return ((ArrayProperty)prop).ArrayElementType;
-				} else if (ArrayRequestSize) {
-					return TokenType.INTEGER_VAL;
-				}
-
-				return prop.GetTokenType ();
-			}
-		}
-
 		public TokenType ArrayElementType
 		{
 			get { return arrayElementType; }
