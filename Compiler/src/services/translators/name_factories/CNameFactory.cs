@@ -22,9 +22,9 @@ namespace Compiler
 			return labelBaseString + counter.ToString ();
 		}
 
-		public string GetCName (string function)
+		public string GetCName (string id)
 		{
-			return "_" + function;
+			return "_" + id;
 		}
 
 		public string GetTempVarId (Object objet = null)
@@ -46,7 +46,7 @@ namespace Compiler
 		private string GetName (string baseStr)
 		{
 			counter++;
-			return "_" + baseStr + "_" + counter.ToString ();
+			return baseStr + "_" + counter.ToString ();
 		}
 	}
 }

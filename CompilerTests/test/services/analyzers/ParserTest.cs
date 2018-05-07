@@ -175,6 +175,9 @@ namespace CompilerTests
 			SyntaxTree tree = parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
+			foreach (string key in tree.Root.Functions ["proc"].Scope.SymbolTable.Keys) {
+				Console.WriteLine (key + " / " + tree.Root.Functions ["proc"].Scope.SymbolTable[key].GetTokenType ());
+			}
 			CheckScopeContainsVariables (tree.Root.Functions ["proc"].Scope, true, "i", "ii", "str", "ary");
 		}
 
@@ -241,7 +244,7 @@ namespace CompilerTests
 			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
 			Assert.IsTrue (prop.Assigned == true);
 			Assert.IsTrue (prop.GetTokenType () == TokenType.TYPE_ARRAY);
-			Assert.AreEqual (((ArrayProperty)prop).ArrayElementType, TokenType.TYPE_INTEGER);
+			Assert.AreEqual (((ArrayProperty)prop).ArrayElementType, TokenType.INTEGER_VAL);
 		}
 
 		[Test]
@@ -255,7 +258,7 @@ namespace CompilerTests
 			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
 			Assert.IsTrue (prop.Assigned == true);
 			Assert.IsTrue (prop.GetTokenType () == TokenType.TYPE_ARRAY);
-			Assert.AreEqual (((ArrayProperty)prop).ArrayElementType, TokenType.TYPE_REAL);
+			Assert.AreEqual (((ArrayProperty)prop).ArrayElementType, TokenType.REAL_VAL);
 		}
 
 		[Test]
@@ -269,7 +272,7 @@ namespace CompilerTests
 			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
 			Assert.IsTrue (prop.Assigned == true);
 			Assert.IsTrue (prop.GetTokenType () == TokenType.TYPE_ARRAY);
-			Assert.AreEqual (((ArrayProperty)prop).ArrayElementType, TokenType.TYPE_STRING);
+			Assert.AreEqual (((ArrayProperty)prop).ArrayElementType, TokenType.STRING_VAL);
 		}
 
 		[Test]
@@ -283,7 +286,7 @@ namespace CompilerTests
 			Property prop = tree.Root.MainBlock.Scope.GetProperty ("x", false);
 			Assert.IsTrue (prop.Assigned == true);
 			Assert.IsTrue (prop.GetTokenType () == TokenType.TYPE_ARRAY);
-			Assert.AreEqual (((ArrayProperty)prop).ArrayElementType, TokenType.TYPE_BOOLEAN);
+			Assert.AreEqual (((ArrayProperty)prop).ArrayElementType, TokenType.BOOLEAN_VAL);
 		}
 
 		[Test]

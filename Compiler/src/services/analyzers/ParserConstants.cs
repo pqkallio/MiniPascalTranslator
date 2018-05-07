@@ -23,7 +23,11 @@ namespace Compiler
 			{TokenType.TYPE_INTEGER, null},
 			{TokenType.TYPE_BOOLEAN, null},
 			{TokenType.TYPE_REAL, null},
-			{TokenType.TYPE_STRING, null}
+			{TokenType.TYPE_STRING, null},
+			{TokenType.INTEGER_VAL, null},
+			{TokenType.BOOLEAN_VAL, null},
+			{TokenType.REAL_VAL, null},
+			{TokenType.STRING_VAL, null}
 		};
 
 		public static readonly Dictionary<TokenType, string> STATEMENT_FASTFORWARD_TO = new Dictionary<TokenType, string> () 

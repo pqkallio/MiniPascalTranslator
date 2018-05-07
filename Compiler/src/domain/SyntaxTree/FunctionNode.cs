@@ -14,7 +14,7 @@ namespace Compiler
 		{
 			this.block = block;
 			this.parameters = parametersNode;
-			this.returnType = idNode.VariableType;
+			this.returnType = idNode != null ? idNode.VariableType : TokenType.UNDEFINED;
 			this.idNode = idNode;
 		}
 

@@ -23,7 +23,7 @@ namespace Compiler
 
 		public override ISemanticCheckValue Accept (INodeVisitor visitor)
 		{
-			return null;
+			return visitor.VisitTermTailNode (this);
 		}
 
 		public Factor Factor

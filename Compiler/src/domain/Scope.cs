@@ -77,6 +77,11 @@ namespace Compiler
 		{
 			get { return childScopes; }
 		}
+
+		public Dictionary<string, Property> SymbolTable
+		{
+			get { return this.symbolTable; }
+		}
 	}
 }
 

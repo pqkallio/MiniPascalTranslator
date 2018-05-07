@@ -37,6 +37,8 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitAssignNode(AssignNode node)
 		{
+			node.AssignValueExpression.Accept (this);
+			addToTranslation (statement (spaced (nameFactory.GetCName (node.IDNode.ID), "=", node.AssignValueExpression.Location)));
 			return null;
 		}
 
@@ -300,11 +302,36 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitTermNode(TermNode node)
 		{
+			Factor factor = node.Factor;
+			TermTail tail = node.TermTail;
+
+			setNodeLocation (node);
+
+			factor.Location = node.Location;
+			factor.Accept (this);
+
+			if (tail != null) {
+				tail.SubTotal = factor.Location;
+				tail.Accept (this);
+			}
 			return null;
 		}
 
 		public ISemanticCheckValue VisitTermTailNode(TermTail node)
 		{
+			setNodeLocation (node);
+			Factor factor = node.Factor;
+			TermTail tail = node.ChildTermTail;
+
+			factor.Location = node.Location;
+			factor.Accept (this);
+
+			addAssignment (null, node.SubTotal, node.SubTotal, opStrings [node.Operation], factor.Location);
+
+			if (tail != null) {
+				tail.SubTotal = node.Location;
+				tail.Accept (this);
+			}
 			return null;
 		}
 
@@ -317,7 +344,11 @@ namespace Compiler
 		{
 			includeLibraries ();
 			addEmptyLineToTranslation ();
+			createHelperFunctionDeclarations ();
+			addEmptyLineToTranslation ();
 			createFunctionDeclarations (programNode);
+			addEmptyLineToTranslation ();
+			createHelperFunctions ();
 			addEmptyLineToTranslation ();
 			createMainFunction (programName);
 			addEmptyLineToTranslation ();
@@ -329,14 +360,41 @@ namespace Compiler
 				addToTranslation (LibraryInclusion (library));
 			}
 		}
-
+			
 		private void createFunctionDeclarations (ProgramNode programNode)
 		{
+			addComment("program functions");
+
 			createProgramFunctionDeclaration(programName);
 
 			foreach (string func in programNode.Functions.Keys) {
 				FunctionNode functionNode = programNode.Functions [func];
 				addToTranslation (createFunctionDeclaration (func, functionNode.IDNode, functionNode.Parameters.Parameters));
+			}
+		}
+
+		private void createHelperFunctionDeclarations ()
+		{
+			addComment("helper functions");
+
+			foreach (string str in CTranslatorConstants.HELPER_FUNCTION_DECLARATIONS) {
+				addToTranslation (statement (str));
+			}
+		}
+
+		private void addComment(string line)
+		{
+			addToTranslation (spaced (CTranslatorConstants.COMMENT_DELIMITERS.Item1, line, CTranslatorConstants.COMMENT_DELIMITERS.Item2));
+		}
+
+		private void createHelperFunctions ()
+		{
+			foreach (string[] helperFunction in CTranslatorConstants.HELPER_FUNCTIONS) {
+				foreach (string str in helperFunction) {
+					addToTranslation (str);
+				}
+
+				addEmptyLineToTranslation ();
 			}
 		}
 
@@ -406,7 +464,9 @@ namespace Compiler
 			StringBuilder sb = new StringBuilder ();
 
 			for (int i = 0; i < strings.Length - 1; i++) {
-				sb.Append (strings [i] + " ");
+				if (strings [i] != null) {
+					sb.Append (strings [i] + " ");
+				}
 			}
 
 			sb.Append (strings [strings.Length - 1]);
@@ -485,9 +545,6 @@ namespace Compiler
 
 				sb.Append (' ');
 				sb.Append (nameFactory.GetCName (param.IdNode.ID));
-				sb.Append (", ");
-
-				sb.Append ("int " + nameFactory.GetSizeVariableForArray (param.IdNode.ID));
 			}
 
 			return sb.ToString ();

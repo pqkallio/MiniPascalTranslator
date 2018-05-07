@@ -87,6 +87,7 @@ namespace Compiler
 		/// <param name="node">Node.</param>
 		public ISemanticCheckValue VisitIntValueNode(IntValueNode node)
 		{
+			node.Accept (this.typeChecker);
 			// This is not a statement so it needs not to be actually checked here.
 			// So, we pass it to the TypeCheckerVisitor instead.
 			return voidProperty;
@@ -101,7 +102,7 @@ namespace Compiler
 		{
 			// This is not a statement so it needs not to be actually checked here.
 			// So, we pass it to the TypeCheckerVisitor instead.
-			TokenType eh = node.EvaluationType;
+			node.Accept (this.typeChecker);
 			return voidProperty;
 		}
 
@@ -114,7 +115,7 @@ namespace Compiler
 		{
 			// This is not a statement so it needs not to be actually checked here.
 			// So, we pass it to the TypeCheckerVisitor instead.
-			TokenType eh = node.EvaluationType;
+			node.Accept (this.typeChecker);
 			return voidProperty;
 		}
 
@@ -125,6 +126,7 @@ namespace Compiler
 		/// <param name="node">An ISemanticCheckValue.</param>
 		public ISemanticCheckValue VisitVariableIdNode(VariableIdNode node)
 		{
+			node.Accept (this.typeChecker);
 			Property prop = node.Scope.GetProperty (node.ID);
 
 			if (prop.GetTokenType () == TokenType.ERROR) {
@@ -225,6 +227,7 @@ namespace Compiler
 		public ISemanticCheckValue VisitArrayAccessNode(ArrayAccessNode node)
 		{
 			// NOT IN USE, AT LEAST NOT YET
+			node.Accept (this.typeChecker);
 			node.ArrayIdNode.Accept (this);
 			node.ArrayIndexExpression.Accept (this);
 			TokenType eh = node.EvaluationType;
@@ -233,7 +236,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitRealValueNode(RealValueNode node)
 		{
-			TokenType eh = node.EvaluationType;
+			node.Accept (this.typeChecker);
 			return voidProperty;
 		}
 
@@ -263,6 +266,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitBooleanNegation(BooleanNegation node)
 		{
+			node.Accept (this.typeChecker);
 			node.Factor.Accept (this);
 
 			if (node.EvaluationType != TokenType.BOOLEAN_VAL) {
@@ -274,6 +278,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitExpressionNode(ExpressionNode node)
 		{
+			node.Accept (this.typeChecker);
 			node.SimpleExpression.Accept (this);
 
 			if (node.ExpressionTail != null) {
@@ -289,6 +294,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitExpressionTail(ExpressionTail node)
 		{
+			node.Accept (this.typeChecker);
 			node.RightHandSide.Accept (this);
 
 			return voidProperty;
@@ -296,6 +302,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitFactorNode(Factor node)
 		{
+			node.Accept (this.typeChecker);
 			FactorMain main = node.FactorMain;
 			FactorTail tail = node.FactorTail;
 
@@ -313,8 +320,6 @@ namespace Compiler
 						analyzer.notifyError (new IllegalTypeError (tail));
 					}
 				}
-			} else if (main.EvaluationType == TokenType.TYPE_ARRAY) {
-				analyzer.notifyError(new IllegalTypeError (main));
 			}
 
 			return voidProperty;
@@ -322,6 +327,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitFactorMain(FactorMain node)
 		{
+			node.Accept (this.typeChecker);
 			node.Evaluee.Accept (this);
 
 			return voidProperty;
@@ -329,6 +335,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitFactorTail(FactorTail node)
 		{
+			node.Accept (this.typeChecker);
 			return voidProperty;
 		}
 
@@ -365,6 +372,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitFunctionCallNode(FunctionCallNode node)
 		{
+			node.Accept (this.typeChecker);
 			VariableIdNode idNode = node.IdNode;
 			ArgumentsNode arguments = node.ArgumentsNode;
 
@@ -463,6 +471,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitTermNode(TermNode node)
 		{
+			node.Accept (this.typeChecker);
 			Factor factor = node.Factor;
 			TermTail tail = node.TermTail;
 
@@ -481,6 +490,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitTermTailNode(TermTail node)
 		{
+			node.Accept (this.typeChecker);
 			Factor factor = node.Factor;
 			TermTail tail = node.ChildTermTail;
 
@@ -499,6 +509,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitSimpleExpression(SimpleExpression node)
 		{
+			node.Accept (this.typeChecker);
 			node.Term.Accept (this);
 
 			if (node.Tail != null) {
@@ -515,6 +526,7 @@ namespace Compiler
 
 		public ISemanticCheckValue VisitSimpleExpressionTail(SimpleExpressionTail node)
 		{
+			node.Accept (this.typeChecker);
 			node.Term.Accept (this);
 
 			return null;
