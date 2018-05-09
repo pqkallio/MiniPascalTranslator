@@ -10,14 +10,14 @@ namespace Compiler
 	{
 		private ArgumentsNode arguments;
 
-		public IOPrintNode (Token token, ArgumentsNode arguments, INameFactory nameFactory)
-			: base(token, nameFactory)
+		public IOPrintNode (Token token, ArgumentsNode arguments, Scope scope)
+			: base(token, scope)
 		{
 			this.arguments = arguments;
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
-			return visitor.VisitIOPrintNode (this);
+		public override void Accept(INodeVisitor visitor) {
+			visitor.VisitIOPrintNode (this);
 		}
 
 		public ArgumentsNode Arguments

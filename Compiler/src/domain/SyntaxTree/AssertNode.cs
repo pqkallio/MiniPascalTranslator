@@ -10,14 +10,14 @@ namespace Compiler
 	{
 		private ExpressionNode expression;
 
-		public AssertNode (Token token, ExpressionNode expression, INameFactory nameFactory)
-			: base(token, nameFactory)
+		public AssertNode (Token token, ExpressionNode expression, Scope scope)
+			: base(token, scope)
 		{
 			this.expression = expression;
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
-			return visitor.VisitAssertNode (this);
+		public override void Accept(INodeVisitor visitor) {
+			visitor.VisitAssertNode (this);
 		}
 
 		public ExpressionNode AssertExpression

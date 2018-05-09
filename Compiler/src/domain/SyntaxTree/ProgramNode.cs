@@ -15,9 +15,9 @@ namespace Compiler
 			this.functions = functionNodes;
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override void Accept(INodeVisitor visitor)
 		{
-			return visitor.VisitProgramNode (this);
+			visitor.VisitProgramNode (this);
 		}
 
 		public Dictionary<string, FunctionNode> Functions

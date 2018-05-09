@@ -1,52 +1,54 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Compiler
 {
 	public class CNameFactory : INameFactory
 	{
 		private string labelBaseString;
-		private string genericTempBaseString;
-		private int counter;
+		private string scopeBaseString;
+		private int labelCounter;
+		private Dictionary<Scope, CTempVarPool> tempies;
+		private int scopeIdCounter;
 
 		public CNameFactory ()
 		{
 			this.labelBaseString = "L";
-			this.genericTempBaseString = "temp";
+			this.scopeBaseString = "S";
+			this.tempies = new Dictionary<Scope, CTempVarPool> ();
 
-			this.counter = -1;
+			this.labelCounter = -1;
+			this.scopeIdCounter = -1;
 		}
 
 		public string GetLabel ()
 		{
-			counter++;
-			return labelBaseString + counter.ToString ();
+			labelCounter++;
+			return labelBaseString + labelCounter.ToString ();
 		}
 
-		public string GetCName (string id)
+		public string GetCName (Scope scope, string id)
 		{
-			return "_" + id;
+			createCTempVarPoolIfNeeded (scope);
+
+			return tempies[scope].ID + "_" + id;
 		}
 
-		public string GetTempVarId (Object objet = null)
+		public string GetTempVarId (Scope scope, TokenType type, ref bool declared)
 		{
-			counter++;
+			createCTempVarPoolIfNeeded (scope);
 
-			if (objet == null) {
-				return GetName (genericTempBaseString);
+			string tempVarId = tempies [scope].GetTempId (type, ref declared);
+
+			return tempVarId;
+		}
+
+		private void createCTempVarPoolIfNeeded (Scope scope)
+		{
+			if (!tempies.ContainsKey (scope)) {
+				scopeIdCounter++;
+				tempies [scope] = new CTempVarPool (scopeBaseString + scopeIdCounter.ToString ());
 			}
-
-			return GetName (objet.GetType ().Name);
-		}
-
-		public string GetSizeVariableForArray (string arrayId)
-		{
-			return "_" + GetCName(arrayId) + "_SIZE";
-		}
-
-		private string GetName (string baseStr)
-		{
-			counter++;
-			return baseStr + "_" + counter.ToString ();
 		}
 	}
 }

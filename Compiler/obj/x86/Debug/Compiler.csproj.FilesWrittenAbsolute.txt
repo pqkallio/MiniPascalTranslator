@@ -1,5 +1,1 @@
 /home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
-/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/bin/Debug/Compiler.dll.mdb
-/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/bin/Debug/Compiler.dll
-/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/obj/x86/Debug/Compiler.dll
-/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/obj/x86/Debug/Compiler.dll.mdb

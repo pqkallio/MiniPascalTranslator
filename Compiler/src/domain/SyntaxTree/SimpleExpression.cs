@@ -8,8 +8,8 @@ namespace Compiler
 		private SimpleExpressionTail tail;
 		private bool additiveInverse;
 
-		public SimpleExpression (Token token, TermNode term, SimpleExpressionTail tail, bool additiveInverse)
-			: base(token)
+		public SimpleExpression (Token token, TermNode term, SimpleExpressionTail tail, bool additiveInverse, Scope scope)
+			: base(token, scope)
 		{
 			this.term = term;
 			this.tail = tail;
@@ -17,9 +17,9 @@ namespace Compiler
 			this.evaluationType = TokenType.UNDEFINED;
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override void Accept(INodeVisitor visitor)
 		{
-			return visitor.VisitSimpleExpression (this);
+			visitor.VisitSimpleExpression (this);
 		}
 
 		public TermNode Term

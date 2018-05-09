@@ -10,12 +10,8 @@ namespace Compiler
 	{
 		private string value;
 
-		public IntValueNode (string value)
-			: this(value, new Token (0, 0, "", TokenType.INTEGER_VAL))
-		{}
-
-		public IntValueNode (string value, Token token)
-			: base (token, null)
+		public IntValueNode (string value, Token token, Scope scope)
+			: base (token, scope)
 		{
 			this.value = value;
 		}
@@ -31,8 +27,8 @@ namespace Compiler
 			set { }
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
-			return visitor.VisitIntValueNode (this);
+		public override void Accept(INodeVisitor visitor) {
+			visitor.VisitIntValueNode (this);
 		}
 
 		public override string ToString ()

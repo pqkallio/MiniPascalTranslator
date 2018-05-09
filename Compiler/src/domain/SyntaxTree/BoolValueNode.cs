@@ -6,16 +6,12 @@ namespace Compiler
 	/// <summary>
 	/// Represents a boolean value in the AST
 	/// </summary>
-	public class BoolValueNode : Evaluee, ISemanticCheckValue
+	public class BoolValueNode : Evaluee
 	{
 		private bool value;
 
-		public BoolValueNode (bool value)
-			: this(value, new Token (0, 0, "", TokenType.BOOLEAN_VAL_FALSE))
-		{}
-
-		public BoolValueNode (bool value, Token token)
-			: base(token)
+		public BoolValueNode (bool value, Token token, Scope scope)
+			: base(token, scope)
 		{
 			this.value = value;
 		}
@@ -25,8 +21,8 @@ namespace Compiler
 			set { this.value = value; }
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
-			return visitor.VisitBoolValueNode (this);
+		public override void Accept(INodeVisitor visitor) {
+			visitor.VisitBoolValueNode (this);
 		}
 
 		public override string ToString ()

@@ -31,9 +31,9 @@ namespace Compiler
 			get { return arrayElementType; }
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override void Accept(INodeVisitor visitor)
 		{
-			return visitor.VisitTypeNode (this);
+			visitor.VisitTypeNode (this);
 		}
 	}
 }

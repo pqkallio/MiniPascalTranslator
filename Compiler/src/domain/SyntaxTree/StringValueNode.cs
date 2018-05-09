@@ -10,12 +10,8 @@ namespace Compiler
 	{
 		private string value;
 
-		public StringValueNode (string value)
-			: this(value, new Token (0, 0, "", TokenType.STRING_VAL))
-		{}
-
-		public StringValueNode (string value, Token token)
-			: base (token, null)
+		public StringValueNode (string value, Token token, Scope scope)
+			: base (token, scope)
 		{
 			this.value = value;
 		}
@@ -31,8 +27,8 @@ namespace Compiler
 			set { }
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
-			return visitor.VisitStringValueNode (this);
+		public override void Accept(INodeVisitor visitor) {
+			visitor.VisitStringValueNode (this);
 		}
 
 		public override string ToString ()

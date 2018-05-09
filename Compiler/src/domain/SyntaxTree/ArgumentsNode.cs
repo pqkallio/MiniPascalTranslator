@@ -20,9 +20,9 @@ namespace Compiler
 			AddExpressions (expressions);
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override void Accept(INodeVisitor visitor)
 		{
-			return null;
+			visitor.VisitArgumentsNode(this);
 		}
 
 		private void AddExpressions (ExpressionNode[] expressions)

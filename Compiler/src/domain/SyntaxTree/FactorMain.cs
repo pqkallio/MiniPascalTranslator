@@ -6,15 +6,15 @@ namespace Compiler
 	{
 		private Evaluee evaluee;
 
-		public FactorMain (Token token, Evaluee evaluee)
-			: base(token)
+		public FactorMain (Token token, Scope scope, Evaluee evaluee)
+			: base(token, scope)
 		{
 			this.evaluee = evaluee;
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override void Accept(INodeVisitor visitor)
 		{
-			return visitor.VisitFactorMain (this);
+			visitor.VisitFactorMain (this);
 		}
 
 		public Evaluee Evaluee

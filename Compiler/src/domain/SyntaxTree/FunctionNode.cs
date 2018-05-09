@@ -9,8 +9,8 @@ namespace Compiler
 		private TokenType returnType;
 		private VariableIdNode idNode;
 
-		public FunctionNode (Token token, INameFactory nameFactory, VariableIdNode idNode, ParametersNode parametersNode, BlockNode block, Scope scope)
-			: base(token, nameFactory, scope)
+		public FunctionNode (Token token, VariableIdNode idNode, ParametersNode parametersNode, BlockNode block, Scope scope)
+			: base(token, scope)
 		{
 			this.block = block;
 			this.parameters = parametersNode;
@@ -18,9 +18,9 @@ namespace Compiler
 			this.idNode = idNode;
 		}
 
-		public override ISemanticCheckValue Accept (INodeVisitor visitor)
+		public override void Accept (INodeVisitor visitor)
 		{
-			return visitor.VisitFunctionNode (this);
+			visitor.VisitFunctionNode (this);
 		}
 
 		public virtual TokenType ReturnType

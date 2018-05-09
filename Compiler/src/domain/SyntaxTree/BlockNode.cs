@@ -7,15 +7,15 @@ namespace Compiler
 	{
 		List<StatementNode> statements;
 
-		public BlockNode (Token token, Scope blockScope, INameFactory labelFactory, List<StatementNode> statements)
-			: base(token, labelFactory, blockScope)
+		public BlockNode (Token token, Scope blockScope, List<StatementNode> statements)
+			: base(token, blockScope)
 		{
 			this.statements = statements;
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override void Accept(INodeVisitor visitor)
 		{
-			return visitor.VisitBlockNode (this);
+			visitor.VisitBlockNode (this);
 		}
 
 		public List<StatementNode> Statements

@@ -7,16 +7,16 @@ namespace Compiler
 		private SimpleExpression expression;
 		private ExpressionTail tail;
 
-		public ExpressionNode (Token token, SimpleExpression expression, ExpressionTail tail = null)
-			: base(token)
+		public ExpressionNode (Token token, Scope scope, SimpleExpression expression, ExpressionTail tail = null)
+			: base(token, scope)
 		{
 			this.expression = expression;
 			this.tail = tail;
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override void Accept(INodeVisitor visitor)
 		{
-			return visitor.VisitExpressionNode (this);
+			visitor.VisitExpressionNode (this);
 		}
 
 		public SimpleExpression SimpleExpression

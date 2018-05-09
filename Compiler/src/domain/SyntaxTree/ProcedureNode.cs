@@ -5,7 +5,7 @@ namespace Compiler
 	public class ProcedureNode : FunctionNode
 	{
 		public ProcedureNode (Token token, INameFactory labelFactory, VariableIdNode idNode, ParametersNode parametersNode, BlockNode block, Scope scope)
-			: base(token, labelFactory, idNode, parametersNode, block, scope)
+			: base(token, idNode, parametersNode, block, scope)
 		{}
 
 		public override TokenType ReturnType
@@ -14,9 +14,9 @@ namespace Compiler
 			set { base.ReturnType = TokenType.VOID; }
 		}
 
-		public override ISemanticCheckValue Accept (INodeVisitor visitor)
+		public override void Accept (INodeVisitor visitor)
 		{
-			return visitor.VisitProcedureNode (this);
+			visitor.VisitProcedureNode (this);
 		}
 	}
 }

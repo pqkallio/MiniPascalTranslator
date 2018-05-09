@@ -8,8 +8,8 @@ namespace Compiler
 		private Factor factor;
 		private TermTail termTail;
 
-		public TermTail (Token token, TokenType operation, Factor factor, TermTail termTail = null)
-			: base(token)
+		public TermTail (Token token, Scope scope, TokenType operation, Factor factor, TermTail termTail = null)
+			: base(token, scope)
 		{
 			this.operation = operation;
 			this.factor = factor;
@@ -21,9 +21,9 @@ namespace Compiler
 			get { return operation; }
 		}
 
-		public override ISemanticCheckValue Accept (INodeVisitor visitor)
+		public override void Accept (INodeVisitor visitor)
 		{
-			return visitor.VisitTermTailNode (this);
+			visitor.VisitTermTailNode (this);
 		}
 
 		public Factor Factor

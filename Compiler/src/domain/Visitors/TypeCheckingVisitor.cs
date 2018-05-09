@@ -11,25 +11,34 @@ namespace Compiler
 			this.analyzer = analyzer;
 		}
 
-		public ISemanticCheckValue VisitAssertNode(AssertNode node)
-		{
-			return null;
-		}
+		public void VisitAssertNode(AssertNode node)
+		{}
 
-		public ISemanticCheckValue VisitAssignNode(AssignNode node)
-		{
-			return null;
-		}
-
-		public ISemanticCheckValue VisitArrayAssignNode(ArrayAssignStatement node)
-		{
-			return null;
-		}
-
-		public ISemanticCheckValue VisitArrayAccessNode(ArrayAccessNode node)
+		public void VisitArraySizeCheckNode(ArraySizeCheckNode node)
 		{
 			if (node.HasAlreadyBeenEvaluated) {
-				return null;
+				return;
+			}
+
+			Property prop = node.Scope.GetProperty (node.IDNode.ID);
+
+			if (prop.GetTokenType () != TokenType.TYPE_ARRAY) {
+				node.EvaluationType = TokenType.ERROR;
+			} else {
+				node.EvaluationType = TokenType.INTEGER_VAL;
+			}
+		}
+
+		public void VisitAssignNode(AssignNode node)
+		{}
+
+		public void VisitArrayAssignNode(ArrayAssignStatement node)
+		{}
+
+		public void VisitArrayAccessNode(ArrayAccessNode node)
+		{
+			if (node.HasAlreadyBeenEvaluated) {
+				return;
 			}
 
 			Property prop = node.Scope.GetProperty (node.ArrayIdNode.ID);
@@ -40,80 +49,59 @@ namespace Compiler
 				ArrayProperty arrayProp = (ArrayProperty)prop;
 				node.EvaluationType = arrayProp.ArrayElementType;
 			}
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitDeclarationNode(DeclarationNode node)
-		{
-			return null;
-		}
+		public void VisitDeclarationNode(DeclarationNode node)
+		{}
 
-		public ISemanticCheckValue VisitIntValueNode(IntValueNode node)
+		public void VisitIntValueNode(IntValueNode node)
 		{
 			node.EvaluationType = TokenType.INTEGER_VAL;
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitRealValueNode(RealValueNode node)
+		public void VisitRealValueNode(RealValueNode node)
 		{
 			node.EvaluationType = TokenType.REAL_VAL;
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitBoolValueNode(BoolValueNode node)
+		public void VisitBoolValueNode(BoolValueNode node)
 		{
 			node.EvaluationType = TokenType.BOOLEAN_VAL;
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitStringValueNode(StringValueNode node)
+		public void VisitStringValueNode(StringValueNode node)
 		{
 			node.EvaluationType = TokenType.STRING_VAL;
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitIOPrintNode(IOPrintNode node)
-		{
-			return null;
-		}
+		public void VisitIOPrintNode(IOPrintNode node)
+		{}
 
-		public ISemanticCheckValue VisitIOReadNode(IOReadNode node)
-		{
-			return null;
-		}
+		public void VisitIOReadNode(IOReadNode node)
+		{}
 
-		public ISemanticCheckValue VisitTypeNode(TypeNode node)
-		{
-			return null;
-		}
+		public void VisitTypeNode(TypeNode node)
+		{}
 
-		public ISemanticCheckValue VisitBlockNode(BlockNode node)
-		{
-			return null;
-		}
+		public void VisitBlockNode(BlockNode node)
+		{}
 
-		public ISemanticCheckValue VisitBooleanNegation(BooleanNegation node)
+		public void VisitBooleanNegation(BooleanNegation node)
 		{
 			if (node.HasAlreadyBeenEvaluated) {
-				return null;
+				return;
 			}
+
 			node.Factor.Accept (this);
 			TokenType factorEval = node.Factor.EvaluationType;
 
 			node.EvaluationType = factorEval != TokenType.BOOLEAN_VAL ? factorEval : TokenType.ERROR;
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitExpressionNode(ExpressionNode node)
+		public void VisitExpressionNode(ExpressionNode node)
 		{
 			if (node.HasAlreadyBeenEvaluated) {
-				return null;
+				return;
 			}
 
 			node.SimpleExpression.Accept (this);
@@ -129,23 +117,19 @@ namespace Compiler
 			}
 
 			node.EvaluationType = expressionEvaluation;
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitExpressionTail(ExpressionTail node)
+		public void VisitExpressionTail(ExpressionTail node)
 		{
 			node.RightHandSide.Accept (this);
 
 			node.EvaluationType = TokenType.BOOLEAN_VAL;
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitFactorNode(Factor node)
+		public void VisitFactorNode(Factor node)
 		{
 			if (node.HasAlreadyBeenEvaluated) {
-				return null;
+				return;
 			}
 
 			node.FactorMain.Accept (this);
@@ -160,80 +144,59 @@ namespace Compiler
 				node.EvaluationType = node.FactorMain.EvaluationType;
 			}
 
-			return null;
+			return;
 		}
 
-		public ISemanticCheckValue VisitFactorMain(FactorMain node)
+		public void VisitFactorMain(FactorMain node)
 		{
 			if (node.HasAlreadyBeenEvaluated) {
-				return null;
+				return;
 			}
 
 			node.Evaluee.Accept (this);
 			node.EvaluationType = node.Evaluee.EvaluationType;
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitFactorTail(FactorTail node)
-		{
-			return null;
-		}
+		public void VisitFactorTail(FactorTail node)
+		{}
 
-		public ISemanticCheckValue VisitFunctionNode(FunctionNode node)
-		{
-			return null;
-		}
+		public void VisitFunctionNode(FunctionNode node)
+		{}
 
-		public ISemanticCheckValue VisitProcedureNode(ProcedureNode node)
-		{
-			return null;
-		}
+		public void VisitProcedureNode(ProcedureNode node)
+		{}
 
-		public ISemanticCheckValue VisitFunctionCallNode(FunctionCallNode node)
+		public void VisitFunctionCallNode(FunctionCallNode node)
 		{
 			node.IdNode.Accept (this);
 
 			node.EvaluationType = node.IdNode.EvaluationType;
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitIfNode(IfNode node)
-		{
-			return null;
-		}
+		public void VisitIfNode(IfNode node)
+		{}
 
-		public ISemanticCheckValue VisitWhileLoopNode(WhileNode node)
-		{
-			return null;
-		}
+		public void VisitWhileLoopNode(WhileNode node)
+		{}
 
-		public ISemanticCheckValue VisitParametersNode(ParametersNode node)
-		{
-			return null;
-		}
+		public void VisitParametersNode(ParametersNode node)
+		{}
 
-		public ISemanticCheckValue VisitArgumentsNode(ArgumentsNode node)
-		{
-			return null;
-		}
+		public void VisitArgumentsNode(ArgumentsNode node)
+		{}
 
-		public ISemanticCheckValue VisitProgramNode(ProgramNode node)
-		{
-			return null;
-		}
+		public void VisitProgramNode(ProgramNode node)
+		{}
 
-		public ISemanticCheckValue VisitReturnStatement(ReturnStatement node)
-		{
-			return null;
-		}
+		public void VisitReturnStatement(ReturnStatement node)
+		{}
 
-		public ISemanticCheckValue VisitTermNode(TermNode node)
+		public void VisitTermNode(TermNode node)
 		{
 			if (node.HasAlreadyBeenEvaluated) {
-				return null;
+				return;
 			}
+
 			node.Factor.Accept (this);
 			TokenType factorEval = node.Factor.EvaluationType;
 
@@ -249,14 +212,12 @@ namespace Compiler
 			}
 
 			node.EvaluationType = factorEval;
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitTermTailNode(TermTail node)
+		public void VisitTermTailNode(TermTail node)
 		{
 			if (node.HasAlreadyBeenEvaluated) {
-				return null;
+				return;
 			}
 
 			node.Factor.Accept (this);
@@ -272,31 +233,23 @@ namespace Compiler
 			}
 
 			node.EvaluationType = factorEval;
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitVariableIdNode(VariableIdNode node)
+		public void VisitVariableIdNode(VariableIdNode node)
 		{
 			if (node.HasAlreadyBeenEvaluated) {
-				return null;
+				return;
 			}
 
 			Property prop = node.Scope.GetProperty (node.ID);
 
-			if (node.ArrayRequestSize) {
-				node.EvaluationType = TokenType.INTEGER_VAL;
-			} else {
-				node.EvaluationType = prop.GetTokenType ();
-			}
-				
-			return null;
+			node.EvaluationType = prop.GetTokenType ();
 		}
 
-		public ISemanticCheckValue VisitSimpleExpression(SimpleExpression node)
+		public void VisitSimpleExpression(SimpleExpression node)
 		{
 			if (node.HasAlreadyBeenEvaluated) {
-				return null;
+				return;
 			}
 
 			node.Term.Accept (this);
@@ -317,14 +270,12 @@ namespace Compiler
 			}
 
 			node.EvaluationType = termEval;
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitSimpleExpressionTail(SimpleExpressionTail node)
+		public void VisitSimpleExpressionTail(SimpleExpressionTail node)
 		{
 			if (node.HasAlreadyBeenEvaluated) {
-				return null;
+				return;
 			}
 
 			node.Term.Accept (this);
@@ -340,8 +291,6 @@ namespace Compiler
 			}
 
 			node.EvaluationType = termEval;
-
-			return null;
 		}
 	}
 }

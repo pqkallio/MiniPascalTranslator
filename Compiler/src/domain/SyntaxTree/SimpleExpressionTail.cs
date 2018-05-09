@@ -8,8 +8,8 @@ namespace Compiler
 		private TermNode term;
 		private SimpleExpressionTail tail;
 
-		public SimpleExpressionTail (Token token, TokenType operation, TermNode term, SimpleExpressionTail tail)
-			: base(token)
+		public SimpleExpressionTail (Token token, TokenType operation, TermNode term, SimpleExpressionTail tail, Scope scope)
+			: base(token, scope)
 		{
 			this.operation = operation;
 			this.term = term;
@@ -31,9 +31,9 @@ namespace Compiler
 			get { return this.tail; }
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override void Accept(INodeVisitor visitor)
 		{
-			return visitor.VisitSimpleExpressionTail (this);
+			visitor.VisitSimpleExpressionTail (this);
 		}
 	}
 }

@@ -7,8 +7,8 @@ namespace Compiler
 		private TokenType operation;
 		private SimpleExpression rightHandSide;
 
-		public ExpressionTail (Token token, TokenType operation, SimpleExpression rightHandSide)
-			: base(token)
+		public ExpressionTail (Token token, TokenType operation, SimpleExpression rightHandSide, Scope scope)
+			: base(token, scope)
 		{
 			this.operation = operation;
 			this.rightHandSide = rightHandSide;
@@ -18,9 +18,9 @@ namespace Compiler
 			get { return rightHandSide; }
 		}
 
-		public override ISemanticCheckValue Accept (INodeVisitor visitor)
+		public override void Accept (INodeVisitor visitor)
 		{
-			return visitor.VisitExpressionTail (this);
+			visitor.VisitExpressionTail (this);
 		}
 
 		public TokenType Operation

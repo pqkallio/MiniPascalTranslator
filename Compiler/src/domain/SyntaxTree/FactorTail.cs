@@ -2,15 +2,15 @@
 
 namespace Compiler
 {
-	public class FactorTail : SyntaxTreeNode
+	public class FactorTail : Evaluee
 	{
 		public FactorTail (Token token, Scope scope = null)
 			: base(token, scope: scope)
 		{}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override void Accept(INodeVisitor visitor)
 		{
-			return visitor.VisitFactorTail (this);
+			visitor.VisitFactorTail (this);
 		}
 	}
 }

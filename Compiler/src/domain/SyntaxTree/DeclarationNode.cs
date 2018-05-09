@@ -12,8 +12,8 @@ namespace Compiler
 		private List<VariableIdNode> idsToDeclare;
 		private TypeNode type;
 
-		public DeclarationNode (Token token, INameFactory nameFactory, Scope scope, TypeNode type, List<VariableIdNode> idsToDeclare)
-			: base (token, nameFactory, scope)
+		public DeclarationNode (Token token, Scope scope, TypeNode type, List<VariableIdNode> idsToDeclare)
+			: base (token, scope)
 		{
 			this.type = type;
 			this.idsToDeclare = idsToDeclare;
@@ -29,8 +29,8 @@ namespace Compiler
 			get { return this.type; }
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
-			return visitor.VisitDeclarationNode (this);
+		public override void Accept(INodeVisitor visitor) {
+			visitor.VisitDeclarationNode (this);
 		}
 	}
 }

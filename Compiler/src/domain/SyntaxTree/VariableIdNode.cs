@@ -8,47 +8,20 @@ namespace Compiler
 	/// Represents a variable id in the AST.
 	/// Can be used as an expression.
 	/// </summary>
-	public class VariableIdNode : Evaluee
+	public class VariableIdNode : VariableEvaluee
 	{
 		private string id;
 		private TokenType variableType;
-		private ExpressionNode arrayIndexNode;
-		private ExpressionNode arraySizeExpression;
 		private TokenType arrayElementType;
-		private bool arrayRequestSize;
 
 		public VariableIdNode(Scope scope)
-			: this(null, scope, null, null)
+			: this(null, scope, null)
 		{}
 
-		public VariableIdNode(string id, Scope scope, Token token)
-			: this(id, scope, token, null)
-		{}
-
-		public VariableIdNode (string id, Scope scope, Token token, ExpressionNode arrayIndexNode = null, ExpressionNode arraySizeExpression = null, TokenType arrayElementType = TokenType.UNDEFINED)
-			: base(token, scope: scope, isVariable: true)
+		public VariableIdNode (string id, Scope scope, Token token)
+			: base(token, scope: scope)
 		{
 			this.id = id;
-			this.arrayIndexNode = arrayIndexNode;
-			this.arraySizeExpression = arraySizeExpression;
-			this.arrayElementType = arrayElementType;
-			this.arrayRequestSize = false;
-		}
-
-		public TokenType ArrayElementType
-		{
-			get { return arrayElementType; }
-			set { arrayElementType = value; }
-		}
-
-		public ExpressionNode ArraySizeExpression
-		{
-			get { return arraySizeExpression; }
-		}
-
-		public void SetEvaluationType(TokenType type)
-		{
-			evaluationType = type;
 		}
 
 		public string ID {
@@ -56,31 +29,29 @@ namespace Compiler
 			set { id = value; }
 		}
 
-		public TokenType VariableType
-		{
-			get { return variableType; }
-			set { variableType = value; }
-		}
-
 		public override string ToString ()
 		{
 			return ID;
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
-			return visitor.VisitVariableIdNode (this);
+		public override void Accept(INodeVisitor visitor) {
+			visitor.VisitVariableIdNode (this);
 		}
 
-		public ExpressionNode ArrayIndex
+		public TokenType VariableType 
 		{
-			get { return arrayIndexNode; }
-			set { arrayIndexNode = value; }
+			get { return this.variableType; }
+			set { this.variableType = value; }
 		}
 
-		public bool ArrayRequestSize
+		public TokenType ArrayElementType
 		{
-			get { return arrayRequestSize; }
-			set { arrayRequestSize = value; }
+			get { return this.arrayElementType; }
+			set { this.arrayElementType = value; }
+		}
+
+		public override VariableIdNode IDNode {
+			get { return this; }
 		}
 	}
 }

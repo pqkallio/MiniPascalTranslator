@@ -12,9 +12,9 @@ namespace Compiler
 			this.returnValue = returnValue;
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override void Accept(INodeVisitor visitor)
 		{
-			return visitor.VisitReturnStatement(this);
+			visitor.VisitReturnStatement(this);
 		}
 
 		public ExpressionNode ReturnValue

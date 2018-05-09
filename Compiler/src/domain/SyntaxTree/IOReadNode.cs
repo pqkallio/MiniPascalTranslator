@@ -9,22 +9,22 @@ namespace Compiler
 	/// </summary>
 	public class IOReadNode : StatementNode
 	{
-		private List<VariableIdNode> idNodes;
+		private List<Evaluee> idNodes;
 
-		public IOReadNode (List<VariableIdNode> idNodes, Scope scope, Token token, INameFactory nameFactory)
-			: base(token, nameFactory, scope)
+		public IOReadNode (List<Evaluee> idNodes, Scope scope, Token token)
+			: base(token, scope)
 		{
 			this.idNodes = idNodes;
 		}
 
-		public List<VariableIdNode> IDNodes
+		public List<Evaluee> IDNodes
 		{
 			get { return this.idNodes; }
 			set { this.idNodes = value; }
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
-			return visitor.VisitIOReadNode (this);
+		public override void Accept(INodeVisitor visitor) {
+			visitor.VisitIOReadNode (this);
 		}
 	}
 }

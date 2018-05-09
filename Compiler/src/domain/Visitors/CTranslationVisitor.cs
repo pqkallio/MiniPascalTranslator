@@ -30,102 +30,85 @@ namespace Compiler
 			get { return this.translation; }
 		}
 
-		public ISemanticCheckValue VisitAssertNode(AssertNode node)
-		{
-			return null;
-		}
+		public void VisitAssertNode(AssertNode node)
+		{}
 
-		public ISemanticCheckValue VisitAssignNode(AssignNode node)
+		public void VisitArraySizeCheckNode(ArraySizeCheckNode node)
+		{}
+
+		public void VisitAssignNode(AssignNode node)
 		{
 			node.AssignValueExpression.Accept (this);
-			addToTranslation (statement (spaced (nameFactory.GetCName (node.IDNode.ID), "=", node.AssignValueExpression.Location)));
-			return null;
+			addToTranslation (statement (spaced (nameFactory.GetCName (node.Scope, node.IDNode.IDNode.ID), "=", node.AssignValueExpression.Location)));
+			
 		}
 
-		public ISemanticCheckValue VisitArrayAssignNode(ArrayAssignStatement node)
-		{
-			return null;
-		}
+		public void VisitArrayAssignNode(ArrayAssignStatement node)
+		{}
 
-		public ISemanticCheckValue VisitArrayAccessNode(ArrayAccessNode node)
-		{
-			return null;
-		}
+		public void VisitArrayAccessNode(ArrayAccessNode node)
+		{}
 
-		public ISemanticCheckValue VisitDeclarationNode(DeclarationNode node)
+		public void VisitDeclarationNode(DeclarationNode node)
 		{
 			if (node.DeclarationType.PropertyType == TokenType.TYPE_ARRAY) {
 				node.DeclarationType.ArraySizeExpression.Accept (this);
 
 				foreach (VariableIdNode idNode in node.IDsToDeclare) {
-					string id = nameFactory.GetCName(idNode.ID);
-					addAllocation(typeNames[node.DeclarationType.ArrayElementType], node.DeclarationType.Location, id, node.Scope);
+					string id = nameFactory.GetCName(node.Scope, idNode.ID);
+					addAllocation(node.DeclarationType.ArrayElementType, node.DeclarationType.Location, id, node.Scope);
 				}
 			} else {
 				foreach (VariableIdNode idNode in node.IDsToDeclare) {
-					addToTranslation (GetDeclarationType (node.DeclarationType) + " " + nameFactory.GetCName(idNode.ID) + ";");
+					addToTranslation (GetDeclarationType (node.DeclarationType) + " " + nameFactory.GetCName(node.Scope, idNode.ID) + ";");
 				}
 			}
 			
-			return null;
+			
 		}
 
-		public ISemanticCheckValue VisitIntValueNode(IntValueNode node)
+		public void VisitIntValueNode(IntValueNode node)
 		{	
-			setNodeLocation (node);
+			setNodeLocation (node, node.EvaluationType);
 
 			addAssignment (typeNames[node.EvaluationType], node.Location, node.Value);
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitRealValueNode(RealValueNode node)
+		public void VisitRealValueNode(RealValueNode node)
 		{
-			setNodeLocation (node);
+			setNodeLocation (node, node.EvaluationType);
 
 			addAssignment (typeNames[node.EvaluationType], node.Location, node.Value);
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitBoolValueNode(BoolValueNode node)
+		public void VisitBoolValueNode(BoolValueNode node)
 		{
-			setNodeLocation (node);
+			setNodeLocation (node, node.EvaluationType);
 
 			string strVal = node.Value ? "1" : "0";
 
 			addAssignment (typeNames[node.EvaluationType], node.Location, strVal);
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitStringValueNode(StringValueNode node)
+		public void VisitStringValueNode(StringValueNode node)
 		{
-			setNodeLocation (node);
+			setNodeLocation (node, node.EvaluationType);
 
 			string strVal = unspaced (CTranslatorConstants.STRING_DELIMITER, node.Value, CTranslatorConstants.STRING_DELIMITER);
 
 			addAssignment (typeNames[node.EvaluationType], node.Location, strVal);
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitIOPrintNode(IOPrintNode node)
-		{
-			return null;
-		}
+		public void VisitIOPrintNode(IOPrintNode node)
+		{}
 
-		public ISemanticCheckValue VisitIOReadNode(IOReadNode node)
-		{
-			return null;
-		}
+		public void VisitIOReadNode(IOReadNode node)
+		{}
 
-		public ISemanticCheckValue VisitTypeNode(TypeNode node)
-		{
-			return null;
-		}
+		public void VisitTypeNode(TypeNode node)
+		{}
 
-		public ISemanticCheckValue VisitBlockNode(BlockNode node)
+		public void VisitBlockNode(BlockNode node)
 		{
 			addToTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item1);
 			blockDepth++;
@@ -147,17 +130,14 @@ namespace Compiler
 
 			blockDepth--;
 			addToTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item2);
-			return null;
 		}
 
-		public ISemanticCheckValue VisitBooleanNegation(BooleanNegation node)
-		{
-			return null;
-		}
+		public void VisitBooleanNegation(BooleanNegation node)
+		{}
 
-		public ISemanticCheckValue VisitExpressionNode(ExpressionNode node)
+		public void VisitExpressionNode(ExpressionNode node)
 		{
-			setNodeLocation (node);
+			setNodeLocation (node, node.EvaluationType);
 
 			node.SimpleExpression.Location = node.Location;
 			node.SimpleExpression.Accept (this);
@@ -166,13 +146,11 @@ namespace Compiler
 				node.ExpressionTail.SubTotal = node.SimpleExpression.Location;
 				node.ExpressionTail.Accept (this);
 			}
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitSimpleExpression (SimpleExpression node)
+		public void VisitSimpleExpression (SimpleExpression node)
 		{
-			setNodeLocation (node);
+			setNodeLocation (node, node.EvaluationType);
 
 			node.Term.Location = node.Location;
 			node.Term.Accept (this);
@@ -185,13 +163,11 @@ namespace Compiler
 				node.Tail.SubTotal = node.Location;
 				node.Tail.Accept (this);
 			}
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitSimpleExpressionTail (SimpleExpressionTail node)
+		public void VisitSimpleExpressionTail (SimpleExpressionTail node)
 		{
-			setNodeLocation (node);
+			setNodeLocation (node, node.EvaluationType);
 
 			node.Term.Location = node.Location;
 			node.Term.Accept (this);
@@ -202,110 +178,82 @@ namespace Compiler
 				node.Tail.SubTotal = node.SubTotal;
 				node.Tail.Accept (this);
 			}
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitExpressionTail(ExpressionTail node)
+		public void VisitExpressionTail(ExpressionTail node)
 		{
-			setNodeLocation (node);
+			setNodeLocation (node, node.EvaluationType);
 			node.RightHandSide.Accept (this);
 			addAssignment (typeNames[node.EvaluationType], node.Location, node.Location, opStrings[node.Operation], node.RightHandSide.Location);
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitFactorNode(Factor node)
+		public void VisitFactorNode(Factor node)
 		{
-			setNodeLocation (node);
+			setNodeLocation (node, node.EvaluationType);
 			node.FactorMain.Location = node.Location;
 			node.FactorMain.Accept (this);
 
 			if (node.FactorTail != null) {
 				// DO SUMTHIN!!!!
 			}
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitFactorMain(FactorMain node)
+		public void VisitFactorMain(FactorMain node)
 		{
-			setNodeLocation (node);
+			setNodeLocation (node, node.EvaluationType);
 
 			node.Evaluee.Location = node.Location;
 			node.Evaluee.Accept (this);
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitFactorTail(FactorTail node)
-		{
-			return null;
-		}
+		public void VisitFactorTail(FactorTail node)
+		{}
 
-		public ISemanticCheckValue VisitFunctionNode(FunctionNode node)
+		public void VisitFunctionNode(FunctionNode node)
 		{
-			addToTranslation (createFunctionStart(nameFactory.GetCName(node.IDNode.ID), node.IDNode, nameFactory, node.Parameters.Parameters));
+			addToTranslation (createFunctionStart(nameFactory.GetCName(node.Scope, node.IDNode.ID), node.IDNode, nameFactory, node.Parameters.Parameters));
 			node.Block.Accept (this);
 			addEmptyLineToTranslation ();
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitProcedureNode(ProcedureNode node)
+		public void VisitProcedureNode(ProcedureNode node)
 		{
 			VisitFunctionNode (node);
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitFunctionCallNode(FunctionCallNode node)
-		{
-			return null;
-		}
+		public void VisitFunctionCallNode(FunctionCallNode node)
+		{}
 
-		public ISemanticCheckValue VisitIfNode(IfNode node)
-		{
-			return null;
-		}
+		public void VisitIfNode(IfNode node)
+		{}
 
-		public ISemanticCheckValue VisitWhileLoopNode(WhileNode node)
-		{
-			return null;
-		}
+		public void VisitWhileLoopNode(WhileNode node)
+		{}
 
-		public ISemanticCheckValue VisitParametersNode(ParametersNode node)
-		{
-			return null;
-		}
+		public void VisitParametersNode(ParametersNode node)
+		{}
 
-		public ISemanticCheckValue VisitArgumentsNode(ArgumentsNode node)
-		{
-			return null;
-		}
+		public void VisitArgumentsNode(ArgumentsNode node)
+		{}
 
-		public ISemanticCheckValue VisitProgramNode(ProgramNode node)
+		public void VisitProgramNode(ProgramNode node)
 		{
 			createProgramStart (node);
 
 			foreach (FunctionNode func in node.Functions.Values) {
 				func.Accept (this);
 			}
-
-			return null;
 		}
 
-		public ISemanticCheckValue VisitReturnStatement(ReturnStatement node)
-		{
-			return null;
-		}
+		public void VisitReturnStatement(ReturnStatement node)
+		{}
 
-		public ISemanticCheckValue VisitTermNode(TermNode node)
+		public void VisitTermNode(TermNode node)
 		{
 			Factor factor = node.Factor;
 			TermTail tail = node.TermTail;
 
-			setNodeLocation (node);
+			setNodeLocation (node, node.EvaluationType);
 
 			factor.Location = node.Location;
 			factor.Accept (this);
@@ -314,12 +262,11 @@ namespace Compiler
 				tail.SubTotal = factor.Location;
 				tail.Accept (this);
 			}
-			return null;
 		}
 
-		public ISemanticCheckValue VisitTermTailNode(TermTail node)
+		public void VisitTermTailNode(TermTail node)
 		{
-			setNodeLocation (node);
+			setNodeLocation (node, node.EvaluationType);
 			Factor factor = node.Factor;
 			TermTail tail = node.ChildTermTail;
 
@@ -332,13 +279,10 @@ namespace Compiler
 				tail.SubTotal = node.Location;
 				tail.Accept (this);
 			}
-			return null;
 		}
 
-		public ISemanticCheckValue VisitVariableIdNode(VariableIdNode node)
-		{
-			return null;
-		}
+		public void VisitVariableIdNode(VariableIdNode node)
+		{}
 
 		private void createProgramStart (ProgramNode programNode)
 		{
@@ -350,7 +294,7 @@ namespace Compiler
 			addEmptyLineToTranslation ();
 			createHelperFunctions ();
 			addEmptyLineToTranslation ();
-			createMainFunction (programName);
+			createMainFunction (programName, programNode.Scope);
 			addEmptyLineToTranslation ();
 		}
 
@@ -365,7 +309,7 @@ namespace Compiler
 		{
 			addComment("program functions");
 
-			createProgramFunctionDeclaration(programName);
+			createProgramFunctionDeclaration(programName, programNode.Scope);
 
 			foreach (string func in programNode.Functions.Keys) {
 				FunctionNode functionNode = programNode.Functions [func];
@@ -400,20 +344,20 @@ namespace Compiler
 
 		private string createFunctionDeclaration (string functionName, VariableIdNode idNode, List<Parameter> parameters = null)
 		{
-			return createFunctionDeclaration (nameFactory.GetCName (functionName), idNode, nameFactory, parameters);
+			return createFunctionDeclaration (nameFactory.GetCName (idNode.Scope, functionName), idNode, nameFactory, parameters);
 		}
 
-		private void createProgramFunctionDeclaration(string programName)
+		private void createProgramFunctionDeclaration(string programName, Scope scope)
 		{
-			addToTranslation ("int " + nameFactory.GetCName (programName) + "();");
+			addToTranslation ("int " + nameFactory.GetCName (scope, programName) + "();");
 		}
 
-		private void createMainFunction (string programName)
+		private void createMainFunction (string programName, Scope scope)
 		{
 			addToTranslation ("int main()");
 			addToTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item1);
 			this.blockDepth++;
-			addToTranslation ("return " + nameFactory.GetCName (programName) + "();");
+			addToTranslation ("return " + nameFactory.GetCName (scope, programName) + "();");
 			this.blockDepth--;
 			addToTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item2);
 		}
@@ -490,7 +434,7 @@ namespace Compiler
 				returnType = typeNames [idNode.ArrayElementType] + '*';
 			}
 
-			string parameterString = createParameters (nameFactory, parameters);
+			string parameterString = createParameters (nameFactory, idNode.Scope, parameters);
 
 			return statement(spaced(returnType, functionName, parameterString));
 		}
@@ -505,21 +449,21 @@ namespace Compiler
 				returnType = typeNames [idNode.ArrayElementType] + '*';
 			}
 
-			string parameterString = createParameters (nameFactory, parameters);
+			string parameterString = createParameters (nameFactory, idNode.Scope, parameters);
 
 			return spaced(returnType, functionName, parameterString);
 		}
 
-		private static string createParameters (CNameFactory nameFactory, List<Parameter> parameters = null)
+		private static string createParameters (CNameFactory nameFactory, Scope scope, List<Parameter> parameters = null)
 		{
 			StringBuilder sb = new StringBuilder (CTranslatorConstants.CALL_TAIL_DELIMITERS.Item1);
 
 			if (parameters != null && parameters.Count > 0) {
 				for (int i = 0; i < parameters.Count - 1; i++) {
-					sb.Append (parameterToString (nameFactory, parameters [i]) + ", ");
+					sb.Append (parameterToString (nameFactory, parameters [i], scope) + ", ");
 				}
 
-				sb.Append (parameterToString (nameFactory, parameters [parameters.Count - 1]));
+				sb.Append (parameterToString (nameFactory, parameters [parameters.Count - 1], scope));
 			}
 
 			sb.Append (CTranslatorConstants.CALL_TAIL_DELIMITERS.Item2);
@@ -527,7 +471,7 @@ namespace Compiler
 			return sb.ToString ();
 		}
 
-		private static string parameterToString (CNameFactory nameFactory, Parameter param)
+		private static string parameterToString (CNameFactory nameFactory, Parameter param, Scope scope)
 		{
 			StringBuilder sb = new StringBuilder ("");
 
@@ -538,13 +482,13 @@ namespace Compiler
 				}
 
 				sb.Append (' ');
-				sb.Append (nameFactory.GetCName (param.IdNode.ID));
+				sb.Append (nameFactory.GetCName (scope, param.IdNode.ID));
 			} else {
 				sb.Append (typeNames [param.IdNode.ArrayElementType]);
 				sb.Append ('*');
 
 				sb.Append (' ');
-				sb.Append (nameFactory.GetCName (param.IdNode.ID));
+				sb.Append (nameFactory.GetCName (scope, param.IdNode.ID));
 			}
 
 			return sb.ToString ();
@@ -555,7 +499,7 @@ namespace Compiler
 			return str + ';';
 		}
 
-		private void addAllocation (string type, string times, string id, Scope scope)
+		private void addAllocation (TokenType type, string times, string id, Scope scope)
 		{
 			if (!this.allocations.ContainsKey (scope)){
 				this.allocations[scope] = new List<string> ();
@@ -563,11 +507,12 @@ namespace Compiler
 
 			this.allocations[scope].Add (id);
 
-			string tempLoc = nameFactory.GetTempVarId ();
+			bool declared = false;
+			string tempLoc = nameFactory.GetTempVarId (scope, type, ref declared);
 			addToTranslation(statement (spaced (typeNames[TokenType.INTEGER_VAL], tempLoc)));
-			addToTranslation(statement (spaced (tempLoc, CTranslatorConstants.ASSIGNMENT, times, opStrings[TokenType.BINARY_OP_MUL], sizeOfString(type))));
+			addToTranslation(statement (spaced (tempLoc, CTranslatorConstants.ASSIGNMENT, times, opStrings[TokenType.BINARY_OP_MUL], sizeOfString(typeNames[type]))));
 
-			string typePointer = unspaced(type, CTranslatorConstants.MEM_POINTER);
+			string typePointer = unspaced(typeNames[type], CTranslatorConstants.MEM_POINTER);
 			string malloc = unspaced (CTranslatorConstants.MEM_ALLOCATION, CTranslatorConstants.CALL_TAIL_DELIMITERS.Item1, tempLoc, CTranslatorConstants.CALL_TAIL_DELIMITERS.Item2);
 			string mallocCall = statement(spaced(typePointer, id, CTranslatorConstants.ASSIGNMENT, malloc));
 			addToTranslation (mallocCall);
@@ -610,9 +555,10 @@ namespace Compiler
 			}
 		}
 
-		private void setNodeLocation(SyntaxTreeNode node) {
+		private void setNodeLocation(SyntaxTreeNode node, TokenType type) {
 			if (node.Location == null) {
-				node.Location = nameFactory.GetTempVarId ();
+				bool declared = false;
+				node.Location = nameFactory.GetTempVarId (node.Scope, type, ref declared);
 			}
 		}
 	}

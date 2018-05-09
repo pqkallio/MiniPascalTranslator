@@ -7,16 +7,16 @@ namespace Compiler
 		private FactorMain main;
 		private FactorTail tail;
 
-		public Factor (Token token, FactorMain main, FactorTail tail = null)
-			: base(token)
+		public Factor (Token token, Scope scope, FactorMain main, FactorTail tail = null)
+			: base(token, scope)
 		{
 			this.main = main;
 			this.tail = tail;
 		}
 
-		public override ISemanticCheckValue Accept (INodeVisitor visitor)
+		public override void Accept (INodeVisitor visitor)
 		{
-			return visitor.VisitFactorNode (this);
+			visitor.VisitFactorNode (this);
 		}
 
 		public FactorMain FactorMain

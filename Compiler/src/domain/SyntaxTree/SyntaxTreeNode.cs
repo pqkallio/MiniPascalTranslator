@@ -8,19 +8,17 @@ namespace Compiler
 		protected Token token;
 		protected string label;
 		protected string location;
-		protected INameFactory labelFactory;
 		protected Scope scope;
 
-		public SyntaxTreeNode (Token token, INameFactory labelFactory = null, Scope scope = null)
+		public SyntaxTreeNode (Token token, Scope scope = null)
 		{
 			this.token = token;
-			this.labelFactory = labelFactory;
 			this.scope = scope;
 			this.label = null;
 			this.location = null;
 		}
 
-		public abstract ISemanticCheckValue Accept(INodeVisitor visitor);
+		public abstract void Accept(INodeVisitor visitor);
 
 		public Token Token { 
 			get { return token; }

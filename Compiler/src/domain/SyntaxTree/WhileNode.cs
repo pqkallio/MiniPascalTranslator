@@ -7,16 +7,16 @@ namespace Compiler
 		private ExpressionNode condition;
 		private StatementNode statement;
 
-		public WhileNode (Token token, INameFactory nameFactory, Scope scope, ExpressionNode condition, StatementNode statement)
-			: base(token, nameFactory, scope)
+		public WhileNode (Token token, Scope scope, ExpressionNode condition, StatementNode statement)
+			: base(token, scope)
 		{
 			this.condition = condition;
 			this.statement = statement;
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override void Accept(INodeVisitor visitor)
 		{
-			return visitor.VisitWhileLoopNode (this);
+			visitor.VisitWhileLoopNode (this);
 		}
 
 		public ExpressionNode Condition

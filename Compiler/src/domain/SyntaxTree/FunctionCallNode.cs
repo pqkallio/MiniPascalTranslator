@@ -8,8 +8,8 @@ namespace Compiler
 		private VariableIdNode idNode;
 		private ArgumentsNode argumentsNode;
 
-		public FunctionCallNode (Token token, VariableIdNode idNode, INameFactory nameFactory, ArgumentsNode argumentsNode = null)
-			: base(token, nameFactory)
+		public FunctionCallNode (Token token, Scope scope, VariableIdNode idNode, ArgumentsNode argumentsNode = null)
+			: base(token, scope)
 		{
 			this.idNode = idNode;
 			this.argumentsNode = argumentsNode;
@@ -36,9 +36,9 @@ namespace Compiler
 			set { idNode = value; }
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override void Accept(INodeVisitor visitor)
 		{
-			return visitor.VisitFunctionCallNode (this);
+			visitor.VisitFunctionCallNode (this);
 		}
 	}
 }

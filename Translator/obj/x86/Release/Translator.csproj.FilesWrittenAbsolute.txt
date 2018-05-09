@@ -1,0 +1,7 @@
+/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Translator/obj/x86/Release/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Translator/bin/Release/Translator.exe.mdb
+/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Translator/bin/Release/Translator.exe
+/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Translator/obj/x86/Release/Translator.exe
+/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Translator/obj/x86/Release/Translator.exe.mdb
+/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Translator/bin/Release/Compiler.dll
+/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Translator/bin/Release/Compiler.dll.mdb

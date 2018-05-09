@@ -266,8 +266,6 @@ namespace Compiler
 
 			END_WHILE:
 			return nodeBuilder.CreateParametersNode(token, parameters);
-
-			return null;
 		}
 
 		private Parameter ParseParameter (Token token, Scope scope)
@@ -378,7 +376,7 @@ namespace Compiler
 				List<StatementNode> statements = new List<StatementNode> ();
 				ParseStatements (token, newScope, statements);
 
-				return new BlockNode (token, newScope, nameFactory, statements);
+				return new BlockNode (token, newScope, statements);
 			} catch (UnexpectedTokenException ex) {
 				FastForwardToEndOfBlock (ex);
 			}
@@ -483,9 +481,7 @@ namespace Compiler
 			StatementNode elseBranch = ParseElseStatement (scope);
 
 		
-			return new IfNode (token, nameFactory, ifCondition, ifBranch, elseBranch);
-
-			return null;
+			return new IfNode (token, scope, ifCondition, ifBranch, elseBranch);
 		}
 
 		private StatementNode ParseElseStatement (Scope scope)
@@ -507,9 +503,7 @@ namespace Compiler
 			match (GetNextToken (), TokenType.DO_WHILE);
 			StatementNode statement = ParseStatement(scope, GetNextToken ());
 
-			return new WhileNode (token, nameFactory, scope, condition, statement);
-
-			return null;
+			return new WhileNode (token, scope, condition, statement);
 		}
 
 		private StatementNode ParseVarDeclaration (Token token, Scope scope)
@@ -542,30 +536,27 @@ namespace Compiler
 				}
 			}
 
-			return new DeclarationNode (token, nameFactory, scope, type, ids);
-
-
-			return null;
+			return new DeclarationNode (token, scope, type, ids);
 		}
 
 		private TypeNode ParseTypeNode (Scope scope)
 		{
 			Token token = GetNextToken ();
 			switch (token.Type) {
-			case TokenType.TYPE_INTEGER:
-			case TokenType.TYPE_BOOLEAN:
-			case TokenType.TYPE_REAL:
-			case TokenType.TYPE_STRING:
-				return new TypeNode (token, token.Type);
-			case TokenType.TYPE_ARRAY:
-				match (GetNextToken (), TokenType.BRACKET_LEFT);
-				ExpressionNode arraySizeExpression = ParseExpression (scope);
-				match (GetNextToken (), TokenType.BRACKET_RIGHT);
-				match (GetNextToken (), TokenType.OF);
-				TokenType elementType = ParseType ();
-				return new ArrayTypeNode (token, token.Type, elementType, arraySizeExpression);
-			default:
-				throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_TYPE);
+				case TokenType.TYPE_INTEGER:
+				case TokenType.TYPE_BOOLEAN:
+				case TokenType.TYPE_REAL:
+				case TokenType.TYPE_STRING:
+					return new TypeNode (token, token.Type);
+				case TokenType.TYPE_ARRAY:
+					match (GetNextToken (), TokenType.BRACKET_LEFT);
+					ExpressionNode arraySizeExpression = ParseExpression (scope);
+					match (GetNextToken (), TokenType.BRACKET_RIGHT);
+					match (GetNextToken (), TokenType.OF);
+					TokenType elementType = ParseType ();
+					return new ArrayTypeNode (token, token.Type, elementType, arraySizeExpression);
+				default:
+					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_TYPE);
 			}
 		}
 
@@ -659,30 +650,26 @@ namespace Compiler
 			}
 
 			return nodeBuilder.CreateReturnStatement (token, expression);
-
-			return null;
 		}
 
 		private StatementNode ParseReadStatement (Scope scope, Token token)
 		{
 			match (GetNextToken (), TokenType.PARENTHESIS_LEFT);
-			List<VariableIdNode> ids = new List<VariableIdNode> ();
+			List<Evaluee> ids = new List<Evaluee> ();
 			ParseIdsForReadStatement (scope, ids);
 			match (GetNextToken (), TokenType.PARENTHESIS_RIGHT);
 
-			return new IOReadNode (ids, scope, token, nameFactory);
-
-			return null;
+			return new IOReadNode (ids, scope, token);
 		}
 
-		private void ParseIdsForReadStatement (Scope scope, List<VariableIdNode> ids)
+		private void ParseIdsForReadStatement (Scope scope, List<Evaluee> ids)
 		{
 			Token token = GetNextToken ();
 			TokenType type = idType(token.Type);
 
 			switch (type) {
 			case TokenType.ID:
-				VariableIdNode idNode = ParseVariable (scope, token);
+				Evaluee idNode = ParseVariable (scope, token);
 				ids.Add (idNode);
 				ParseIdsForReadStatement (scope, ids);
 				break;
@@ -710,19 +697,25 @@ namespace Compiler
 			return type;
 		}
 
-		private VariableIdNode ParseVariable (Scope scope, Token token)
+		private Evaluee ParseVariable (Scope scope, Token token)
 		{
+			VariableIdNode idNode = new VariableIdNode (token.Value, scope, token);
 			Token next = GetNextToken ();
 
 			if (next.Type != TokenType.BRACKET_LEFT) {
 				bufferedToken = next;
-				return new VariableIdNode (token.Value, scope, token);
+				return idNode;
 			}
 
+			return ParseArrayAccessNode (scope, idNode);
+		}
+
+		private Evaluee ParseArrayAccessNode (Scope scope, VariableIdNode idNode)
+		{
 			ExpressionNode arrayIndexExpression = ParseExpression (scope);
 			match (GetNextToken (), TokenType.BRACKET_RIGHT);
 
-			return new VariableIdNode (token.Value, scope, token, arrayIndexExpression);
+			return new ArrayAccessNode (idNode, idNode.Token, scope, arrayIndexExpression);
 		}
 
 		private StatementNode ParseWriteStatement (Scope scope, Token token)
@@ -732,9 +725,7 @@ namespace Compiler
 			ArgumentsNode argumentsNode = ParseArguments (scope, arguments);
 			match (GetNextToken (), TokenType.PARENTHESIS_RIGHT);
 
-			return new IOPrintNode (token, argumentsNode, nameFactory);
-
-			return null;
+			return new IOPrintNode (token, argumentsNode, scope);
 		}
 
 		private StatementNode ParseAssertStatement (Scope scope, Token token)
@@ -743,9 +734,7 @@ namespace Compiler
 			ExpressionNode expression = ParseExpression (scope);
 			match (GetNextToken (), TokenType.PARENTHESIS_RIGHT);
 
-			return new AssertNode (token, expression, nameFactory);
-
-			return null;
+			return new AssertNode (token, expression, scope);
 		}
 
 		private StatementNode ParseIdStatement (Scope scope, Token token)
@@ -769,13 +758,13 @@ namespace Compiler
 		{
 			ExpressionNode arrayIndexExpression = ParseExpression (scope);
 			match (GetNextToken (), TokenType.BRACKET_RIGHT);
-
+			ArrayAccessNode arrayAccessNode = new ArrayAccessNode (idNode, idNode.Token, scope, arrayIndexExpression);
 			Token token = GetNextToken ();
 
 			switch (token.Type) {
 				case TokenType.ASSIGN:
 					ExpressionNode assignValueExpression = ParseExpression (scope);
-					return nodeBuilder.CreateAssignToArrayNode (idNode, scope, token, nameFactory, arrayIndexExpression, assignValueExpression);
+					return nodeBuilder.CreateAssignToArrayNode (arrayAccessNode, scope, token, arrayIndexExpression, assignValueExpression);
 				default:
 					throw new UnexpectedTokenException (token, TokenType.ASSIGN);
 			}
@@ -785,9 +774,7 @@ namespace Compiler
 		{
 			ExpressionNode expression = ParseExpression (scope);
 
-			return nodeBuilder.CreateAssignNode (idNode, scope, token, nameFactory, expression);
-
-			return null;
+			return nodeBuilder.CreateAssignNode (idNode, scope, token, expression);
 		}
 
 		private ExpressionNode ParseExpression (Scope scope)
@@ -808,9 +795,7 @@ namespace Compiler
 					SimpleExpression expression = ParseSimpleExpression (scope, token);
 					ExpressionTail tail = ParseExpressionTail (scope);
 					
-					return new ExpressionNode (token, expression, tail);
-
-					return null;
+					return new ExpressionNode (token, scope, expression, tail);
 				default:
 					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
 			}
@@ -829,9 +814,7 @@ namespace Compiler
 				case TokenType.BINARY_OP_LOG_GT:
 					SimpleExpression rightHandSide = ParseSimpleExpression (scope, GetNextToken ());
 
-					return new ExpressionTail (token, token.Type, rightHandSide);
-
-					break;
+					return new ExpressionTail (token, token.Type, rightHandSide, scope);
 				default:
 					bufferedToken = token;
 					break;
@@ -866,25 +849,21 @@ namespace Compiler
 			}
 
 			switch (token.Type) {
-			case TokenType.ID:
-			case TokenType.STRING_VAL:
-			case TokenType.INTEGER_VAL:
-			case TokenType.BOOLEAN_VAL_FALSE:
-			case TokenType.BOOLEAN_VAL_TRUE:
-			case TokenType.REAL_VAL:
-			case TokenType.PARENTHESIS_LEFT:
-			case TokenType.UNARY_OP_LOG_NEG:
-				TermNode term = ParseTerm (scope, token);
-				SimpleExpressionTail tail = ParseSimpleExpressionTail (scope);
+				case TokenType.ID:
+				case TokenType.STRING_VAL:
+				case TokenType.INTEGER_VAL:
+				case TokenType.BOOLEAN_VAL_FALSE:
+				case TokenType.BOOLEAN_VAL_TRUE:
+				case TokenType.REAL_VAL:
+				case TokenType.PARENTHESIS_LEFT:
+				case TokenType.UNARY_OP_LOG_NEG:
+					TermNode term = ParseTerm (scope, token);
+					SimpleExpressionTail tail = ParseSimpleExpressionTail (scope);
 
-				return new SimpleExpression (token, term, tail, additiveInverse);
-
-				break;
+					return new SimpleExpression (token, term, tail, additiveInverse, scope);
 				default:
 					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
 			}
-		
-			return null;
 		}
 
 		private SimpleExpressionTail ParseSimpleExpressionTail (Scope scope)
@@ -910,35 +889,27 @@ namespace Compiler
 			TermNode term = ParseTerm(scope, GetNextToken ());
 			SimpleExpressionTail tail = ParseSimpleExpressionTail (scope);
 
-			return new SimpleExpressionTail (token, operation, term, tail);
-
-
-			return null;
+			return new SimpleExpressionTail (token, operation, term, tail, scope);
 		}
 
 		private TermNode ParseTerm (Scope scope, Token token)
 		{
 			switch (token.Type) {
-			case TokenType.ID:
-			case TokenType.STRING_VAL:
-			case TokenType.INTEGER_VAL:
-			case TokenType.BOOLEAN_VAL_FALSE:
-			case TokenType.BOOLEAN_VAL_TRUE:
-			case TokenType.REAL_VAL:
-			case TokenType.PARENTHESIS_LEFT:
-			case TokenType.UNARY_OP_LOG_NEG:
-				Factor factor = ParseFactor (scope, token);
-				TermTail tail = ParseTermTail (scope);
+				case TokenType.ID:
+				case TokenType.STRING_VAL:
+				case TokenType.INTEGER_VAL:
+				case TokenType.BOOLEAN_VAL_FALSE:
+				case TokenType.BOOLEAN_VAL_TRUE:
+				case TokenType.REAL_VAL:
+				case TokenType.PARENTHESIS_LEFT:
+				case TokenType.UNARY_OP_LOG_NEG:
+					Factor factor = ParseFactor (scope, token);
+					TermTail tail = ParseTermTail (scope);
 
-				return new TermNode (token, factor, tail);
-
-
-				break;
-			default:
-				throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
+					return new TermNode (token, scope, factor, tail);
+				default:
+					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
 			}
-
-			return null;
 		}
 
 		private TermTail ParseTermTail (Scope scope)
@@ -946,17 +917,14 @@ namespace Compiler
 			Token token = GetNextToken ();
 
 			switch (token.Type) {
-			case TokenType.BINARY_OP_MUL:
-			case TokenType.BINARY_OP_DIV:
-			case TokenType.BINARY_OP_MOD:
-			case TokenType.BINARY_OP_LOG_AND:
-				Factor factor = ParseFactor (scope, GetNextToken ());
-				TermTail termTail = ParseTermTail (scope);
+				case TokenType.BINARY_OP_MUL:
+				case TokenType.BINARY_OP_DIV:
+				case TokenType.BINARY_OP_MOD:
+				case TokenType.BINARY_OP_LOG_AND:
+					Factor factor = ParseFactor (scope, GetNextToken ());
+					TermTail termTail = ParseTermTail (scope);
 
-				return new TermTail (token, token.Type, factor, termTail);
-
-
-				break;
+					return new TermTail (token, scope, token.Type, factor, termTail);
 			}
 
 			bufferedToken = token;
@@ -977,15 +945,10 @@ namespace Compiler
 				FactorMain main = ParseFactorMain (scope, token);
 				FactorTail tail = ParseFactorTail (scope);
 
-				return new Factor (token, main, tail);
-
-
-				break;
+				return new Factor (token, scope, main, tail);
 			default:
 				throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
 			}
-
-			return null;
 		}
 
 		private FactorTail ParseFactorTail (Scope scope)
@@ -1011,50 +974,47 @@ namespace Compiler
 			}
 
 			switch (token.Type) {
-			case TokenType.ID:
-				VariableIdNode idNode = ParseVarId (scope, token);
-				evaluee = ParseFactorIdTail (idNode, scope);
-				break;
-			case TokenType.STRING_VAL:
-			case TokenType.INTEGER_VAL:
-			case TokenType.BOOLEAN_VAL_FALSE:
-			case TokenType.BOOLEAN_VAL_TRUE:
-			case TokenType.REAL_VAL:
-				evaluee = ParseLiteral (scope, token);
-				break;
-			case TokenType.PARENTHESIS_LEFT:
-				evaluee = ParseExpression (scope);
-				match (GetNextToken (), TokenType.PARENTHESIS_RIGHT);
-				break;
-			case TokenType.UNARY_OP_LOG_NEG:
-				Factor factor = ParseFactor (scope, GetNextToken ());
-				evaluee = new BooleanNegation (token, factor);
-				break;
-			default:
-				throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
+				case TokenType.ID:
+					VariableIdNode idNode = ParseVarId (scope, token);
+					evaluee = ParseFactorIdTail (idNode, scope);
+					break;
+				case TokenType.STRING_VAL:
+				case TokenType.INTEGER_VAL:
+				case TokenType.BOOLEAN_VAL_FALSE:
+				case TokenType.BOOLEAN_VAL_TRUE:
+				case TokenType.REAL_VAL:
+					evaluee = ParseLiteral (scope, token);
+					break;
+				case TokenType.PARENTHESIS_LEFT:
+					evaluee = ParseExpression (scope);
+					match (GetNextToken (), TokenType.PARENTHESIS_RIGHT);
+					break;
+				case TokenType.UNARY_OP_LOG_NEG:
+					Factor factor = ParseFactor (scope, GetNextToken ());
+					evaluee = new BooleanNegation (token, scope, factor);
+					break;
+				default:
+					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
 			}
 
-			return new FactorMain (token, evaluee);
-
-
-			return null;
+			return new FactorMain (token, scope, evaluee);
 		}
 
 		private Evaluee ParseLiteral (Scope scope, Token token)
 		{
 			// etsi scopesta mahdolliset avainsaoja vastaavat muuttujat
 			switch (token.Type) {
-			case TokenType.STRING_VAL:
-				return nodeBuilder.CreateStringValueNode (token);
-			case TokenType.INTEGER_VAL:
-				return ParseIntegerOperand(token);
-			case TokenType.REAL_VAL:
-				return nodeBuilder.CreateRealValueNode (token);
-			case TokenType.BOOLEAN_VAL_FALSE:
-			case TokenType.BOOLEAN_VAL_TRUE:
-				return nodeBuilder.CreateBoolValueNode (token);
-			default:
-				throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_LITERAL);
+				case TokenType.STRING_VAL:
+					return nodeBuilder.CreateStringValueNode (token, scope);
+				case TokenType.INTEGER_VAL:
+					return ParseIntegerOperand(token, scope);
+				case TokenType.REAL_VAL:
+					return nodeBuilder.CreateRealValueNode (token, scope);
+				case TokenType.BOOLEAN_VAL_FALSE:
+				case TokenType.BOOLEAN_VAL_TRUE:
+					return nodeBuilder.CreateBoolValueNode (token, scope);
+				default:
+					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_LITERAL);
 			}
 		}
 
@@ -1063,10 +1023,10 @@ namespace Compiler
 		/// </summary>
 		/// <param name="token">Token.</param>
 		/// <param name="parent">An IExpressionContainer.</param>
-		private IntValueNode ParseIntegerOperand(Token token) {
+		private IntValueNode ParseIntegerOperand(Token token, Scope scope) {
 			try {
 				// try to create an IntValueNode for the value
-				return nodeBuilder.CreateIntValueNode (token);
+				return nodeBuilder.CreateIntValueNode (token, scope);
 			} catch (OverflowException) {
 				// In case the token's value is an integer that cannot be represented as a
 				// signed 32-bit integer, an OverflowException is thrown.
@@ -1080,14 +1040,15 @@ namespace Compiler
 		private Evaluee ParseFactorIdTail (VariableIdNode idNode, Scope scope)
 		{
 			Token token = GetNextToken ();
+
 			switch (token.Type) {
-			case (TokenType.PARENTHESIS_LEFT):
-				return ParseCallTail(idNode, scope, token);
-			case (TokenType.BRACKET_LEFT):
-				return ParseArrayAccess (idNode, scope, token);
-			default:
-				bufferedToken = token;
-				return idNode;
+				case (TokenType.PARENTHESIS_LEFT):
+					return ParseCallTail(idNode, scope, token);
+				case (TokenType.BRACKET_LEFT):
+					return ParseArrayAccess (idNode, scope, token);
+				default:
+					bufferedToken = token;
+					return idNode;
 			}
 		}
 
@@ -1097,8 +1058,6 @@ namespace Compiler
 			match (GetNextToken (), TokenType.BRACKET_RIGHT);
 
 			return new ArrayAccessNode (idNode, token, scope, arrayIndexExpression);
-
-			return null;
 		}
 
 		private Evaluee ParseCallTail(VariableIdNode idNode, Scope scope, Token token)
@@ -1106,10 +1065,7 @@ namespace Compiler
 			ArgumentsNode arguments = ParseFunctionArguments (scope);
 			match (GetNextToken (), TokenType.PARENTHESIS_RIGHT);
 
-			return nodeBuilder.CreateFunctionCallNode (idNode, arguments, token, scope, nameFactory);
-
-
-			return null;
+			return nodeBuilder.CreateFunctionCallNode (idNode, arguments, token, scope);
 		}
 
 		private ArgumentsNode ParseFunctionArguments (Scope scope)

@@ -9,7 +9,6 @@ namespace Compiler
 	public class StatementCheckVisitor : INodeVisitor
 	{
 		private SemanticAnalyzer analyzer;			// the parent analyzer to notify the errors to
-		private VoidProperty voidProperty;
 		private List<ReturnStatement> returnStatements;
 		private TypeCheckingVisitor typeChecker;
 
@@ -22,20 +21,19 @@ namespace Compiler
 			this.analyzer = analyzer;
 			this.returnStatements = new List<ReturnStatement> ();
 			this.typeChecker = new TypeCheckingVisitor (analyzer);
+		}
 
-			// We tend to return a lot of VoidProperties here,
-			// but since we don't do anything with them, we
-			// use one global VoidProperty object and pass it
-			// anytime we need to pass one.
-			this.voidProperty = new VoidProperty ();
+		public void VisitArraySizeCheckNode(ArraySizeCheckNode node)
+		{
+			
 		}
 
 		/// <summary>
 		/// Checks the static semantic constraints of an AssignNode.
 		/// </summary>
-		/// <returns>An ISemanticCheckValue.</returns>
+		/// <returns>An void.</returns>
 		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitAssignNode(AssignNode node)
+		public void VisitAssignNode(AssignNode node)
 		{
 			node.IDNode.Accept (this);
 			node.AssignValueExpression.Accept (this);
@@ -44,7 +42,7 @@ namespace Compiler
 			TokenType exprEval = node.AssignValueExpression.EvaluationType;
 
 			bool assignable = node.IDNode.EvaluationType != TokenType.ERROR;
-			Property varProperty = node.Scope.GetProperty (node.IDNode.ID);
+			Property varProperty = node.Scope.GetProperty (node.IDNode.IDNode.ID);
 
 			if (varProperty.DeclarationRow > node.Token.Row) {
 				analyzer.notifyError(new UndeclaredVariableError(node.IDNode));
@@ -59,103 +57,83 @@ namespace Compiler
 			if (assignable) {
 				varProperty.Assigned = true;
 			}
-
-			return voidProperty;
 		}
 
 		/// <summary>
 		/// Checks the static semantic constraints of a BinOpNode.
 		/// </summary>
 		/// 
-		/// <returns>An ISemanticCheckValue.</returns>
+		/// <returns>An void.</returns>
 		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitDeclarationNode(DeclarationNode node)
+		public void VisitDeclarationNode(DeclarationNode node)
 		{
 			foreach (VariableIdNode idNode in node.IDsToDeclare) {
 				idNode.Accept (this);
 			}
 
 			node.DeclarationType.Accept (this);
-
-			return voidProperty;
 		}
 
 		/// <summary>
 		/// Checks the static semantic constraints of an IntValueNode.
 		/// </summary>
-		/// <returns>An ISemanticCheckValue.</returns>
+		/// <returns>An void.</returns>
 		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitIntValueNode(IntValueNode node)
+		public void VisitIntValueNode(IntValueNode node)
 		{
 			node.Accept (this.typeChecker);
 			// This is not a statement so it needs not to be actually checked here.
 			// So, we pass it to the TypeCheckerVisitor instead.
-			return voidProperty;
 		}
 
 		/// <summary>
 		/// Checks the static semantic constraints of a BoolValueNode.
 		/// </summary>
-		/// <returns>An ISemanticCheckValue.</returns>
+		/// <returns>An void.</returns>
 		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitBoolValueNode(BoolValueNode node)
+		public void VisitBoolValueNode(BoolValueNode node)
 		{
 			// This is not a statement so it needs not to be actually checked here.
 			// So, we pass it to the TypeCheckerVisitor instead.
 			node.Accept (this.typeChecker);
-			return voidProperty;
+			
 		}
 
 		/// <summary>
 		/// Checks the static semantic constraints of a StringValueNode.
 		/// </summary>
-		/// <returns>An ISemanticCheckValue.</returns>
+		/// <returns>An void.</returns>
 		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitStringValueNode(StringValueNode node)
+		public void VisitStringValueNode(StringValueNode node)
 		{
 			// This is not a statement so it needs not to be actually checked here.
 			// So, we pass it to the TypeCheckerVisitor instead.
 			node.Accept (this.typeChecker);
-			return voidProperty;
+			
 		}
 
 		/// <summary>
 		/// Checks the static semantic constraints of a VariableIdNode.
 		/// </summary>
 		/// <returns>The variable identifier node.</returns>
-		/// <param name="node">An ISemanticCheckValue.</param>
-		public ISemanticCheckValue VisitVariableIdNode(VariableIdNode node)
+		/// <param name="node">An void.</param>
+		public void VisitVariableIdNode(VariableIdNode node)
 		{
 			node.Accept (this.typeChecker);
 			Property prop = node.Scope.GetProperty (node.ID);
 
 			if (prop.GetTokenType () == TokenType.ERROR) {
 				analyzer.notifyError (new UninitializedVariableError (node));
-				node.SetEvaluationType (TokenType.ERROR);
-				return voidProperty;
+				node.EvaluationType = TokenType.ERROR;
 			}
-
-			if (node.ArrayIndex != null) {
-				if (prop.GetTokenType () != TokenType.TYPE_ARRAY) {
-					analyzer.notifyError (new IllegalArrayAccessError (node));
-				}
-
-				TokenType arrayIndexEval = node.ArrayIndex.EvaluationType;
-
-				if (arrayIndexEval != TokenType.INTEGER_VAL) {
-					analyzer.notifyError (new IllegalArrayIndexError (node));
-				}
-			}
-
-			return voidProperty;
 		}
 
 		/// <summary>
 		/// Checks the static semantic constraints of an AssertNode.
 		/// </summary>
-		/// <returns>An ISemanticCheckValue.</returns>
+		/// <returns>An void.</returns>
 		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitAssertNode(AssertNode node)
+		public void VisitAssertNode(AssertNode node)
 		{
 			node.AssertExpression.Accept (this);
 
@@ -166,27 +144,27 @@ namespace Compiler
 				analyzer.notifyError (new IllegalTypeError (node));
 			}
 
-			return voidProperty;
+			
 		}
 
 		/// <summary>
 		/// Checks the static semantic constraints of an IOPrintNode.
 		/// </summary>
-		/// <returns>An ISemanticCheckValue.</returns>
+		/// <returns>An void.</returns>
 		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitIOPrintNode(IOPrintNode node)
+		public void VisitIOPrintNode(IOPrintNode node)
 		{
 			node.Arguments.Accept (this);
 			// check the expression of this node
-			return voidProperty;
+			
 		}
 
 		/// <summary>
 		/// Checks the static semantic constraints of an IOReadNode.
 		/// </summary>
-		/// <returns>An ISemanticCheckValue.</returns>
+		/// <returns>An void.</returns>
 		/// <param name="node">Node.</param>
-		public ISemanticCheckValue VisitIOReadNode(IOReadNode node) 
+		public void VisitIOReadNode(IOReadNode node) 
 		{
 			foreach (VariableIdNode idNode in node.IDNodes) {
 				idNode.Accept (this);
@@ -199,20 +177,20 @@ namespace Compiler
 				}
 			}
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitArrayAssignNode(ArrayAssignStatement node)
+		public void VisitArrayAssignNode(ArrayAssignStatement node)
 		{
 			node.IndexExpression.Accept (this);
 			node.AssignValueExpression.Accept (this);
 			node.IDNode.Accept (this);
 
-			Property prop = node.IDNode.Scope.GetProperty (node.IDNode.ID);
+			Property prop = node.IDNode.Scope.GetProperty (node.IDNode.IDNode.ID);
 
-			if (node.IDNode.Scope.GetProperty (node.IDNode.ID).GetTokenType () != TokenType.TYPE_ARRAY) {
+			if (node.IDNode.Scope.GetProperty (node.IDNode.IDNode.ID).GetTokenType () != TokenType.TYPE_ARRAY) {
 				analyzer.notifyError (new IllegalAssignmentError (node));
-				return voidProperty;
+				
 			}
 
 			ArrayProperty arrProp = (ArrayProperty) prop;
@@ -221,26 +199,26 @@ namespace Compiler
 				analyzer.notifyError (new IllegalTypeError (node));
 			}
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitArrayAccessNode(ArrayAccessNode node)
+		public void VisitArrayAccessNode(ArrayAccessNode node)
 		{
 			// NOT IN USE, AT LEAST NOT YET
 			node.Accept (this.typeChecker);
 			node.ArrayIdNode.Accept (this);
 			node.ArrayIndexExpression.Accept (this);
 			TokenType eh = node.EvaluationType;
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitRealValueNode(RealValueNode node)
+		public void VisitRealValueNode(RealValueNode node)
 		{
 			node.Accept (this.typeChecker);
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitTypeNode(TypeNode node)
+		public void VisitTypeNode(TypeNode node)
 		{
 			ExpressionNode sizeExpr = node.ArraySizeExpression;
 
@@ -252,19 +230,19 @@ namespace Compiler
 				}
 			}
 			
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitBlockNode(BlockNode node)
+		public void VisitBlockNode(BlockNode node)
 		{
 			foreach (StatementNode statement in node.Statements) {
 				CheckStatement (statement, node);
 			}
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitBooleanNegation(BooleanNegation node)
+		public void VisitBooleanNegation(BooleanNegation node)
 		{
 			node.Accept (this.typeChecker);
 			node.Factor.Accept (this);
@@ -273,10 +251,10 @@ namespace Compiler
 				analyzer.notifyError (new IllegalTypeError (node.Factor));
 			}
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitExpressionNode(ExpressionNode node)
+		public void VisitExpressionNode(ExpressionNode node)
 		{
 			node.Accept (this.typeChecker);
 			node.SimpleExpression.Accept (this);
@@ -289,18 +267,18 @@ namespace Compiler
 				analyzer.notifyError (new IllegalTypeError (node));
 			}
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitExpressionTail(ExpressionTail node)
+		public void VisitExpressionTail(ExpressionTail node)
 		{
 			node.Accept (this.typeChecker);
 			node.RightHandSide.Accept (this);
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitFactorNode(Factor node)
+		public void VisitFactorNode(Factor node)
 		{
 			node.Accept (this.typeChecker);
 			FactorMain main = node.FactorMain;
@@ -322,24 +300,24 @@ namespace Compiler
 				}
 			}
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitFactorMain(FactorMain node)
+		public void VisitFactorMain(FactorMain node)
 		{
 			node.Accept (this.typeChecker);
 			node.Evaluee.Accept (this);
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitFactorTail(FactorTail node)
+		public void VisitFactorTail(FactorTail node)
 		{
 			node.Accept (this.typeChecker);
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitFunctionNode(FunctionNode node)
+		public void VisitFunctionNode(FunctionNode node)
 		{
 			node.Parameters.Accept (this);
 			node.Block.Accept (this);
@@ -357,20 +335,20 @@ namespace Compiler
 				analyzer.notifyError(new AllCodePathsDontReturnError (node));
 			}
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitProcedureNode(ProcedureNode node)
+		public void VisitProcedureNode(ProcedureNode node)
 		{
 			node.Parameters.Accept (this);
 			node.Block.Accept (this);
 
 			CheckReturnTypes (node);
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitFunctionCallNode(FunctionCallNode node)
+		public void VisitFunctionCallNode(FunctionCallNode node)
 		{
 			node.Accept (this.typeChecker);
 			VariableIdNode idNode = node.IdNode;
@@ -385,16 +363,16 @@ namespace Compiler
 
 				if (function == null) {
 					analyzer.notifyError(new NotAValidFunctionError(idNode));
-					return voidProperty;
+					
 				}
 
 				CompareParamsAndArgs (node, function.Parameters.Parameters, arguments.Arguments); 
 			}
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitIfNode(IfNode node)
+		public void VisitIfNode(IfNode node)
 		{
 			ExpressionNode condition = node.Condition;
 			StatementNode ifBranch = node.IfBranch;
@@ -415,10 +393,10 @@ namespace Compiler
 				}
 			}
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitWhileLoopNode(WhileNode node)
+		public void VisitWhileLoopNode(WhileNode node)
 		{
 			ExpressionNode condition = node.Condition;
 			StatementNode statement = node.Statement;
@@ -430,15 +408,15 @@ namespace Compiler
 				analyzer.notifyError (new IllegalTypeError (condition));
 			}
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitParametersNode(ParametersNode node)
+		public void VisitParametersNode(ParametersNode node)
 		{
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitArgumentsNode(ArgumentsNode node)
+		public void VisitArgumentsNode(ArgumentsNode node)
 		{
 			List<ExpressionNode> arguments = node.Arguments;
 
@@ -446,10 +424,10 @@ namespace Compiler
 				arg.Accept (this);
 			}
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitProgramNode(ProgramNode node)
+		public void VisitProgramNode(ProgramNode node)
 		{
 			foreach (FunctionNode func in node.Functions.Values) {
 				func.Accept (this);
@@ -457,19 +435,19 @@ namespace Compiler
 
 			node.MainBlock.Accept (this);
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitReturnStatement(ReturnStatement node)
+		public void VisitReturnStatement(ReturnStatement node)
 		{
 			node.ReturnValue.Accept (this);
 
 			returnStatements.Add (node);
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitTermNode(TermNode node)
+		public void VisitTermNode(TermNode node)
 		{
 			node.Accept (this.typeChecker);
 			Factor factor = node.Factor;
@@ -485,10 +463,10 @@ namespace Compiler
 				analyzer.notifyError (new IllegalTypeError (node));
 			}
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitTermTailNode(TermTail node)
+		public void VisitTermTailNode(TermTail node)
 		{
 			node.Accept (this.typeChecker);
 			Factor factor = node.Factor;
@@ -504,10 +482,10 @@ namespace Compiler
 				analyzer.notifyError (new IllegalTypeError (node));
 			}
 
-			return voidProperty;
+			
 		}
 
-		public ISemanticCheckValue VisitSimpleExpression(SimpleExpression node)
+		public void VisitSimpleExpression(SimpleExpression node)
 		{
 			node.Accept (this.typeChecker);
 			node.Term.Accept (this);
@@ -521,15 +499,13 @@ namespace Compiler
 					analyzer.notifyError (new IllegalTypeError (node));
 				}
 			}
-			return null;
 		}
 
-		public ISemanticCheckValue VisitSimpleExpressionTail(SimpleExpressionTail node)
+		public void VisitSimpleExpressionTail(SimpleExpressionTail node)
 		{
 			node.Accept (this.typeChecker);
 			node.Term.Accept (this);
 
-			return null;
 		}
 
 		private void CompareParamsAndArgs (FunctionCallNode callNode, List<Parameter> parameters, List<ExpressionNode> arguments) {

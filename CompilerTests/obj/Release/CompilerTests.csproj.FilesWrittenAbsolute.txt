@@ -1,0 +1,8 @@
+/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/CompilerTests/obj/Release/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/CompilerTests/bin/Release/CompilerTests.dll.mdb
+/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/CompilerTests/bin/Release/CompilerTests.dll
+/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/CompilerTests/obj/Release/CompilerTests.dll
+/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/CompilerTests/obj/Release/CompilerTests.dll.mdb
+/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/CompilerTests/bin/Release/nunit.framework.dll
+/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/CompilerTests/bin/Release/Compiler.dll
+/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/CompilerTests/bin/Release/Compiler.dll.mdb

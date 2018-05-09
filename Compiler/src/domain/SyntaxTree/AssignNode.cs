@@ -10,21 +10,17 @@ namespace Compiler
 	/// </summary>
 	public class AssignNode : StatementNode
 	{
-		private VariableIdNode idNode;
+		private VariableEvaluee idNode;
 		private ExpressionNode assignValueExpression;
 
-		public AssignNode (VariableIdNode idNode, Scope scope, INameFactory nameFactory)
-			: this (idNode, scope, null, nameFactory)
-		{}
-
-		public AssignNode (VariableIdNode idNode, Scope scope, Token token, INameFactory nameFactory, ExpressionNode assignValueExpression = null)
-			: base(token, nameFactory, scope)
+		public AssignNode (VariableEvaluee idNode, Scope scope, Token token, ExpressionNode assignValueExpression = null)
+			: base(token, scope: scope)
 		{
 			this.idNode = idNode;
 			this.assignValueExpression = assignValueExpression;
 		}
 
-		public VariableIdNode IDNode {
+		public VariableEvaluee IDNode {
 			get { return idNode; }
 			set { idNode = value; }
 		}
@@ -34,8 +30,8 @@ namespace Compiler
 			set { assignValueExpression = value; }
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
-			return visitor.VisitAssignNode (this);
+		public override void Accept(INodeVisitor visitor) {
+			visitor.VisitAssignNode (this);
 		}
 	}
 }

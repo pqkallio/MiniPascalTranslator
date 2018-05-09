@@ -4,39 +4,40 @@ namespace Compiler
 {
 	public interface INodeVisitor
 	{
-		ISemanticCheckValue VisitAssertNode(AssertNode node);
-		ISemanticCheckValue VisitAssignNode(AssignNode node);
-		ISemanticCheckValue VisitArrayAssignNode(ArrayAssignStatement node);
-		ISemanticCheckValue VisitArrayAccessNode(ArrayAccessNode node);
-		ISemanticCheckValue VisitDeclarationNode(DeclarationNode node);
-		ISemanticCheckValue VisitIntValueNode(IntValueNode node);
-		ISemanticCheckValue VisitRealValueNode(RealValueNode node);
-		ISemanticCheckValue VisitBoolValueNode(BoolValueNode node);
-		ISemanticCheckValue VisitStringValueNode(StringValueNode node);
-		ISemanticCheckValue VisitIOPrintNode(IOPrintNode node);
-		ISemanticCheckValue VisitIOReadNode(IOReadNode node);
-		ISemanticCheckValue VisitTypeNode(TypeNode node);
-		ISemanticCheckValue VisitBlockNode(BlockNode node);
-		ISemanticCheckValue VisitBooleanNegation(BooleanNegation node);
-		ISemanticCheckValue VisitExpressionNode(ExpressionNode node);
-		ISemanticCheckValue VisitExpressionTail(ExpressionTail node);
-		ISemanticCheckValue VisitFactorNode(Factor node);
-		ISemanticCheckValue VisitFactorMain(FactorMain node);
-		ISemanticCheckValue VisitFactorTail(FactorTail node);
-		ISemanticCheckValue VisitFunctionNode(FunctionNode node);
-		ISemanticCheckValue VisitProcedureNode(ProcedureNode node);
-		ISemanticCheckValue VisitFunctionCallNode(FunctionCallNode node);
-		ISemanticCheckValue VisitIfNode(IfNode node);
-		ISemanticCheckValue VisitWhileLoopNode(WhileNode node);
-		ISemanticCheckValue VisitParametersNode(ParametersNode node);
-		ISemanticCheckValue VisitArgumentsNode(ArgumentsNode node);
-		ISemanticCheckValue VisitProgramNode(ProgramNode node);
-		ISemanticCheckValue VisitReturnStatement(ReturnStatement node);
-		ISemanticCheckValue VisitTermNode(TermNode node);
-		ISemanticCheckValue VisitTermTailNode(TermTail node);
-		ISemanticCheckValue VisitVariableIdNode(VariableIdNode node);
-		ISemanticCheckValue VisitSimpleExpression(SimpleExpression node);
-		ISemanticCheckValue VisitSimpleExpressionTail(SimpleExpressionTail node);
+		void VisitAssertNode(AssertNode node);
+		void VisitAssignNode(AssignNode node);
+		void VisitArrayAssignNode(ArrayAssignStatement node);
+		void VisitArrayAccessNode(ArrayAccessNode node);
+		void VisitDeclarationNode(DeclarationNode node);
+		void VisitIntValueNode(IntValueNode node);
+		void VisitRealValueNode(RealValueNode node);
+		void VisitBoolValueNode(BoolValueNode node);
+		void VisitStringValueNode(StringValueNode node);
+		void VisitIOPrintNode(IOPrintNode node);
+		void VisitIOReadNode(IOReadNode node);
+		void VisitTypeNode(TypeNode node);
+		void VisitBlockNode(BlockNode node);
+		void VisitBooleanNegation(BooleanNegation node);
+		void VisitExpressionNode(ExpressionNode node);
+		void VisitExpressionTail(ExpressionTail node);
+		void VisitFactorNode(Factor node);
+		void VisitFactorMain(FactorMain node);
+		void VisitFactorTail(FactorTail node);
+		void VisitFunctionNode(FunctionNode node);
+		void VisitProcedureNode(ProcedureNode node);
+		void VisitFunctionCallNode(FunctionCallNode node);
+		void VisitIfNode(IfNode node);
+		void VisitWhileLoopNode(WhileNode node);
+		void VisitParametersNode(ParametersNode node);
+		void VisitArgumentsNode(ArgumentsNode node);
+		void VisitProgramNode(ProgramNode node);
+		void VisitReturnStatement(ReturnStatement node);
+		void VisitTermNode(TermNode node);
+		void VisitTermTailNode(TermTail node);
+		void VisitVariableIdNode(VariableIdNode node);
+		void VisitSimpleExpression(SimpleExpression node);
+		void VisitSimpleExpressionTail(SimpleExpressionTail node);
+		void VisitArraySizeCheckNode (ArraySizeCheckNode node);
 	}
 }
 

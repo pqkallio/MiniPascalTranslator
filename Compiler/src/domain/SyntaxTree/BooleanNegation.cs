@@ -6,15 +6,15 @@ namespace Compiler
 	{
 		private Factor factor;
 
-		public BooleanNegation (Token token, Factor factor)
-			: base (token)
+		public BooleanNegation (Token token, Scope scope, Factor factor)
+			: base (token, scope)
 		{
 			this.factor = factor;
 		}
 
-		public override ISemanticCheckValue Accept (INodeVisitor visitor)
+		public override void Accept (INodeVisitor visitor)
 		{
-			return null;
+			visitor.VisitBooleanNegation(this);
 		}
 
 		public Factor Factor

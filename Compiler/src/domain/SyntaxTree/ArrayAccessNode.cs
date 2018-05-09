@@ -2,7 +2,7 @@
 
 namespace Compiler
 {
-	public class ArrayAccessNode : Evaluee
+	public class ArrayAccessNode : VariableEvaluee
 	{
 		private VariableIdNode arrayId;
 		private ExpressionNode index;
@@ -14,9 +14,9 @@ namespace Compiler
 			this.index = index;
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override void Accept(INodeVisitor visitor)
 		{
-			return visitor.VisitArrayAccessNode (this);
+			visitor.VisitArrayAccessNode (this);
 		}
 
 		public VariableIdNode ArrayIdNode
@@ -27,6 +27,10 @@ namespace Compiler
 		public ExpressionNode ArrayIndexExpression
 		{
 			get { return this.index; }
+		}
+
+		public override VariableIdNode IDNode {
+			get { return arrayId; }
 		}
 	}
 }

@@ -8,8 +8,8 @@ namespace Compiler
 		protected bool isVariable;
 		protected string subTotal;
 
-		public Evaluee (Token token, INameFactory nameFactory = null, Scope scope = null, bool isVariable = false)
-			: base(token, nameFactory, scope)
+		public Evaluee (Token token, Scope scope = null, bool isVariable = false)
+			: base(token, scope: scope)
 		{
 			this.evaluationType = TokenType.UNDEFINED;
 			this.isVariable = isVariable;

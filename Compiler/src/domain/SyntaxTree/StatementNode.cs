@@ -6,8 +6,8 @@ namespace Compiler
 	{
 		private bool returns;
 
-		public StatementNode (Token token, INameFactory nameFactory = null, Scope scope = null, bool returns = false)
-			: base(token, nameFactory, scope)
+		public StatementNode (Token token, Scope scope = null, bool returns = false)
+			: base(token, scope)
 		{
 			this.returns = returns;
 		}

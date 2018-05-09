@@ -8,17 +8,17 @@ namespace Compiler
 		private StatementNode ifBranch;
 		private StatementNode elseBranch;
 
-		public IfNode (Token token, INameFactory nameFactory, ExpressionNode condition, StatementNode ifBranch, StatementNode elseBranch = null)
-			: base(token, nameFactory)
+		public IfNode (Token token, Scope scope, ExpressionNode condition, StatementNode ifBranch, StatementNode elseBranch = null)
+			: base(token, scope)
 		{
 			this.condition = condition;
 			this.ifBranch = ifBranch;
 			this.elseBranch = elseBranch;
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor)
+		public override void Accept(INodeVisitor visitor)
 		{
-			return visitor.VisitIfNode (this);
+			visitor.VisitIfNode (this);
 		}
 
 		public ExpressionNode Condition

@@ -6,8 +6,8 @@ namespace Compiler
 	{
 		private string value;
 
-		public RealValueNode (string value, Token token)
-			: base(token)
+		public RealValueNode (string value, Token token, Scope scope)
+			: base(token, scope)
 		{
 			this.value = value;
 		}
@@ -17,8 +17,8 @@ namespace Compiler
 			set { this.value = value; }
 		}
 
-		public override ISemanticCheckValue Accept(INodeVisitor visitor) {
-			return null;
+		public override void Accept(INodeVisitor visitor) {
+			visitor.VisitRealValueNode(this);
 		}
 
 		public override string ToString ()
