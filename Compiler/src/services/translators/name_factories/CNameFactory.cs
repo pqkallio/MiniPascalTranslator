@@ -43,6 +43,11 @@ namespace Compiler
 			return tempVarId;
 		}
 
+		public void ReturnTempVarId (Scope scope, string tempVarId, TokenType varType)
+		{
+			tempies [scope].ReturnTempId (varType, tempVarId);
+		}
+
 		private void createCTempVarPoolIfNeeded (Scope scope)
 		{
 			if (!tempies.ContainsKey (scope)) {

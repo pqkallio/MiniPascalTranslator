@@ -15,6 +15,7 @@ namespace Compiler
 		private static Dictionary<TokenType, string> paramTypeNames = CTranslatorConstants.PARAM_SIMPLE_TYPE_NAMES;
 		private static Dictionary<TokenType, string> opStrings = CTranslatorConstants.OPERATION_STRINGS;
 		private Dictionary<Scope, List<string>> allocations;
+		private Dictionary<Scope, Dictionary<string, string>> declaredVariables;
 
 		public CTranslationVisitor (string programName, CNameFactory nameFactory)
 		{
@@ -23,6 +24,7 @@ namespace Compiler
 			this.nameFactory = nameFactory;
 			this.blockDepth = 0;
 			this.allocations = new Dictionary<Scope, List<string>> ();
+			this.declaredVariables = new Dictionary<Scope, Dictionary<string, string>> ();
 		}
 
 		public List<string> Translation
@@ -40,7 +42,6 @@ namespace Compiler
 		{
 			node.AssignValueExpression.Accept (this);
 			addToTranslation (statement (spaced (nameFactory.GetCName (node.Scope, node.IDNode.IDNode.ID), "=", node.AssignValueExpression.Location)));
-			
 		}
 
 		public void VisitArrayAssignNode(ArrayAssignStatement node)
@@ -69,34 +70,38 @@ namespace Compiler
 
 		public void VisitIntValueNode(IntValueNode node)
 		{	
-			setNodeLocation (node, node.EvaluationType);
+			bool declared = false;
+			setNodeLocation (node, node.EvaluationType, ref declared);
 
-			addAssignment (typeNames[node.EvaluationType], node.Location, node.Value);
+			addAssignment (typeNames[node.EvaluationType], node.Location, node.Value, node.Scope, declared: declared);
 		}
 
 		public void VisitRealValueNode(RealValueNode node)
 		{
-			setNodeLocation (node, node.EvaluationType);
+			bool declared = false;
+			setNodeLocation (node, node.EvaluationType, ref declared);
 
-			addAssignment (typeNames[node.EvaluationType], node.Location, node.Value);
+			addAssignment (typeNames[node.EvaluationType], node.Location, node.Value, node.Scope, declared: declared);
 		}
 
 		public void VisitBoolValueNode(BoolValueNode node)
 		{
-			setNodeLocation (node, node.EvaluationType);
+			bool declared = false;
+			setNodeLocation (node, node.EvaluationType, ref declared);
 
 			string strVal = node.Value ? "1" : "0";
 
-			addAssignment (typeNames[node.EvaluationType], node.Location, strVal);
+			addAssignment (typeNames[node.EvaluationType], node.Location, strVal, node.Scope, declared: declared);
 		}
 
 		public void VisitStringValueNode(StringValueNode node)
 		{
-			setNodeLocation (node, node.EvaluationType);
+			bool declared = false;
+			setNodeLocation (node, node.EvaluationType, ref declared);
 
 			string strVal = unspaced (CTranslatorConstants.STRING_DELIMITER, node.Value, CTranslatorConstants.STRING_DELIMITER);
 
-			addAssignment (typeNames[node.EvaluationType], node.Location, strVal);
+			addAssignment (typeNames[node.EvaluationType], node.Location, strVal, node.Scope, declared: declared);
 		}
 
 		public void VisitIOPrintNode(IOPrintNode node)
@@ -137,7 +142,8 @@ namespace Compiler
 
 		public void VisitExpressionNode(ExpressionNode node)
 		{
-			setNodeLocation (node, node.EvaluationType);
+			bool declared = false;
+			setNodeLocation (node, node.EvaluationType, ref declared);
 
 			node.SimpleExpression.Location = node.Location;
 			node.SimpleExpression.Accept (this);
@@ -150,7 +156,8 @@ namespace Compiler
 
 		public void VisitSimpleExpression (SimpleExpression node)
 		{
-			setNodeLocation (node, node.EvaluationType);
+			bool declared = false;
+			setNodeLocation (node, node.EvaluationType, ref declared);
 
 			node.Term.Location = node.Location;
 			node.Term.Accept (this);
@@ -167,12 +174,13 @@ namespace Compiler
 
 		public void VisitSimpleExpressionTail (SimpleExpressionTail node)
 		{
-			setNodeLocation (node, node.EvaluationType);
+			bool declared = false;
+			setNodeLocation (node, node.EvaluationType, ref declared);
 
 			node.Term.Location = node.Location;
 			node.Term.Accept (this);
 
-			addAssignment (typeNames[node.EvaluationType], node.SubTotal, node.SubTotal, opStrings [node.Operation], node.Location);
+			addAssignment (typeNames[node.EvaluationType], node.SubTotal, node.SubTotal, node.Scope, opStrings [node.Operation], node.Location);
 
 			if (node.Tail != null) {
 				node.Tail.SubTotal = node.SubTotal;
@@ -182,14 +190,16 @@ namespace Compiler
 
 		public void VisitExpressionTail(ExpressionTail node)
 		{
-			setNodeLocation (node, node.EvaluationType);
+			bool declared = false;
+			setNodeLocation (node, node.EvaluationType, ref declared);
 			node.RightHandSide.Accept (this);
-			addAssignment (typeNames[node.EvaluationType], node.Location, node.Location, opStrings[node.Operation], node.RightHandSide.Location);
+			addAssignment (typeNames[node.EvaluationType], node.Location, node.Location, node.Scope, opStrings[node.Operation], node.RightHandSide.Location);
 		}
 
 		public void VisitFactorNode(Factor node)
 		{
-			setNodeLocation (node, node.EvaluationType);
+			bool declared = false;
+			setNodeLocation (node, node.EvaluationType, ref declared);
 			node.FactorMain.Location = node.Location;
 			node.FactorMain.Accept (this);
 
@@ -200,7 +210,8 @@ namespace Compiler
 
 		public void VisitFactorMain(FactorMain node)
 		{
-			setNodeLocation (node, node.EvaluationType);
+			bool declared = false;
+			setNodeLocation (node, node.EvaluationType, ref declared);
 
 			node.Evaluee.Location = node.Location;
 			node.Evaluee.Accept (this);
@@ -253,7 +264,8 @@ namespace Compiler
 			Factor factor = node.Factor;
 			TermTail tail = node.TermTail;
 
-			setNodeLocation (node, node.EvaluationType);
+			bool declared = false;
+			setNodeLocation (node, node.EvaluationType, ref declared);
 
 			factor.Location = node.Location;
 			factor.Accept (this);
@@ -261,19 +273,21 @@ namespace Compiler
 			if (tail != null) {
 				tail.SubTotal = factor.Location;
 				tail.Accept (this);
+				nameFactory.ReturnTempVarId (tail.Scope, tail.Location, tail.EvaluationType);
 			}
 		}
 
 		public void VisitTermTailNode(TermTail node)
 		{
-			setNodeLocation (node, node.EvaluationType);
+			bool declared = false;
+			setNodeLocation (node, node.EvaluationType, ref declared);
 			Factor factor = node.Factor;
 			TermTail tail = node.ChildTermTail;
 
 			factor.Location = node.Location;
 			factor.Accept (this);
 
-			addAssignment (null, node.SubTotal, node.SubTotal, opStrings [node.Operation], factor.Location);
+			addAssignment (typeNames[factor.EvaluationType], node.SubTotal, node.SubTotal, node.Scope, opStrings [node.Operation], factor.Location);
 
 			if (tail != null) {
 				tail.SubTotal = node.Location;
@@ -544,20 +558,29 @@ namespace Compiler
 			return unspaced (CTranslatorConstants.SIZE_OF, leftDelimiter, type, rightDelimiter);
 		}
 
-		private void addAssignment(string type, string target, string firstOperand, string operation = null, string secondOperand = null)
+		private void addAssignment(string type, string target, string firstOperand, Scope scope, string operation = null, string secondOperand = null, bool declared = false)
 		{
 			string assignment = CTranslatorConstants.ASSIGNMENT;
+			bool alreadyDeclared = declaredVariables [scope].ContainsKey (target);
+			string typeAndTarget = alreadyDeclared ? target : spaced (type, target);
 
 			if (operation != null) {
-				addToTranslation (statement (spaced (type, target, assignment, firstOperand, operation, secondOperand)));
+				addToTranslation (statement (spaced (typeAndTarget, assignment, firstOperand, operation, secondOperand)));
 			} else {
-				addToTranslation (statement (spaced (type, target, assignment, firstOperand)));
+				addToTranslation (statement (spaced (typeAndTarget, assignment, firstOperand)));
+			}
+
+			if (!alreadyDeclared) {
+				declaredVariables [scope] [target] = null;
 			}
 		}
 
-		private void setNodeLocation(SyntaxTreeNode node, TokenType type) {
+		private void setNodeLocation(SyntaxTreeNode node, TokenType type, ref bool declared) {
 			if (node.Location == null) {
-				bool declared = false;
+				if (!declaredVariables.ContainsKey (node.Scope)) {
+					declaredVariables [node.Scope] = new Dictionary<string, string> ();
+				}
+
 				node.Location = nameFactory.GetTempVarId (node.Scope, type, ref declared);
 			}
 		}
