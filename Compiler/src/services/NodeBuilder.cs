@@ -60,9 +60,9 @@ namespace Compiler
 			return new FunctionCallNode (token, scope, idNode, arguments);
 		}
 
-		public FactorTail CreateArraySizeCheckNode (Token token, Scope scope)
+		public ArraySizeCheckNode CreateArraySizeCheckNode (Token token, Scope scope, VariableIdNode arrayIdNode = null)
 		{
-			return new ArraySizeCheckNode (token, scope);
+			return new ArraySizeCheckNode (token, scope, arrayIdNode);
 		}
 
 		public IntValueNode CreateIntValueNode(Token token, Scope scope)

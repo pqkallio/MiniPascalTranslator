@@ -65,16 +65,26 @@ namespace Compiler
 			{TokenType.UNARY_OP_LOG_NEG, "!"},
 		};
 
+		public static readonly Dictionary<TokenType, string> ADDRESS_PREFIXES = new Dictionary<TokenType, string> ()
+		{
+			{TokenType.INTEGER_VAL, MEM_ADDRESS},
+			{TokenType.REAL_VAL, MEM_ADDRESS},
+			{TokenType.BOOLEAN_VAL, MEM_ADDRESS},
+			{TokenType.STRING_VAL, ""},
+			{TokenType.TYPE_ARRAY, ""}
+		};
+
 		public static readonly string[] HELPER_FUNCTION_DECLARATIONS = new string[]
 		{
 			"unsigned int get_string_length(char* string)",
-			"int load_from_int_array(int* array, unsigned int index, int* temp)",
-			"int load_from_float_array(float* array, unsigned int index, float* temp)",
-			"int load_from_string_array(char** array, unsigned int index, char** temp)",
+			"void load_from_int_array(int* array, unsigned int index, int* temp)",
+			"void load_from_float_array(float* array, unsigned int index, float* temp)",
+			"void load_from_string_array(char** array, unsigned int index, char** temp)",
 			"int insert_to_int_array(int* array, unsigned int index, int temp)",
 			"int insert_to_float_array(float* array, unsigned int index, float temp)",
 			"int insert_to_string_array(char** array, unsigned int index, char* temp)",
-			"char* string_concatenation(char* first, char* second)"
+			"char* string_concatenation(char* first, char* second)",
+			"int compare_strings(char* lhs, char* rhs)"
 		};
 
 		public static readonly string[] getStringLengthFunction = new string[]
@@ -234,6 +244,46 @@ namespace Compiler
 			"}"
 		};
 
+		public static readonly string[] stringComparison = new string[]
+		{
+			HELPER_FUNCTION_DECLARATIONS[8],
+			"{",
+			"	unsigned int lhs_length = get_string_length(lhs);",
+			"	unsigned int rhs_length = get_string_length(rhs);",
+			"	int comparison;",
+			"	int index;",
+			"	char c_lhs;",
+			"	char c_rhs;",
+			"	int lhs_length_gt_index;",
+			"	int rhs_length_gt_index;",
+			"",
+			"	goto check_condition;",
+			"",
+			"	compare:",
+			"	c_lhs = lhs[index];",
+			"	c_rhs = rhs[index];",
+			"	comparison = c_lhs - c_rhs;",
+			"",
+			"	if (comparison < 0) goto end;",
+			"	if (comparison > 0) goto end;",
+			"",
+			"	index = index + 1;",
+			"",
+			"	check_condition:",
+			"	lhs_length_gt_index = lhs_length > index;",
+			"	rhs_length_gt_index = rhs_length > index;",
+			"	comparison = lhs_length_gt_index - rhs_length_gt_index;",
+			"",
+			"	if (!lhs_length_gt_index) goto end;",
+			"	if (!rhs_length_gt_index) goto end;",
+			"",
+			"	goto compare;",
+			"",
+			"	end:",
+			"	return comparison;",
+			"}"
+		};
+
 		public static readonly string[][] HELPER_FUNCTIONS = new string[][] {
 			getStringLengthFunction,
 			loadFromFloatArray,
@@ -242,7 +292,8 @@ namespace Compiler
 			insertToFloatArray,
 			insertToIntArray,
 			insertToStringArray,
-			stringConcatenation
+			stringConcatenation,
+			stringComparison
 		};
 	}
 }

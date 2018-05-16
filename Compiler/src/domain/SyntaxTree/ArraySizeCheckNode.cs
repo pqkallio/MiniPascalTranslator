@@ -2,25 +2,35 @@
 
 namespace Compiler
 {
-	public class ArraySizeCheckNode : FactorTail
+	public class ArraySizeCheckNode : FactorMain
 	{
-		VariableIdNode arrayIdNode;
+		Evaluee arrayIdNode;
 
-		public ArraySizeCheckNode (Token token, Scope scope, VariableIdNode arrayIdNode = null)
-			: base(token, scope: scope)
+		public ArraySizeCheckNode (Token token, Scope scope, Evaluee arrayIdNode = null)
+			: base(token, scope, arrayIdNode)
 		{
 			this.arrayIdNode = arrayIdNode;
 		}
 
 		public override void Accept(INodeVisitor visitor)
 		{
-			visitor.VisitArraySizeCheckNode (this);;
+			visitor.VisitArraySizeCheckNode (this);
 		}
 
-		public VariableIdNode IDNode
+		public Evaluee ArrayIDNode
 		{
 			get { return arrayIdNode; }
 			set { this.arrayIdNode = value; }
+		}
+
+		public override string VariableID
+		{
+			get {
+				if (arrayIdNode == null)
+					return null;
+				else
+					return arrayIdNode.VariableID;
+			}
 		}
 	}
 }

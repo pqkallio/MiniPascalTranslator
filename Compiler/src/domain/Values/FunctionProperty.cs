@@ -4,13 +4,17 @@ namespace Compiler
 {
 	public class FunctionProperty : Property
 	{
-		public FunctionProperty (int declarationRow = int.MaxValue)
+		private TokenType returnType;
+
+		public FunctionProperty (TokenType returnType, int declarationRow = int.MaxValue)
 			: base(declarationRow, true)
-		{}
+		{
+			this.returnType = returnType;
+		}
 
 		public override TokenType GetTokenType ()
 		{
-			return TokenType.FUNCTION;
+			return returnType;
 		}
 	}
 }

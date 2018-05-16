@@ -56,11 +56,13 @@ namespace Compiler
 		{
 			StringBuilder sb = new StringBuilder ();
 
+			/*
 			if (id != null) {
 				sb.Append (id + "_");
 			}
+			*/
 
-			sb.Append ("temp" + counter.ToString ());
+			sb.Append ("r" + counter.ToString ());
 
 			counter++;
 
@@ -68,4 +70,3 @@ namespace Compiler
 		}
 	}
 }
-

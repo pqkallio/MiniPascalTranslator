@@ -36,6 +36,11 @@ namespace Compiler
 		{
 			get { return evaluationType != TokenType.UNDEFINED; }
 		}
+
+		public virtual string VariableID
+		{
+			get { return null; }
+		}
 	}
 }
 

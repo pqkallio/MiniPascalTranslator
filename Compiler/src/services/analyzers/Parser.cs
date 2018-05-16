@@ -171,12 +171,6 @@ namespace Compiler
 			try {
 				idNode = ParseVarId (programScope);
 
-				// first check that the program scope hasn't got a function or procedure with the same name
-				// declared already
-				if (expectDeclared (idNode, programScope, false)) {
-					programScope.AddProperty (idNode.ID.ToLower(), new FunctionProperty (token.Row));
-				}
-
 				match(GetNextToken(), TokenType.PARENTHESIS_LEFT);
 				parameters = ParseParameters(functionScope);
 
@@ -190,6 +184,12 @@ namespace Compiler
 				}
 			} catch (UnexpectedTokenException ex) {
 				FastForwardToStatementEnd (ex);
+			}
+
+			// check that the program scope hasn't got a function or procedure with the same name
+			// declared already
+			if (expectDeclared (idNode, programScope, false)) {
+				programScope.AddProperty (idNode.ID.ToLower(), new FunctionProperty (idNode.VariableType, token.Row));
 			}
 				
 			try {
@@ -943,15 +943,18 @@ namespace Compiler
 			case TokenType.PARENTHESIS_LEFT:
 			case TokenType.UNARY_OP_LOG_NEG:
 				FactorMain main = ParseFactorMain (scope, token);
-				FactorTail tail = ParseFactorTail (scope);
-
-				return new Factor (token, scope, main, tail);
+				ArraySizeCheckNode tail = ParseFactorTail (scope);
+				if (tail != null) {
+					tail.ArrayIDNode = main.Evaluee;
+					return new Factor (token, scope, tail);
+				}
+				return new Factor (token, scope, main);
 			default:
 				throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_EXPRESSION);
 			}
 		}
 
-		private FactorTail ParseFactorTail (Scope scope)
+		private ArraySizeCheckNode ParseFactorTail (Scope scope)
 		{
 			Token token = GetNextToken ();
 
@@ -1338,4 +1341,3 @@ namespace Compiler
 		}
 	}
 }
-

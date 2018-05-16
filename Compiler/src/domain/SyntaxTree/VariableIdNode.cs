@@ -53,5 +53,10 @@ namespace Compiler
 		public override VariableIdNode IDNode {
 			get { return this; }
 		}
+
+		public override string VariableID
+		{
+			get { return this.id; }
+		}
 	}
 }

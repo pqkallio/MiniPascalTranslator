@@ -261,6 +261,11 @@ namespace Compiler
 
 			if (node.ExpressionTail != null) {
 				node.ExpressionTail.Accept (this);
+				if (!LegitOperationChecker.IsLegitOperationForEvaluations (node.ExpressionTail.Operation, node.SimpleExpression.EvaluationType, node.ExpressionTail.RightHandSide.EvaluationType)) {
+					node.EvaluationType = TokenType.ERROR;
+				} else {
+					node.EvaluationType = TokenType.BOOLEAN_VAL;
+				}
 			}
 
 			if (node.EvaluationType == TokenType.ERROR) {
@@ -274,8 +279,6 @@ namespace Compiler
 		{
 			node.Accept (this.typeChecker);
 			node.RightHandSide.Accept (this);
-
-			
 		}
 
 		public void VisitFactorNode(Factor node)
@@ -299,22 +302,17 @@ namespace Compiler
 					}
 				}
 			}
-
-			
 		}
 
 		public void VisitFactorMain(FactorMain node)
 		{
 			node.Accept (this.typeChecker);
 			node.Evaluee.Accept (this);
-
-			
 		}
 
 		public void VisitFactorTail(FactorTail node)
 		{
 			node.Accept (this.typeChecker);
-			
 		}
 
 		public void VisitFunctionNode(FunctionNode node)
@@ -517,7 +515,7 @@ namespace Compiler
 			TokenType errorType = TokenType.ERROR;
 
 			for (int i = 0; i < parameters.Count; i++) {
-				if (parameters [i].Reference && !arguments[i].Variable) {
+				if (parameters [i].Reference && !isAddressable(arguments[i])) {
 					analyzer.notifyError (new InvalidArgumentError (callNode, i + 1));
 				} else { TokenType paramEval = parameters [i].ParameterType;
 					TokenType argEval = arguments [i].EvaluationType;
@@ -527,6 +525,35 @@ namespace Compiler
 					}
 				}
 			}
+		}
+
+		private bool isAddressable(ExpressionNode expressionNode)
+		{
+			if (!expressionNode.SimpleExpression.Term.Factor.FactorMain.Evaluee.Variable) {
+				return false;
+			}
+
+			if (expressionNode.SimpleExpression.Term.Factor.FactorTail != null) {
+				return false;
+			}
+
+			if (expressionNode.SimpleExpression.Term.TermTail != null) {
+				return false;
+			}
+
+			if (expressionNode.SimpleExpression.Tail != null) {
+				return false;
+			}
+
+			if (expressionNode.SimpleExpression.AdditiveInverse) {
+				return false;
+			}
+
+			if (expressionNode.ExpressionTail != null) {
+				return false;
+			}
+
+			return true;
 		}
 
 		private void CheckStatement (StatementNode statement, StatementNode parentNode = null, bool parentCanReturn = true)

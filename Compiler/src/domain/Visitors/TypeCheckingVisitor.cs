@@ -20,7 +20,7 @@ namespace Compiler
 				return;
 			}
 
-			Property prop = node.Scope.GetProperty (node.IDNode.ID);
+			Property prop = node.Scope.GetProperty (node.VariableID);
 
 			if (prop.GetTokenType () != TokenType.TYPE_ARRAY) {
 				node.EvaluationType = TokenType.ERROR;
@@ -46,8 +46,7 @@ namespace Compiler
 			if (prop.GetTokenType () != TokenType.TYPE_ARRAY) {
 				node.EvaluationType = TokenType.ERROR;
 			} else {
-				ArrayProperty arrayProp = (ArrayProperty)prop;
-				node.EvaluationType = arrayProp.ArrayElementType;
+				node.EvaluationType = TokenType.INTEGER_VAL;
 			}
 		}
 
@@ -123,7 +122,7 @@ namespace Compiler
 		{
 			node.RightHandSide.Accept (this);
 
-			node.EvaluationType = TokenType.BOOLEAN_VAL;
+			node.EvaluationType = node.RightHandSide.EvaluationType;
 		}
 
 		public void VisitFactorNode(Factor node)

@@ -31,7 +31,7 @@ namespace Compiler
 		{
 			createCTempVarPoolIfNeeded (scope);
 
-			return tempies[scope].ID + "_" + id;
+			return "_" + id;
 		}
 
 		public string GetTempVarId (Scope scope, TokenType type, ref bool declared)

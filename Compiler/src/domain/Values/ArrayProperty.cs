@@ -4,19 +4,14 @@ namespace Compiler
 {
 	public class ArrayProperty : Property
 	{
-		private int size;
+		private ExpressionNode sizeExpression;
 		private TokenType arrayElementType;
 
-		public ArrayProperty (TokenType valueType, int size = -1, int declarationRow = int.MaxValue)
+		public ArrayProperty (TokenType valueType, ExpressionNode sizeExpression = null, int declarationRow = int.MaxValue)
 			: base(declarationRow, true)
 		{
 			this.arrayElementType = valueType;
-			this.size = size;
-		}
-
-		public int Size
-		{
-			get { return this.size; }
+			this.sizeExpression = sizeExpression;
 		}
 
 		public override TokenType GetTokenType ()
@@ -27,6 +22,11 @@ namespace Compiler
 		public TokenType ArrayElementType
 		{
 			get { return arrayElementType; }
+		}
+
+		public ExpressionNode SizeExpression
+		{
+			get { return sizeExpression; }
 		}
 	}
 }

@@ -10,7 +10,7 @@ namespace Compiler
 	/// implementing this interface can also be used as Visitors'
 	/// methods' return values.
 	/// </summary>
-	public abstract class Property : ISemanticCheckValue
+	public abstract class Property : IComparable
 	{
 		private bool assigned;
 		private int declarationRow;
@@ -32,6 +32,24 @@ namespace Compiler
 		{
 			get { return this.declarationRow; }
 		}
+
+		public int CompareTo (object objet)
+		{
+			if (this.GetTokenType () == TokenType.TYPE_ARRAY) {
+				return 1;
+			}
+
+			if (objet.GetType () != this.GetType ()) {
+				return 0;
+			}
+
+			Property prop = (Property)objet;
+
+			if (prop.GetTokenType () == TokenType.TYPE_ARRAY) {
+				return -1;
+			}
+
+			return 0;
+		}
 	}
 }
-
