@@ -265,14 +265,14 @@ namespace Compiler
 			}
 
 			END_WHILE:
-			return nodeBuilder.CreateParametersNode(token, parameters);
+			return nodeBuilder.CreateParametersNode(token, parameters, scope);
 		}
 
 		private Parameter ParseParameter (Token token, Scope scope)
 		{
 			switch (token.Type) {
 				case TokenType.VAR:
-					return Param (scope, reference: true);
+					return Param (scope, GetNextToken(), reference: true);
 				case TokenType.ID:
 					return Param (scope, token);
 				default:
@@ -280,12 +280,8 @@ namespace Compiler
 			}
 		}
 
-		private Parameter Param(Scope scope, Token idToken=null, bool reference=false)
+		private Parameter Param(Scope scope, Token idToken, bool reference=false)
 		{
-			if (reference) {
-				idToken = GetNextToken ();
-			}
-
 			idToken.Type = idType (idToken.Type);
 
 			if (idToken.Type != TokenType.ID) {
@@ -296,7 +292,7 @@ namespace Compiler
 
 			match (GetNextToken (), TokenType.SET_TYPE);
 
-			Property property = ParsePropertyForParam (scope);
+			Property property = ParsePropertyForParam (scope, idToken, reference);
 
 			if (property.GetTokenType () == TokenType.TYPE_ARRAY) {
 				ArrayProperty arrayProp = (ArrayProperty)property;
@@ -315,23 +311,23 @@ namespace Compiler
 			return new Parameter (idNode, property.GetTokenType (), reference);
 		}
 
-		private Property ParsePropertyForParam (Scope scope)
+		private Property ParsePropertyForParam (Scope scope, Token token, bool reference)
 		{
 			TokenType type = ParseType ();
 
 			switch (type) {
 				case TokenType.TYPE_INTEGER:
 				case TokenType.INTEGER_VAL:
-					return new IntegerProperty ();
+					return new IntegerProperty (declarationRow: token.Row, reference: reference);
 				case TokenType.TYPE_BOOLEAN:
 				case TokenType.BOOLEAN_VAL:
-					return new BooleanProperty ();
+					return new BooleanProperty (declarationRow: token.Row, reference: reference);
 				case TokenType.TYPE_REAL:
 				case TokenType.REAL_VAL:
-					return new RealProperty ();
+					return new RealProperty (declarationRow: token.Row, reference: reference);
 				case TokenType.TYPE_STRING:
 				case TokenType.STRING_VAL:
-					return new StringProperty ();
+					return new StringProperty (declarationRow: token.Row);
 				case TokenType.TYPE_ARRAY:
 					return ParseArrayPropertyForParam (scope);
 				default:
@@ -346,13 +342,13 @@ namespace Compiler
 			Token token = GetNextToken ();
 
 			switch (token.Type) {
-			case TokenType.BRACKET_RIGHT:
-				bufferedToken = token;
-				break;
-			default:
-				bufferedToken = token;
-				ExpressionNode expression = ParseExpression (scope);
-				break;
+				case TokenType.BRACKET_RIGHT:
+					bufferedToken = token;
+					break;
+				default:
+					bufferedToken = token;
+					ExpressionNode expression = ParseExpression (scope);
+					break;
 			}
 
 			match (GetNextToken (), TokenType.BRACKET_RIGHT);
@@ -361,11 +357,11 @@ namespace Compiler
 			TokenType type = ParseType ();
 
 			if (ParserConstants.SIMPLE_TYPES.ContainsKey (type)) {
-				return new ArrayProperty (type);
+				return new ArrayProperty (type, declarationRow: token.Row);
 			}
 
 			notifyError (new IllegalArrayElementTypeError (token));
-			return new ArrayProperty (TokenType.ERROR);
+			return new ArrayProperty (TokenType.ERROR, declarationRow: token.Row);
 		}
 
 		private BlockNode ParseBlock (Scope scope)
@@ -388,6 +384,10 @@ namespace Compiler
 		{
 			StatementNode statement = null;
 
+			if (idType (token.Type) == TokenType.ID && scope.ContainsKey (token.Value)) {
+				token.Type = TokenType.ID;
+			}
+
 			switch (token.Type) {
 				case TokenType.ID:
 				case TokenType.RETURN:
@@ -398,13 +398,13 @@ namespace Compiler
 				case TokenType.IF:
 				case TokenType.WHILE_LOOP:
 				case TokenType.VAR:
-				try {
-					statement = ParseStatement (scope, token);
-					statements.Add (statement);
-				} catch (UnexpectedTokenException ex) {
-					FastForwardToStatementEnd (ex);
-				}
-				break;
+					try {
+						statement = ParseStatement (scope, token);
+						statements.Add (statement);
+					} catch (UnexpectedTokenException ex) {
+						FastForwardToStatementEnd (ex);
+					}
+					break;
 				case TokenType.END:
 					return;
 				default:

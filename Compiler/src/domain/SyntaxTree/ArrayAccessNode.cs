@@ -32,6 +32,11 @@ namespace Compiler
 		public override VariableIdNode IDNode {
 			get { return arrayId; }
 		}
+
+		public override string VariableID
+		{
+			get { return IDNode.ID; }
+		}
 	}
 }
 

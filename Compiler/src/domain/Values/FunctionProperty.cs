@@ -7,7 +7,7 @@ namespace Compiler
 		private TokenType returnType;
 
 		public FunctionProperty (TokenType returnType, int declarationRow = int.MaxValue)
-			: base(declarationRow, true)
+			: base(declarationRow, true, false)
 		{
 			this.returnType = returnType;
 		}

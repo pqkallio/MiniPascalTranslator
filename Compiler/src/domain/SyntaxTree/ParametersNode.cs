@@ -7,14 +7,8 @@ namespace Compiler
 	{
 		private List<Parameter> parameters;
 
-		public ParametersNode (Token token, params Parameter[] parameters)
-			: base(token)
-		{
-			this.parameters = new List<Parameter> (parameters);
-		}
-
-		public ParametersNode (Token token, List<Parameter> parameters)
-			: base(token)
+		public ParametersNode (Token token, List<Parameter> parameters, Scope scope)
+			: base(token, scope)
 		{
 			this.parameters = parameters;
 		}

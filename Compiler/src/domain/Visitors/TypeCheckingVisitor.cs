@@ -4,13 +4,6 @@ namespace Compiler
 {
 	public class TypeCheckingVisitor : INodeVisitor
 	{
-		private SemanticAnalyzer analyzer;
-
-		public TypeCheckingVisitor (SemanticAnalyzer analyzer)
-		{
-			this.analyzer = analyzer;
-		}
-
 		public void VisitAssertNode(AssertNode node)
 		{}
 
@@ -46,7 +39,8 @@ namespace Compiler
 			if (prop.GetTokenType () != TokenType.TYPE_ARRAY) {
 				node.EvaluationType = TokenType.ERROR;
 			} else {
-				node.EvaluationType = TokenType.INTEGER_VAL;
+				ArrayProperty arrayProp = (ArrayProperty)prop;
+				node.EvaluationType = arrayProp.ArrayElementType;
 			}
 		}
 
@@ -94,7 +88,7 @@ namespace Compiler
 			node.Factor.Accept (this);
 			TokenType factorEval = node.Factor.EvaluationType;
 
-			node.EvaluationType = factorEval != TokenType.BOOLEAN_VAL ? factorEval : TokenType.ERROR;
+			node.EvaluationType = factorEval == TokenType.BOOLEAN_VAL ? factorEval : TokenType.ERROR;
 		}
 
 		public void VisitExpressionNode(ExpressionNode node)

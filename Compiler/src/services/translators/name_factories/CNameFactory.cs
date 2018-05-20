@@ -34,11 +34,11 @@ namespace Compiler
 			return "_" + id;
 		}
 
-		public string GetTempVarId (Scope scope, TokenType type, ref bool declared)
+		public string GetTempVarId (Scope scope, TokenType type)
 		{
 			createCTempVarPoolIfNeeded (scope);
 
-			string tempVarId = tempies [scope].GetTempId (type, ref declared);
+			string tempVarId = tempies [scope].GetTempId (type);
 
 			return tempVarId;
 		}

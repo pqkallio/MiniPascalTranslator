@@ -7,8 +7,8 @@ namespace Compiler
 	/// </summary>
 	public class IntegerProperty : Property
 	{
-		public IntegerProperty(int declarationRow = int.MaxValue)
-			: base(declarationRow)
+		public IntegerProperty(int declarationRow = int.MaxValue, bool assigned = false, bool reference = false)
+			: base(declarationRow, assigned, reference)
 		{}
 
 		public override TokenType GetTokenType ()

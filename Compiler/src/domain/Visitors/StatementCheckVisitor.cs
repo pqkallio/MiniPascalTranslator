@@ -20,7 +20,7 @@ namespace Compiler
 		{
 			this.analyzer = analyzer;
 			this.returnStatements = new List<ReturnStatement> ();
-			this.typeChecker = new TypeCheckingVisitor (analyzer);
+			this.typeChecker = new TypeCheckingVisitor ();
 		}
 
 		public void VisitArraySizeCheckNode(ArraySizeCheckNode node)
@@ -176,8 +176,6 @@ namespace Compiler
 					analyzer.notifyError (new IllegalTypeError (idNode));
 				}
 			}
-
-			
 		}
 
 		public void VisitArrayAssignNode(ArrayAssignStatement node)
@@ -366,8 +364,6 @@ namespace Compiler
 
 				CompareParamsAndArgs (node, function.Parameters.Parameters, arguments.Arguments); 
 			}
-
-			
 		}
 
 		public void VisitIfNode(IfNode node)

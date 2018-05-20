@@ -17,16 +17,14 @@ namespace Compiler
 			this.tempIds = new Dictionary<TokenType, List<string>> ();
 		}
 
-		public string GetTempId (TokenType type, ref bool declared)
+		public string GetTempId (TokenType type)
 		{
 			createEntryIfNeeded (type);
 			string tempId;
 
 			if (tempIds [type].Count == 0) {
-				declared = false;
 				tempId = getNewId ();
 			} else {
-				declared = true;
 				tempId = tempIds [type] [0];
 				tempIds [type].RemoveAt (0);
 			}

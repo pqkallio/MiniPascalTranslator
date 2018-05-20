@@ -14,13 +14,18 @@ namespace Compiler
 		public static readonly Tuple<string, string> ARRAY_INDEX_DELIMITERS = Tuple.Create("[", "]");
 		public static readonly Tuple<string, string> COMMENT_DELIMITERS = Tuple.Create("/*", "*/");
 		public static readonly string[] LIBRARIES = new string[] {"stdio.h", "stdlib.h"};
+		public static readonly string IF = "if";
+		public static readonly string GOTO = "goto";
 		public static readonly string MEM_ALLOCATION = "malloc";
 		public static readonly string MEM_RELEASE = "free";
 		public static readonly string MEM_POINTER = "*";
 		public static readonly string MEM_ADDRESS = "&";
 		public static readonly string SIZE_OF = "sizeof";
 		public static readonly string ASSIGNMENT = "=";
+		public static readonly string ERROR_LABEL = "error";
+		public static readonly string ASSERTION_FAILED_MESSAGE = "\"Assertion failed.\"";
 		public static readonly string STRING_DELIMITER = "\"";
+		public static readonly string ARRAY_SIZE_INDEX = "0";
 
 		public static readonly Dictionary<TokenType, string> SIMPLE_TYPE_NAMES = new Dictionary<TokenType, string>()
 		{
@@ -74,6 +79,30 @@ namespace Compiler
 			{TokenType.TYPE_ARRAY, ""}
 		};
 
+		public static readonly Dictionary<TokenType, string> ARRAY_ACCESS_FUNCTION_CALLS = new Dictionary<TokenType, string> ()
+		{
+			{TokenType.BOOLEAN_VAL, "load_from_int_array"},
+			{TokenType.INTEGER_VAL, "load_from_int_array"},
+			{TokenType.REAL_VAL, "load_from_float_array"},
+			{TokenType.STRING_VAL, "load_from_string_array"},
+		};
+
+		public static readonly Dictionary<TokenType, string> ARRAY_INSERTION_FUNCTION_CALLS = new Dictionary<TokenType, string> ()
+		{
+			{TokenType.BOOLEAN_VAL, "insert_to_int_array"},
+			{TokenType.INTEGER_VAL, "insert_to_int_array"},
+			{TokenType.REAL_VAL, "insert_to_float_array"},
+			{TokenType.STRING_VAL, "insert_to_string_array"},
+		};
+
+		public static readonly Dictionary<TokenType, string> PRINTING_FUNCTION_CALLS = new Dictionary<TokenType, string> ()
+		{
+			{TokenType.BOOLEAN_VAL, "print_int"},
+			{TokenType.INTEGER_VAL, "print_int"},
+			{TokenType.REAL_VAL, "print_float"},
+			{TokenType.STRING_VAL, "print_string"},
+		};
+
 		public static readonly string[] HELPER_FUNCTION_DECLARATIONS = new string[]
 		{
 			"unsigned int get_string_length(char* string)",
@@ -84,7 +113,11 @@ namespace Compiler
 			"int insert_to_float_array(float* array, unsigned int index, float temp)",
 			"int insert_to_string_array(char** array, unsigned int index, char* temp)",
 			"char* string_concatenation(char* first, char* second)",
-			"int compare_strings(char* lhs, char* rhs)"
+			"int compare_strings(char* lhs, char* rhs)",
+			"void print_int(int integer)",
+			"void print_float(float real)",
+			"void print_string(char* string)",
+			"void print_linebreak()"
 		};
 
 		public static readonly string[] getStringLengthFunction = new string[]
@@ -284,6 +317,34 @@ namespace Compiler
 			"}"
 		};
 
+		public static readonly string[] printInt = new string[] {
+			HELPER_FUNCTION_DECLARATIONS[9],
+			"{",
+			"	printf(\"%d\", integer);",
+			"}"
+		};
+
+		public static readonly string[] printReal = new string[] {
+			HELPER_FUNCTION_DECLARATIONS[10],
+			"{",
+			"	printf(\"%f\", real);",
+			"}"
+		};
+
+		public static readonly string[] printString = new string[] {
+			HELPER_FUNCTION_DECLARATIONS[11],
+			"{",
+			"	printf(\"%s\", string);",
+			"}"
+		};
+
+		public static readonly string[] printLinebreak = new string[] {
+			HELPER_FUNCTION_DECLARATIONS[12],
+			"{",
+			"	printf(\"\\n\");",
+			"}"
+		};
+
 		public static readonly string[][] HELPER_FUNCTIONS = new string[][] {
 			getStringLengthFunction,
 			loadFromFloatArray,
@@ -293,8 +354,11 @@ namespace Compiler
 			insertToIntArray,
 			insertToStringArray,
 			stringConcatenation,
-			stringComparison
+			stringComparison,
+			printInt,
+			printReal,
+			printString,
+			printLinebreak
 		};
 	}
 }
-

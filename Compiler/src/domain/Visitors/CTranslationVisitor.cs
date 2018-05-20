@@ -39,32 +39,110 @@ namespace Compiler
 			get { return this.globalTranslation; }
 		}
 
+		private string parenthesised (string str)
+		{
+			return "(" + str + ")";
+		}
+
+		private string label(string str) {
+			return str + ":";
+		}
+
 		public void VisitAssertNode(AssertNode node)
-		{}
+		{
+			node.AssertExpression.Accept (this);
+			string failureLabel = nameFactory.GetLabel ();
+			string successLabel = nameFactory.GetLabel ();
+			string loc = node.AssertExpression.Location;
+
+			addEmptyLineToScopeTranslation ();
+			addToScopeTranslation (statement (CTranslatorConstants.IF, parenthesised (loc), CTranslatorConstants.GOTO, successLabel));
+
+			addEmptyLineToScopeTranslation ();
+			addToScopeTranslation (label (failureLabel));
+			addToScopeTranslation (statement (CTranslatorConstants.GOTO, CTranslatorConstants.ERROR_LABEL));
+
+			addEmptyLineToScopeTranslation ();
+			addToScopeTranslation (statement (label (successLabel)));
+
+			nameFactory.ReturnTempVarId (currentScope, loc, node.AssertExpression.EvaluationType);
+		}
+
+		private string CreateFailedAssertionPrintCall()
+		{
+			return statement (CreateFunctionCall (CTranslatorConstants.PRINTING_FUNCTION_CALLS [TokenType.STRING_VAL], CTranslatorConstants.ASSERTION_FAILED_MESSAGE));
+		}
 
 		public void VisitArraySizeCheckNode(ArraySizeCheckNode node)
 		{
-			bool declared = false;
-			setNodeLocation (node, TokenType.INTEGER_VAL, new IntegerProperty(), ref declared);
+			setNodeLocation (node, TokenType.INTEGER_VAL, new IntegerProperty());
 			string arrayId = nameFactory.GetCName (node.Scope, node.VariableID);
-			addToScopeTranslation (statement (spaced (node.Location, CTranslatorConstants.ASSIGNMENT, "(int)", unspaced (arrayId, CTranslatorConstants.ARRAY_INDEX_DELIMITERS.Item1, "0", CTranslatorConstants.ARRAY_INDEX_DELIMITERS.Item2))));
+			addToScopeTranslation (simpleAssignment (node.Location, getSizeOfArray (arrayId)));
+		}
+
+		private string simpleAssignment (string target, string assignee)
+		{
+			return statement (target + CTranslatorConstants.ASSIGNMENT + assignee);
+		}
+
+		private string getSizeOfArray (string arrayId)
+		{
+			string tempVar = nameFactory.GetTempVarId (currentScope, TokenType.INTEGER_VAL);
+			addToScopeTranslation(simpleAssignment(tempVar, CTranslatorConstants.ARRAY_SIZE_INDEX));
+
+			return throwToInt () + arrayAccess (arrayId, tempVar);
+		}
+
+		private string arrayAccess (string arrayId, string index)
+		{
+			return arrayId + indexDelimited (index);
+		}
+
+		private string indexDelimited(string index)
+		{
+			string indexDelimiterLeft = CTranslatorConstants.ARRAY_INDEX_DELIMITERS.Item1;
+			string indexDelimiterRight = CTranslatorConstants.ARRAY_INDEX_DELIMITERS.Item2;
+
+			return indexDelimiterLeft + index + indexDelimiterRight;
+		}
+
+		private string throwToInt() {
+			return parenthesised (typeNames [TokenType.INTEGER_VAL]);
 		}
 
 		public void VisitAssignNode(AssignNode node)
 		{
 			string idName = nameFactory.GetCName (node.Scope, node.IDNode.IDNode.ID);
+
+			Property prop = declaredVariables [currentScope] [idName];
 			node.AssignValueExpression.Accept (this);
-			addToScopeTranslation (statement (spaced (idName, "=", node.AssignValueExpression.Location)));
+
+			if (prop.Reference) {
+				addToScopeTranslation (statement (spaced ("*" + idName, "=", node.AssignValueExpression.Location)));
+			} else {
+				addToScopeTranslation (statement (spaced (idName, "=", node.AssignValueExpression.Location)));
+			}
+
 			nameFactory.ReturnTempVarId (node.AssignValueExpression.Scope, node.AssignValueExpression.Location, node.AssignValueExpression.EvaluationType);
 		}
 
 		public void VisitArrayAssignNode(ArrayAssignStatement node)
-		{}
+		{
+			node.IndexExpression.Accept (this);
+			node.AssignValueExpression.Accept (this);
+			string arrayId = nameFactory.GetCName (node.Scope, node.IDNode.VariableID);
+			TokenType type = node.AssignValueExpression.EvaluationType;
+			addToScopeTranslation (
+				statement (
+					CreateFunctionCall (CTranslatorConstants.ARRAY_INSERTION_FUNCTION_CALLS[type], 
+					arrayId, 
+					node.IndexExpression.Location, 
+					node.AssignValueExpression.Location)));
+		}
 
 		public void VisitArrayAccessNode(ArrayAccessNode node)
 		{
-			bool declared = false;
-			setNodeLocation (node, node.EvaluationType, new ArrayProperty(node.EvaluationType), ref declared);
+			setNodeLocation (node, node.EvaluationType, new ArrayProperty(node.EvaluationType));
 			node.ArrayIndexExpression.Accept (this);
 			string arrayId = nameFactory.GetCName (node.Scope, node.VariableID);
 			switch (node.EvaluationType) {
@@ -85,12 +163,16 @@ namespace Compiler
 		{
 			StringBuilder sb = new StringBuilder (functionId + "(");
 
-			int i;
-			for (i = 0; i < arguments.Length - 1; i++) {
-				sb.Append (arguments [i] + ", ");
+			if (arguments.Length > 0) {
+				int i;
+				for (i = 0; i < arguments.Length - 1; i++) {
+					sb.Append (arguments [i] + ", ");
+				}
+
+				sb.Append (arguments [i]);
 			}
 
-			sb.Append (arguments [i] + ")");
+			sb.Append (")");
 
 			return sb.ToString();
 		}
@@ -102,12 +184,15 @@ namespace Compiler
 			if (node.DeclarationType.PropertyType == TokenType.TYPE_ARRAY) {
 				foreach (VariableIdNode idNode in node.IDsToDeclare) {
 					string id = nameFactory.GetCName(scope, idNode.ID);
-					declaredVariables [currentScope] [id] = getProperty(TokenType.TYPE_ARRAY, idNode.ArrayElementType, node.DeclarationType.ArraySizeExpression);
+					ExpressionNode sizeExpr = node.DeclarationType.ArraySizeExpression;
+					TokenType elemType = node.DeclarationType.ArrayElementType;
+					sizeExpr.Accept (this);
+					addAllocation (elemType, sizeExpr.Location, id, node.Scope);
 				}
 			} else {
 				foreach (VariableIdNode idNode in node.IDsToDeclare) {
 					string id = nameFactory.GetCName(scope, idNode.ID);
-					declaredVariables [currentScope] [id] = getProperty(node.Token.Type);
+					declaredVariables [currentScope] [id] = getProperty(idNode.EvaluationType);
 				}
 			}
 		}
@@ -115,15 +200,15 @@ namespace Compiler
 		public void VisitIntValueNode(IntValueNode node)
 		{	
 			bool declared = false;
-			setNodeLocation (node, node.EvaluationType, new IntegerProperty(), ref declared);
-
+			setNodeLocation (node, node.EvaluationType, new IntegerProperty());
+			
 			addAssignment (typeNames[node.EvaluationType], node.Location, node.Value, node.Scope, declared: declared);
 		}
 
 		public void VisitRealValueNode(RealValueNode node)
 		{
 			bool declared = false;
-			setNodeLocation (node, node.EvaluationType, new RealProperty(), ref declared);
+			setNodeLocation (node, node.EvaluationType, new RealProperty());
 
 			addAssignment (typeNames[node.EvaluationType], node.Location, node.Value, node.Scope, declared: declared);
 		}
@@ -131,7 +216,7 @@ namespace Compiler
 		public void VisitBoolValueNode(BoolValueNode node)
 		{
 			bool declared = false;
-			setNodeLocation (node, node.EvaluationType, new IntegerProperty(), ref declared);
+			setNodeLocation (node, node.EvaluationType, new IntegerProperty());
 
 			string strVal = node.Value ? "1" : "0";
 
@@ -141,7 +226,7 @@ namespace Compiler
 		public void VisitStringValueNode(StringValueNode node)
 		{
 			bool declared = false;
-			setNodeLocation (node, node.EvaluationType, new StringProperty(), ref declared);
+			setNodeLocation (node, node.EvaluationType, new StringProperty());
 
 			string strVal = unspaced (CTranslatorConstants.STRING_DELIMITER, node.Value, CTranslatorConstants.STRING_DELIMITER);
 
@@ -149,18 +234,59 @@ namespace Compiler
 		}
 
 		public void VisitIOPrintNode(IOPrintNode node)
-		{}
+		{
+			string functionCall = "";
+
+			foreach (ExpressionNode expression in node.Arguments.Arguments) {
+				expression.Accept (this);
+
+				switch (expression.EvaluationType) {
+					case TokenType.INTEGER_VAL:
+					case TokenType.BOOLEAN_VAL:
+						functionCall = CreateFunctionCall ("print_integer", expression.Location);
+						break;
+					case TokenType.REAL_VAL:
+						functionCall = CreateFunctionCall ("print_real", expression.Location);
+						break;
+					case TokenType.STRING_VAL:
+						functionCall = CreateFunctionCall ("print_string", expression.Location);
+						break;
+				}
+
+				addToScopeTranslation (statement (functionCall));
+
+				nameFactory.ReturnTempVarId (node.Arguments.Scope, expression.Location, expression.EvaluationType);
+			}
+
+			functionCall = CreateFunctionCall ("print_linebreak");
+
+			addToScopeTranslation (statement (functionCall));
+		}
 
 		public void VisitIOReadNode(IOReadNode node)
-		{}
+		{
+			string[] arguments = new string[node.IDNodes.Count];
+
+			for (int i = 0; i < arguments.Length; i++) {
+				Evaluee idNode = node.IDNodes [i];
+				string id = nameFactory.GetCName (node.Scope, idNode.VariableID);
+				if (currentScope.GetProperty (idNode.VariableID).Reference) {
+					arguments [i] = id;
+				} else {
+					arguments [i] = CTranslatorConstants.ADDRESS_PREFIXES [idNode.EvaluationType] + id;
+				}
+			}
+
+			string functionCall = CreateFunctionCall ("fread", arguments);
+
+			addToScopeTranslation (statement (functionCall));
+		}
 
 		public void VisitTypeNode(TypeNode node)
 		{}
 
 		public void VisitBlockNode(BlockNode node)
 		{
-			// addToTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item1);
-
 			List<StatementNode> statements = node.Statements;
 			int stmntsCount = statements.Count;
 			ReturnStatement returnStmnt = statements [stmntsCount - 1].Token.Type == TokenType.RETURN ? (ReturnStatement)statements [stmntsCount - 1] : null;
@@ -175,20 +301,22 @@ namespace Compiler
 			if (i < stmntsCount) {
 				statements [i].Accept (this);
 			}
-
-			// addToTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item2);
 		}
 
 		public void VisitBooleanNegation(BooleanNegation node)
-		{}
+		{
+			setNodeLocation (node, TokenType.BOOLEAN_VAL, getProperty (TokenType.BOOLEAN_VAL));
+			node.Factor.Location = node.Location;
+			node.Factor.Accept (this);
+			addAssignment (typeNames [TokenType.BOOLEAN_VAL], node.Location, "!" + node.Location, node.Scope); 
+		}
 
 		public void VisitExpressionNode(ExpressionNode node)
 		{
-			bool declared = false;
 			node.SimpleExpression.Accept (this);
 
 			if (node.ExpressionTail != null) {
-				setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType), ref declared);
+				setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType));
 				node.ExpressionTail.Accept (this);
 				addRelationalOperation (node);
 				nameFactory.ReturnTempVarId (node.ExpressionTail.Scope, node.ExpressionTail.Location, node.ExpressionTail.EvaluationType);
@@ -253,8 +381,7 @@ namespace Compiler
 
 		public void VisitSimpleExpression (SimpleExpression node)
 		{
-			bool declared = false;
-			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType), ref declared);
+			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType));
 
 			node.Term.Location = node.Location;
 			node.Term.Accept (this);
@@ -271,8 +398,7 @@ namespace Compiler
 
 		public void VisitSimpleExpressionTail (SimpleExpressionTail node)
 		{
-			bool declared = false;
-			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType), ref declared);
+			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType));
 
 			node.Term.Location = node.Location;
 			node.Term.Accept (this);
@@ -287,28 +413,21 @@ namespace Compiler
 
 		public void VisitExpressionTail(ExpressionTail node)
 		{
-			bool declared = false;
-			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType), ref declared);
+			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType));
 			node.RightHandSide.Location = node.Location;
 			node.RightHandSide.Accept (this);
 		}
 
 		public void VisitFactorNode(Factor node)
 		{
-			bool declared = false;
-			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType), ref declared);
+			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType));
 			node.FactorMain.Location = node.Location;
 			node.FactorMain.Accept (this);
-
-			if (node.FactorTail != null) {
-				// DO SUMTHIN!!!!
-			}
 		}
 
 		public void VisitFactorMain(FactorMain node)
 		{
-			bool declared = false;
-			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType), ref declared);
+			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType));
 
 			node.Evaluee.Location = node.Location;
 			node.Evaluee.Accept (this);
@@ -320,13 +439,16 @@ namespace Compiler
 		public void VisitFunctionNode(FunctionNode node)
 		{
 			string head = createFunctionStart(nameFactory.GetCName(node.Scope, node.IDNode.ID), node.IDNode, nameFactory, node.Parameters.Parameters);
+			node.Parameters.Accept (this);
 			this.blockDepth++;
 			node.Block.Accept (this);
 			blockDepth--;
 			addToGlobalTranslation (head);
 			addToGlobalTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item1);
+			this.blockDepth++;
 			addVariableDeclarationsToScopeTranslation (currentScope, declaredVariables [currentScope]);
 			globalTranslation = globalTranslation.Concat (scopeTranslation).ToList ();
+			this.blockDepth--;
 			addToGlobalTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item2);
 			addEmptyLineToGlobalTranslation ();
 		}
@@ -416,7 +538,30 @@ namespace Compiler
 		}
 
 		public void VisitParametersNode(ParametersNode node)
-		{}
+		{
+			foreach (Parameter param in node.Parameters) {
+				string id = nameFactory.GetCName (node.Scope, param.IdNode.ID);
+				Property prop = new ErrorProperty ();
+
+				switch (param.ParameterType) {
+					case TokenType.INTEGER_VAL:
+						prop = new IntegerProperty (node.Token.Row, true, param.Reference);
+						break;
+					case TokenType.REAL_VAL:
+						prop = new RealProperty (node.Token.Row, true, param.Reference);
+						break;
+					case TokenType.STRING_VAL:
+						prop = new StringProperty (node.Token.Row, true);
+						break;
+					case TokenType.TYPE_ARRAY:
+						prop = new ArrayProperty (param.IdNode.ArrayElementType, declarationRow: node.Token.Row);
+						break;
+				}
+
+				prop.Declared = true;
+				declaredVariables [currentScope] [id] = prop;
+			}
+		}
 
 		public void VisitArgumentsNode(ArgumentsNode node)
 		{}
@@ -468,8 +613,7 @@ namespace Compiler
 			Factor factor = node.Factor;
 			TermTail tail = node.TermTail;
 
-			bool declared = false;
-			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType), ref declared);
+			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType));
 
 			factor.Location = node.Location;
 			factor.Accept (this);
@@ -483,8 +627,7 @@ namespace Compiler
 
 		public void VisitTermTailNode(TermTail node)
 		{
-			bool declared = false;
-			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType), ref declared);
+			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType));
 			Factor factor = node.Factor;
 			TermTail tail = node.ChildTermTail;
 
@@ -501,14 +644,24 @@ namespace Compiler
 
 		public void VisitVariableIdNode(VariableIdNode node)
 		{
-			bool declared = false;
 			string id = nameFactory.GetCName (node.Scope, node.ID);
+			bool reference = false;
+
+			if (!declaredVariables [currentScope].ContainsKey (id)) {
+				declaredVariables [currentScope] [id] = node.Scope.GetProperty (node.ID);
+			} else {
+				reference = declaredVariables [currentScope] [id].Reference;
+			}
 
 			addToCurrentScope (id, node.Scope.GetProperty (node.ID));
-			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType), ref declared);
+			setNodeLocation (node, node.EvaluationType, getProperty(node.EvaluationType));
 
 			if (typeNames.ContainsKey (node.EvaluationType)) {
-				addAssignment (typeNames [node.EvaluationType], node.Location, id, node.Scope);
+				if (reference) {
+					addAssignment (typeNames [node.EvaluationType], node.Location, "*" + id, node.Scope);
+				} else {
+					addAssignment (typeNames [node.EvaluationType], node.Location, id, node.Scope);
+				}
 			}
 		}
 
@@ -746,9 +899,9 @@ namespace Compiler
 			return sb.ToString ();
 		}
 
-		public static string statement (string str)
+		public static string statement (params string[] str)
 		{
-			return str + ';';
+			return spaced(str) + ';';
 		}
 
 		private void addAllocation (TokenType type, string times, string id, Scope scope)
@@ -759,8 +912,7 @@ namespace Compiler
 
 			this.allocations[scope].Add (id);
 
-			bool declared = false;
-			string tempLoc = nameFactory.GetTempVarId (scope, type, ref declared);
+			string tempLoc = nameFactory.GetTempVarId (scope, type);
 			addToScopeTranslation(statement (spaced (typeNames[TokenType.INTEGER_VAL], tempLoc)));
 			addToScopeTranslation(statement (spaced (tempLoc, CTranslatorConstants.ASSIGNMENT, times, opStrings[TokenType.BINARY_OP_MUL], sizeOfString(typeNames[type]))));
 
@@ -813,9 +965,9 @@ namespace Compiler
 			}
 		}
 
-		private void setNodeLocation(SyntaxTreeNode node, TokenType type, Property property, ref bool declared) {
+		private void setNodeLocation(SyntaxTreeNode node, TokenType type, Property property) {
 			if (node.Location == null) {
-				string location = nameFactory.GetTempVarId (node.Scope, type, ref declared);
+				string location = nameFactory.GetTempVarId (node.Scope, type);
 				node.Location = location;
 
 				if (!declaredVariables [currentScope].ContainsKey (location)) {
@@ -826,25 +978,35 @@ namespace Compiler
 
 		private void addVariableDeclarationsToScopeTranslation (Scope scope, Dictionary<string, Property> variables)
 		{
-			List<string> scopeDecalarations = new List<string> ();
+			List<string> scopeDeclarations = new List<string> ();
 
 			foreach (string key in variables.Keys) {
+				if (scope.ContainsKey(key)) {
+					continue;
+				}
+
 				Property prop = variables [key];
+
+				if (prop.Declared) {
+					continue;
+				}
+
 				TokenType type = prop.GetTokenType ();
 
 				switch (type) {
-				case TokenType.TYPE_ARRAY:
-					ArrayProperty aProp = (ArrayProperty)prop;
-					TokenType elementType = aProp.ArrayElementType;
-					addToTranslation (scopeDecalarations, statement (spaced (typeNames [elementType] + CTranslatorConstants.MEM_POINTER, key)));
-					break;
-				default:
-					addToTranslation (scopeDecalarations, statement (spaced (typeNames [type], key)));
-					break;
+					case TokenType.TYPE_ARRAY:
+						ArrayProperty aProp = (ArrayProperty)prop;
+						TokenType elementType = aProp.ArrayElementType;
+						addToTranslation (scopeDeclarations, statement (spaced (typeNames [elementType] + CTranslatorConstants.MEM_POINTER, key)));
+						break;
+					default:
+						addToTranslation (scopeDeclarations, statement (spaced (typeNames [type], key)));
+						break;
 				}
 			}
 
-			scopeTranslation = scopeDecalarations.Concat (scopeTranslation).ToList ();
+			scopeTranslation = scopeDeclarations.Concat (scopeTranslation).ToList ();
+			addEmptyLineToScopeTranslation ();
 		}
 	}
 }

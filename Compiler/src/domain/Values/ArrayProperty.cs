@@ -8,7 +8,7 @@ namespace Compiler
 		private TokenType arrayElementType;
 
 		public ArrayProperty (TokenType valueType, ExpressionNode sizeExpression = null, int declarationRow = int.MaxValue)
-			: base(declarationRow, true)
+			: base(declarationRow, true, true)
 		{
 			this.arrayElementType = valueType;
 			this.sizeExpression = sizeExpression;

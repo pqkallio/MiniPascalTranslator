@@ -10,9 +10,9 @@ namespace Compiler
 			return new ProgramNode (token, functions, mainBlock, scope);
 		}
 
-		public ParametersNode CreateParametersNode (Token token, List<Parameter> parameters)
+		public ParametersNode CreateParametersNode (Token token, List<Parameter> parameters, Scope scope)
 		{
-			return new ParametersNode (token, parameters);
+			return new ParametersNode (token, parameters, scope);
 		}
 
 		public FunctionNode CreateFunctionNode(Token token, INameFactory labelFactory, VariableIdNode idNode, ParametersNode parameters, BlockNode blockNode, Scope scope)

@@ -7,8 +7,8 @@ namespace Compiler
 	/// </summary>
 	public class BooleanProperty : Property
 	{
-		public BooleanProperty(int declarationRow = int.MaxValue)
-			: base(declarationRow)
+		public BooleanProperty(int declarationRow = int.MaxValue, bool assigned = false, bool reference = false)
+			: base(declarationRow, assigned, reference)
 		{}
 
 		public override TokenType GetTokenType ()
