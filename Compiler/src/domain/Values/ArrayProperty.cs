@@ -7,8 +7,8 @@ namespace Compiler
 		private ExpressionNode sizeExpression;
 		private TokenType arrayElementType;
 
-		public ArrayProperty (TokenType valueType, ExpressionNode sizeExpression = null, int declarationRow = int.MaxValue)
-			: base(declarationRow, true, true)
+		public ArrayProperty (TokenType valueType, ExpressionNode sizeExpression = null, int declarationRow = int.MaxValue, bool redeclaration = false)
+			: base(declarationRow, true, true, redeclaration: redeclaration)
 		{
 			this.arrayElementType = valueType;
 			this.sizeExpression = sizeExpression;

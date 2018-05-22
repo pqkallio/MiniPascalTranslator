@@ -8,12 +8,14 @@ namespace Compiler
 		private Scope parentScope;
 		private Dictionary<string, Property> symbolTable;
 		private List<Scope> childScopes;
+		private string redeclarationId;
 
 		public Scope (Scope parentScope = null)
 		{
 			this.parentScope = parentScope;
 			this.symbolTable = new Dictionary<string, Property> ();
 			this.childScopes = new List<Scope> ();
+			this.redeclarationId = "";
 		}
 
 		public bool ContainsKey (string key, bool searchAncestors = true)
@@ -81,6 +83,12 @@ namespace Compiler
 		public Dictionary<string, Property> SymbolTable
 		{
 			get { return this.symbolTable; }
+		}
+
+		public string RedeclarationId
+		{
+			get { return redeclarationId; }
+			set { this.redeclarationId = value; }
 		}
 	}
 }

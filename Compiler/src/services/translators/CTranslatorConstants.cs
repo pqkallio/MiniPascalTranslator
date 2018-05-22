@@ -23,6 +23,8 @@ namespace Compiler
 		public static readonly string SIZE_OF = "sizeof";
 		public static readonly string ASSIGNMENT = "=";
 		public static readonly string ERROR_LABEL = "error";
+		public static readonly string ERROR_CODE_VAR = "ERRORCODE";
+		public static readonly string DEFAULT_ERROR_CODE = "0";
 		public static readonly string ASSERTION_FAILED_MESSAGE = "\"Assertion failed.\"";
 		public static readonly string STRING_DELIMITER = "\"";
 		public static readonly string ARRAY_SIZE_INDEX = "0";
@@ -109,9 +111,9 @@ namespace Compiler
 			"void load_from_int_array(int* array, unsigned int index, int* temp)",
 			"void load_from_float_array(float* array, unsigned int index, float* temp)",
 			"void load_from_string_array(char** array, unsigned int index, char** temp)",
-			"int insert_to_int_array(int* array, unsigned int index, int temp)",
-			"int insert_to_float_array(float* array, unsigned int index, float temp)",
-			"int insert_to_string_array(char** array, unsigned int index, char* temp)",
+			"void insert_to_int_array(int* array, unsigned int index, int temp)",
+			"void insert_to_float_array(float* array, unsigned int index, float temp)",
+			"void insert_to_string_array(char** array, unsigned int index, char* temp)",
 			"char* string_concatenation(char* first, char* second)",
 			"int compare_strings(char* lhs, char* rhs)",
 			"void print_int(int integer)",
@@ -124,19 +126,19 @@ namespace Compiler
 		{
 			HELPER_FUNCTION_DECLARATIONS[0],
 			"{",
-			"	int n = 0;",
-			"	char c = string[n];",
+			"\tint n = 0;",
+			"\tchar c = string[n];",
 			"",
-			"	goto check_condition;",
+			"\tgoto check_condition;",
 			"",
-			"	loop:",
-			"	n = n + 1;",
-			"	c = string[n];",
+			"\tloop:",
+			"\tn = n + 1;",
+			"\tc = string[n];",
 			"",
-			"	check_condition:",
-			"	if (c != '\\0') goto loop;",
+			"\tcheck_condition:",
+			"\tif (c != '\\0') goto loop;",
 			"",
-			"	return n;",
+			"\treturn n;",
 			"}"
 		};
 
@@ -144,16 +146,16 @@ namespace Compiler
 		{
 			HELPER_FUNCTION_DECLARATIONS[1],
 			"{",
-			"	int size_element = array[0];",
-			"	unsigned int array_size = (unsigned int)size_element;",
+			"\tint size_element = array[0];",
+			"\tunsigned int array_size = (unsigned int)size_element;",
 			"",
-			"	if (index < array_size) goto load;",
+			"\tif (index < array_size) goto load;",
 			"",
-			"	return 0;",
+			"\t" + ERROR_CODE_VAR + " = 1;",
+			"\treturn;",
 			"",
-			"	load:",
-			"	*temp = array[index + 1];",
-			"	return 1;",
+			"\tload:",
+			"\t*temp = array[index + 1];",
 			"}"
 		};
 
@@ -161,16 +163,16 @@ namespace Compiler
 		{
 			HELPER_FUNCTION_DECLARATIONS[2],
 			"{",
-			"	float size_element = array[0];",
-			"	unsigned int array_size = (unsigned int)size_element;",
+			"\tfloat size_element = array[0];",
+			"\tunsigned int array_size = (unsigned int)size_element;",
 			"",
-			"	if (index < array_size) goto load;",
+			"\tif (index < array_size) goto load;",
 			"",
-			"	return 0;",
+			"\t" + ERROR_CODE_VAR + " = 1;",
+			"\treturn;",
 			"",
-			"	load:",
-			"	*temp = array[index + 1];",
-			"	return 1;",
+			"\tload:",
+			"\t*temp = array[index + 1];",
 			"}"
 		};
 
@@ -178,16 +180,16 @@ namespace Compiler
 		{
 			HELPER_FUNCTION_DECLARATIONS[3],
 			"{",
-			"	char* size_element = array[0];",
-			"	unsigned int array_size = (unsigned int)size_element;",
+			"\tchar* size_element = array[0];",
+			"\tunsigned int array_size = (unsigned int)size_element;",
 			"",
-			"	if (index < array_size) goto load;",
+			"\tif (index < array_size) goto load;",
 			"",
-			"	return 0;",
+			"\t" + ERROR_CODE_VAR + " = 1;",
+			"\treturn;",
 			"",
-			"	load:",
-			"	*temp = array[index + 1];",
-			"	return 1;",
+			"\tload:",
+			"\t*temp = array[index + 1];",
 			"}"
 		};
 
@@ -196,13 +198,13 @@ namespace Compiler
 		{
 			HELPER_FUNCTION_DECLARATIONS[4],
 			"{",
-			"	if (index < (unsigned int)array[0]) goto insert;",
+			"\tif (index < (unsigned int)array[0]) goto insert;",
 			"",
-			"	return 0;",
+			"\t" + ERROR_CODE_VAR + " = 1;",
+			"\treturn;",
 			"",
-			"	insert:",
-			"	array[index + 1] = temp;",
-			"	return 1;",
+			"\tinsert:",
+			"\tarray[index + 1] = temp;",
 			"}"
 		};
 
@@ -210,13 +212,13 @@ namespace Compiler
 		{
 			HELPER_FUNCTION_DECLARATIONS[5],
 			"{",
-			"	if (index < (unsigned int)array[0]) goto insert;",
+			"\tif (index < (unsigned int)array[0]) goto insert;",
 			"",
-			"	return 0;",
+			"\t" + ERROR_CODE_VAR + " = 1;",
+			"\treturn;",
 			"",
-			"	insert:",
-			"	array[index + 1] = temp;",
-			"	return 1;",
+			"\tinsert:",
+			"\tarray[index + 1] = temp;",
 			"}"
 		};
 
@@ -224,13 +226,13 @@ namespace Compiler
 		{
 			HELPER_FUNCTION_DECLARATIONS[6],
 			"{",
-			"	if (index < (unsigned int)array[0]) goto insert;",
+			"\tif (index < (unsigned int)array[0]) goto insert;",
 			"",
-			"	return 0;",
+			"\t" + ERROR_CODE_VAR + " = 1;",
+			"\treturn;",
 			"",
-			"	insert:",
-			"	array[index + 1] = temp;",
-			"	return 1;",
+			"\tinsert:",
+			"\tarray[index + 1] = temp;",
 			"}"
 		};
 
@@ -238,42 +240,42 @@ namespace Compiler
 		{
 			HELPER_FUNCTION_DECLARATIONS[7],
 			"{",
-			"	unsigned int first_size = get_string_length(first);",
-			"	unsigned int second_size = get_string_length(second);",
+			"\tunsigned int first_size = get_string_length(first);",
+			"\tunsigned int second_size = get_string_length(second);",
 			"",
-			"	unsigned int total_size = first_size + second_size;",
-			"	total_size = total_size + 1;",
+			"\tunsigned int total_size = first_size + second_size;",
+			"\ttotal_size = total_size + 1;",
 			"",
-			"	char* concatenation = malloc(sizeof(char) * total_size);",
+			"\tchar* concatenation = malloc(sizeof(char) * total_size);",
 			"",
-			"	int i = 0;",
-			"	int n = 0;",
+			"\tint i = 0;",
+			"\tint n = 0;",
 			"",
-			"	goto check_first_loop_condition;",
+			"\tgoto check_first_loop_condition;",
 			"",
-			"	first_loop:",
-			"	concatenation[n] = first[i];",
-			"	n = n + 1;",
-			"	i = i + 1;",
+			"\tfirst_loop:",
+			"\tconcatenation[n] = first[i];",
+			"\tn = n + 1;",
+			"\ti = i + 1;",
 			"",
-			"	check_first_loop_condition:",
-			"	if (i < first_size) goto first_loop;",
+			"\tcheck_first_loop_condition:",
+			"\tif (i < first_size) goto first_loop;",
 			"",
-			"	i = 0;",
+			"\ti = 0;",
 			"",
-			"	goto check_second_loop_condition;",
+			"\tgoto check_second_loop_condition;",
 			"",
-			"	second_loop:",
-			"	concatenation[n] = second[i];",
-			"	n = n + 1;",
-			"	i = i + 1;",
+			"\tsecond_loop:",
+			"\tconcatenation[n] = second[i];",
+			"\tn = n + 1;",
+			"\ti = i + 1;",
 			"",
-			"	check_second_loop_condition:",
-			"	if (i < second_size) goto second_loop;",
+			"\tcheck_second_loop_condition:",
+			"\tif (i < second_size) goto second_loop;",
 			"",
-			"	concatenation[n] = '\\0';",
+			"\tconcatenation[n] = '\\0';",
 			"",
-			"	return concatenation;",
+			"\treturn concatenation;",
 			"}"
 		};
 
@@ -281,67 +283,67 @@ namespace Compiler
 		{
 			HELPER_FUNCTION_DECLARATIONS[8],
 			"{",
-			"	unsigned int lhs_length = get_string_length(lhs);",
-			"	unsigned int rhs_length = get_string_length(rhs);",
-			"	int comparison;",
-			"	int index;",
-			"	char c_lhs;",
-			"	char c_rhs;",
-			"	int lhs_length_gt_index;",
-			"	int rhs_length_gt_index;",
+			"\tunsigned int lhs_length = get_string_length(lhs);",
+			"\tunsigned int rhs_length = get_string_length(rhs);",
+			"\tint comparison;",
+			"\tint index;",
+			"\tchar c_lhs;",
+			"\tchar c_rhs;",
+			"\tint lhs_length_gt_index;",
+			"\tint rhs_length_gt_index;",
 			"",
-			"	goto check_condition;",
+			"\tgoto check_condition;",
 			"",
-			"	compare:",
-			"	c_lhs = lhs[index];",
-			"	c_rhs = rhs[index];",
-			"	comparison = c_lhs - c_rhs;",
+			"\tcompare:",
+			"\tc_lhs = lhs[index];",
+			"\tc_rhs = rhs[index];",
+			"\tcomparison = c_lhs - c_rhs;",
 			"",
-			"	if (comparison < 0) goto end;",
-			"	if (comparison > 0) goto end;",
+			"\tif (comparison < 0) goto end;",
+			"\tif (comparison > 0) goto end;",
 			"",
-			"	index = index + 1;",
+			"\tindex = index + 1;",
 			"",
-			"	check_condition:",
-			"	lhs_length_gt_index = lhs_length > index;",
-			"	rhs_length_gt_index = rhs_length > index;",
-			"	comparison = lhs_length_gt_index - rhs_length_gt_index;",
+			"\tcheck_condition:",
+			"\tlhs_length_gt_index = lhs_length > index;",
+			"\trhs_length_gt_index = rhs_length > index;",
+			"\tcomparison = lhs_length_gt_index - rhs_length_gt_index;",
 			"",
-			"	if (!lhs_length_gt_index) goto end;",
-			"	if (!rhs_length_gt_index) goto end;",
+			"\tif (!lhs_length_gt_index) goto end;",
+			"\tif (!rhs_length_gt_index) goto end;",
 			"",
-			"	goto compare;",
+			"\tgoto compare;",
 			"",
-			"	end:",
-			"	return comparison;",
+			"\tend:",
+			"\treturn comparison;",
 			"}"
 		};
 
 		public static readonly string[] printInt = new string[] {
 			HELPER_FUNCTION_DECLARATIONS[9],
 			"{",
-			"	printf(\"%d\", integer);",
+			"\tprintf(\"%d\", integer);",
 			"}"
 		};
 
 		public static readonly string[] printReal = new string[] {
 			HELPER_FUNCTION_DECLARATIONS[10],
 			"{",
-			"	printf(\"%f\", real);",
+			"\tprintf(\"%f\", real);",
 			"}"
 		};
 
 		public static readonly string[] printString = new string[] {
 			HELPER_FUNCTION_DECLARATIONS[11],
 			"{",
-			"	printf(\"%s\", string);",
+			"\tprintf(\"%s\", string);",
 			"}"
 		};
 
 		public static readonly string[] printLinebreak = new string[] {
 			HELPER_FUNCTION_DECLARATIONS[12],
 			"{",
-			"	printf(\"\\n\");",
+			"\tprintf(\"\\n\");",
 			"}"
 		};
 
@@ -360,5 +362,29 @@ namespace Compiler
 			printString,
 			printLinebreak
 		};
+
+		public static string[] GetProgramFunctionErrorHandlingCode ()
+		{
+			return new [] { ERROR_LABEL + ":", "return 1;" };
+		}
+
+		public static string[] GetFunctionErrorHandlingCode (TokenType functionReturnType)
+		{
+			return new [] { ERROR_LABEL + ":", ERROR_CODE_VAR + " = 1", "return " + GetDefaultReturnValue (functionReturnType) + ";" };
+		}
+
+		private static  string GetDefaultReturnValue (TokenType functionReturnType)
+		{
+			switch (functionReturnType) {
+				case TokenType.INTEGER_VAL:
+				case TokenType.BOOLEAN_VAL:
+				case TokenType.REAL_VAL:
+					return "0";
+				case TokenType.STRING_VAL:
+					return "(char*)0";
+				default:
+					return "";
+			}
+		}
 	}
 }

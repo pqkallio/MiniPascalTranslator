@@ -16,13 +16,15 @@ namespace Compiler
 		private int declarationRow;
 		private bool reference;
 		private bool declared;
+		private bool redeclaration;
 
-		public Property (int declarationRow = int.MaxValue, bool assigned = false, bool reference = false, bool declared = false)
+		public Property (int declarationRow = int.MaxValue, bool assigned = false, bool reference = false, bool declared = false, bool redeclaration = false)
 		{
 			this.assigned = assigned;
 			this.declarationRow = declarationRow;
 			this.reference = reference;
 			this.declared = declared;
+			this.redeclaration = redeclaration;
 		}
 
 		public abstract TokenType GetTokenType ();	// returns the token type of the property
@@ -46,6 +48,12 @@ namespace Compiler
 		{
 			get { return declared; }
 			set { this.declared = value; }
+		}
+
+		public bool Redeclaration
+		{
+			get { return redeclaration; }
+			set { this.redeclaration = value; }
 		}
 
 		public int CompareTo (object objet)

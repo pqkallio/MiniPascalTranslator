@@ -514,20 +514,21 @@ namespace Compiler
 
 			foreach (VariableIdNode idNode in ids) {
 				string id = idNode.ID.ToLower ();
+				bool redeclaration = scope.ContainsKey (id);
 
 				if (expectDeclared (idNode, scope, false, false)) {
 					switch (type.PropertyType) {
 						case TokenType.TYPE_INTEGER:
-							scope.AddProperty (id, new IntegerProperty (token.Row));
+							scope.AddProperty (id, new IntegerProperty (token.Row, redeclaration: redeclaration));
 							break;
 						case TokenType.TYPE_STRING:
-							scope.AddProperty (id, new StringProperty (token.Row));
+							scope.AddProperty (id, new StringProperty (token.Row, redeclaration: redeclaration));
 							break;
 						case TokenType.TYPE_BOOLEAN:
-							scope.AddProperty (id, new BooleanProperty (token.Row));
+							scope.AddProperty (id, new BooleanProperty (token.Row, redeclaration: redeclaration));
 							break;
 						case TokenType.TYPE_REAL:
-							scope.AddProperty (id, new RealProperty (token.Row));
+							scope.AddProperty (id, new RealProperty (token.Row, redeclaration: redeclaration));
 							break;
 						case TokenType.TYPE_ARRAY:
 							scope.AddProperty (id, new ArrayProperty(type.ArrayElementType, declarationRow: token.Row));

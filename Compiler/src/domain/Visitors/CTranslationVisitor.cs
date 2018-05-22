@@ -8,19 +8,61 @@ namespace Compiler
 {
 	public class CTranslationVisitor : INodeVisitor
 	{
+		// the code lines of a global scale translation
 		private List<string> globalTranslation;
+
+		// the translated code lines of the current scope
 		private List<string> scopeTranslation;
+
+		// the program's name
 		private string programName;
+
+		/* 
+		 * the name factory is responsible for the handling of
+		 * all the code labels, identifier names and temporary
+		 * variables' names
+		 */
 		private CNameFactory nameFactory;
+
+		// used to determine the amount of tabs to place before a translated code line
 		private int blockDepth;
+
 		private static Dictionary<TokenType, string> typeNames = CTranslatorConstants.SIMPLE_TYPE_NAMES;
 		private static Dictionary<TokenType, string> paramTypeNames = CTranslatorConstants.PARAM_SIMPLE_TYPE_NAMES;
 		private static Dictionary<TokenType, string> opStrings = CTranslatorConstants.OPERATION_STRINGS;
+
+		/*
+		 * a dictionary to hold all the malloc'd identifiers so that they can be
+		 * freed after use
+		 */
 		private Dictionary<Scope, List<string>> allocations;
+
+		/* 
+		 * to keep track of all the variables, both temporary and those declared in the source AST
+		 * so that they can be declared in the beginning of the scope's translation
+		 */
 		private Dictionary<Scope, Dictionary<string, Property>> declaredVariables;
+
+		// the program's root node
 		private ProgramNode programNode;
+
+		/*
+		 * the current scope under to elaborate
+		 * 
+		 * note! 	this does not refer to the original scope in the AST, since many of the
+		 * 			nested scopes will be "flattened" into more generalized scopes 
+		 * 			during the translation
+		 */
 		private Scope currentScope;
 
+		// the code to perform when an error occurs or an assertion fails
+		private string[] errorHandlingCode;
+
+		/// <summary>
+		/// This visitor class transforms Mini-Pascal AST-nodes into a simplified, "assembly-like" C
+		/// </summary>
+		/// <param name="programName">The name of the program</param>
+		/// <param name="nameFactory">Name factory.</param>
 		public CTranslationVisitor (string programName, CNameFactory nameFactory)
 		{
 			this.globalTranslation = new List<string> ();
@@ -32,40 +74,67 @@ namespace Compiler
 			this.declaredVariables = new Dictionary<Scope, Dictionary<string, Property>> ();
 			this.programNode = null;
 			this.currentScope = null;
+			this.errorHandlingCode = new [] { "" };
 		}
 
+		/// <summary>
+		/// Get the translation as a list of strings.
+		/// </summary>
+		/// <value>The translation.</value>
 		public List<string> Translation
 		{
 			get { return this.globalTranslation; }
 		}
 
-		private string parenthesised (string str)
+		/// <summary>
+		/// A private helper method to turn a string into a parenthesised version of the same string
+		/// </summary>
+		/// <param name="str">the string to parenthesize.</param>
+		private string parenthesized (string str)
 		{
 			return "(" + str + ")";
 		}
 
+		/// <summary>
+		/// A private helper method to turn a label into a label pointer
+		/// </summary>
+		/// <param name="str">the label.</param>
 		private string label(string str) {
 			return str + ":";
 		}
 
 		public void VisitAssertNode(AssertNode node)
 		{
-			node.AssertExpression.Accept (this);
-			string failureLabel = nameFactory.GetLabel ();
+			node.AssertExpression.Accept (this);	// elaborate the expression to assert
+
+			// create a label for a successful assertion
 			string successLabel = nameFactory.GetLabel ();
 			string loc = node.AssertExpression.Location;
 
 			addEmptyLineToScopeTranslation ();
-			addToScopeTranslation (statement (CTranslatorConstants.IF, parenthesised (loc), CTranslatorConstants.GOTO, successLabel));
+			// add a conditional jump to code in case of success
+			addToScopeTranslation (statement (CTranslatorConstants.IF, parenthesized (loc), CTranslatorConstants.GOTO, successLabel));
 
 			addEmptyLineToScopeTranslation ();
-			addToScopeTranslation (label (failureLabel));
-			addToScopeTranslation (statement (CTranslatorConstants.GOTO, CTranslatorConstants.ERROR_LABEL));
+			// create code for the case of failure
+			addErrorHandlingCodeToScopeTranslation ();
 
 			addEmptyLineToScopeTranslation ();
 			addToScopeTranslation (statement (label (successLabel)));
 
 			nameFactory.ReturnTempVarId (currentScope, loc, node.AssertExpression.EvaluationType);
+		}
+
+		private void addErrorLabelAndCodeToScopeTranslation ()
+		{
+			foreach (string str in errorHandlingCode) {
+				addToScopeTranslation (str);
+			}
+		}
+
+		private void addErrorHandlingCodeToScopeTranslation ()
+		{
+			addToScopeTranslation (statement (CTranslatorConstants.GOTO, CTranslatorConstants.ERROR_LABEL));
 		}
 
 		private string CreateFailedAssertionPrintCall()
@@ -82,7 +151,7 @@ namespace Compiler
 
 		private string simpleAssignment (string target, string assignee)
 		{
-			return statement (target + CTranslatorConstants.ASSIGNMENT + assignee);
+			return statement (spaced (target, CTranslatorConstants.ASSIGNMENT, assignee));
 		}
 
 		private string getSizeOfArray (string arrayId)
@@ -107,7 +176,7 @@ namespace Compiler
 		}
 
 		private string throwToInt() {
-			return parenthesised (typeNames [TokenType.INTEGER_VAL]);
+			return parenthesized (typeNames [TokenType.INTEGER_VAL]);
 		}
 
 		public void VisitAssignNode(AssignNode node)
@@ -123,40 +192,69 @@ namespace Compiler
 				addToScopeTranslation (statement (spaced (idName, "=", node.AssignValueExpression.Location)));
 			}
 
-			nameFactory.ReturnTempVarId (node.AssignValueExpression.Scope, node.AssignValueExpression.Location, node.AssignValueExpression.EvaluationType);
+			nameFactory.ReturnTempVarId (currentScope, node.AssignValueExpression.Location, node.AssignValueExpression.EvaluationType);
 		}
 
 		public void VisitArrayAssignNode(ArrayAssignStatement node)
 		{
-			node.IndexExpression.Accept (this);
-			node.AssignValueExpression.Accept (this);
+			ExpressionNode index = node.IndexExpression;
+			ExpressionNode value = node.AssignValueExpression;
+
+			index.Accept (this);
+			value.Accept (this);
+
 			string arrayId = nameFactory.GetCName (node.Scope, node.IDNode.VariableID);
-			TokenType type = node.AssignValueExpression.EvaluationType;
+			TokenType type = value.EvaluationType;
+
 			addToScopeTranslation (
 				statement (
 					CreateFunctionCall (CTranslatorConstants.ARRAY_INSERTION_FUNCTION_CALLS[type], 
-					arrayId, 
-					node.IndexExpression.Location, 
-					node.AssignValueExpression.Location)));
+						arrayId,
+						index.Location, 
+						value.Location)));
+
+			addErrorCheckingToScopeTranslation ();
+
+			nameFactory.ReturnTempVarId (currentScope, index.Location, index.EvaluationType);
+			nameFactory.ReturnTempVarId (currentScope, value.Location, type);
+		}
+
+		private void addErrorCheckingToScopeTranslation ()
+		{
+			string lbl = CTranslatorConstants.ERROR_LABEL;
+			string errorcodeVar = CTranslatorConstants.ERROR_CODE_VAR;
+			string noError = CTranslatorConstants.DEFAULT_ERROR_CODE;
+
+			addConditionalJumpsToScopeTranslation (lbl, neqOperationStrings (errorcodeVar, noError));
 		}
 
 		public void VisitArrayAccessNode(ArrayAccessNode node)
 		{
 			setNodeLocation (node, node.EvaluationType, new ArrayProperty(node.EvaluationType));
-			node.ArrayIndexExpression.Accept (this);
+			ExpressionNode index = node.ArrayIndexExpression;
+			index.Accept (this);
 			string arrayId = nameFactory.GetCName (node.Scope, node.VariableID);
 			switch (node.EvaluationType) {
 				case (TokenType.INTEGER_VAL):
 				case (TokenType.BOOLEAN_VAL):
-					addToScopeTranslation (statement (CreateFunctionCall ("load_from_int_array", arrayId, node.ArrayIndexExpression.Location, CTranslatorConstants.MEM_ADDRESS + node.Location)));
+					addToScopeTranslation (statement (CreateFunctionCall ("load_from_int_array", arrayId, index.Location, CTranslatorConstants.MEM_ADDRESS + node.Location)));
 					break;
 				case (TokenType.REAL_VAL):
-					addToScopeTranslation (statement (CreateFunctionCall ("load_from_float_array", arrayId, node.ArrayIndexExpression.Location, CTranslatorConstants.MEM_ADDRESS + node.Location)));
+					addToScopeTranslation (statement (CreateFunctionCall ("load_from_float_array", arrayId, index.Location, CTranslatorConstants.MEM_ADDRESS + node.Location)));
 					break;
 				case (TokenType.STRING_VAL):
-					addToScopeTranslation (statement (CreateFunctionCall ("load_from_string_array", arrayId, node.ArrayIndexExpression.Location, CTranslatorConstants.MEM_ADDRESS + node.Location)));
+					addToScopeTranslation (statement (CreateFunctionCall ("load_from_string_array", arrayId, index.Location, node.Location)));
 					break;
 			}
+
+			addErrorCheckingToScopeTranslation ();
+
+			nameFactory.ReturnTempVarId (currentScope, index.Location, index.EvaluationType);
+		}
+
+		private string[] neqOperationStrings (string lhs, string rhs)
+		{
+			return new [] { createBinaryOperationString(TokenType.BINARY_OP_LOG_LT, lhs, rhs), createBinaryOperationString(TokenType.BINARY_OP_LOG_GT, lhs, rhs) };
 		}
 
 		private string CreateFunctionCall (string functionId, params string[] arguments)
@@ -187,7 +285,8 @@ namespace Compiler
 					ExpressionNode sizeExpr = node.DeclarationType.ArraySizeExpression;
 					TokenType elemType = node.DeclarationType.ArrayElementType;
 					sizeExpr.Accept (this);
-					addAllocation (elemType, sizeExpr.Location, id, node.Scope);
+					addAllocation (elemType, sizeExpr.Location, id, currentScope);
+					nameFactory.ReturnTempVarId (currentScope, sizeExpr.Location, sizeExpr.EvaluationType);
 				}
 			} else {
 				foreach (VariableIdNode idNode in node.IDsToDeclare) {
@@ -266,7 +365,8 @@ namespace Compiler
 		public void VisitIOReadNode(IOReadNode node)
 		{
 			string[] arguments = new string[node.IDNodes.Count];
-
+			string argumentAmountTemp = nameFactory.GetTempVarId (currentScope, TokenType.INTEGER_VAL);
+			string readAmountTemp = nameFactory.GetTempVarId (currentScope, TokenType.INTEGER_VAL);
 			for (int i = 0; i < arguments.Length; i++) {
 				Evaluee idNode = node.IDNodes [i];
 				string id = nameFactory.GetCName (node.Scope, idNode.VariableID);
@@ -279,7 +379,30 @@ namespace Compiler
 
 			string functionCall = CreateFunctionCall ("fread", arguments);
 
-			addToScopeTranslation (statement (functionCall));
+			addToScopeTranslation (simpleAssignment (argumentAmountTemp, arguments.Length.ToString ()));
+			addToScopeTranslation (simpleAssignment (readAmountTemp, functionCall));
+			addEmptyLineToScopeTranslation ();
+
+			addConditionalJumpsToScopeTranslation (CTranslatorConstants.ERROR_LABEL, neqOperationStrings(argumentAmountTemp, readAmountTemp));
+
+			nameFactory.ReturnTempVarId (currentScope, argumentAmountTemp, TokenType.INTEGER_VAL);
+			nameFactory.ReturnTempVarId (currentScope, readAmountTemp, TokenType.INTEGER_VAL);
+		}
+
+		public string createBinaryOperationString (TokenType operation, string lhs, string rhs)
+		{
+			return spaced (lhs, CTranslatorConstants.OPERATION_STRINGS [operation], rhs);
+		}
+
+
+		public void addConditionalJumpsToScopeTranslation (string label, params string[] conditions)
+		{
+			string ifStr = CTranslatorConstants.IF;
+			string gotoStr = CTranslatorConstants.GOTO;
+
+			foreach (string condition in conditions) {
+				addToScopeTranslation (statement (ifStr, parenthesized (condition), gotoStr, label));
+			}
 		}
 
 		public void VisitTypeNode(TypeNode node)
@@ -308,7 +431,7 @@ namespace Compiler
 			setNodeLocation (node, TokenType.BOOLEAN_VAL, getProperty (TokenType.BOOLEAN_VAL));
 			node.Factor.Location = node.Location;
 			node.Factor.Accept (this);
-			addAssignment (typeNames [TokenType.BOOLEAN_VAL], node.Location, "!" + node.Location, node.Scope); 
+			addAssignment (typeNames [TokenType.BOOLEAN_VAL], node.Location, "!" + node.Location, node.Scope);
 		}
 
 		public void VisitExpressionNode(ExpressionNode node)
@@ -393,6 +516,7 @@ namespace Compiler
 			if (node.Tail != null) {
 				node.Tail.SubTotal = node.Location;
 				node.Tail.Accept (this);
+				nameFactory.ReturnTempVarId (currentScope, node.Tail.Location, node.Tail.EvaluationType);
 			}
 		}
 
@@ -402,12 +526,17 @@ namespace Compiler
 
 			node.Term.Location = node.Location;
 			node.Term.Accept (this);
+			if (node.EvaluationType == TokenType.STRING_VAL) {
+				addToScopeTranslation (simpleAssignment (node.SubTotal, CreateFunctionCall ("string_concatenation", node.SubTotal, node.Location)));
+			} else {
+				addAssignment (typeNames [node.EvaluationType], node.SubTotal, node.SubTotal, node.Scope, opStrings [node.Operation], node.Location);
+			}
 
-			addAssignment (typeNames[node.EvaluationType], node.SubTotal, node.SubTotal, node.Scope, opStrings [node.Operation], node.Location);
-
+			nameFactory.ReturnTempVarId (currentScope, node.Term.Location, node.Term.EvaluationType);
 			if (node.Tail != null) {
 				node.Tail.SubTotal = node.SubTotal;
 				node.Tail.Accept (this);
+				nameFactory.ReturnTempVarId (currentScope, node.Tail.Location, node.Tail.EvaluationType);
 			}
 		}
 
@@ -439,17 +568,25 @@ namespace Compiler
 		public void VisitFunctionNode(FunctionNode node)
 		{
 			string head = createFunctionStart(nameFactory.GetCName(node.Scope, node.IDNode.ID), node.IDNode, nameFactory, node.Parameters.Parameters);
+			this.errorHandlingCode = CTranslatorConstants.GetFunctionErrorHandlingCode (node.ReturnType);
+
 			node.Parameters.Accept (this);
+
 			this.blockDepth++;
 			node.Block.Accept (this);
-			blockDepth--;
+			addErrorLabelAndCodeToScopeTranslation ();
+			this.blockDepth--;
+
 			addToGlobalTranslation (head);
 			addToGlobalTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item1);
+
 			this.blockDepth++;
 			addVariableDeclarationsToScopeTranslation (currentScope, declaredVariables [currentScope]);
 			globalTranslation = globalTranslation.Concat (scopeTranslation).ToList ();
 			this.blockDepth--;
+
 			addToGlobalTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item2);
+
 			addEmptyLineToGlobalTranslation ();
 		}
 
@@ -588,21 +725,24 @@ namespace Compiler
 
 		private void createProgramFunction(ProgramNode node) {
 			Scope scope = node.Scope;
+			string head = "int " + nameFactory.GetCName (scope, programName) + "()";
+			this.errorHandlingCode = CTranslatorConstants.GetProgramFunctionErrorHandlingCode ();
 			changeScope (scope);
-			addToScopeTranslation ("int " + nameFactory.GetCName (scope, programName) + "()");
-			addToScopeTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item1);
 			blockDepth++;
 
-			foreach (StatementNode statement in node.MainBlock.Statements) {
-				statement.Accept (this);
-			}
+			node.MainBlock.Accept (this);
 
 			addToScopeTranslation (statement ("return 0"));
 			addEmptyLineToScopeTranslation ();
-			addToScopeTranslation ("error:");
-			addToScopeTranslation (statement ("return 1"));
+			addErrorLabelAndCodeToScopeTranslation ();
+			this.blockDepth--;
+			addToGlobalTranslation (head);
+			addToGlobalTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item1);
+			this.blockDepth++;
+			addVariableDeclarationsToScopeTranslation (currentScope, declaredVariables [currentScope]);
+			globalTranslation = globalTranslation.Concat (scopeTranslation).ToList ();
 			blockDepth--;
-			addToScopeTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item2);
+			addToGlobalTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item2);
 		}
 
 		public void VisitReturnStatement(ReturnStatement node)
@@ -639,6 +779,7 @@ namespace Compiler
 			if (tail != null) {
 				tail.SubTotal = node.Location;
 				tail.Accept (this);
+				nameFactory.ReturnTempVarId (currentScope, tail.Location, tail.EvaluationType);
 			}
 		}
 
@@ -676,6 +817,8 @@ namespace Compiler
 		{
 			includeLibraries ();
 			addEmptyLineToGlobalTranslation ();
+			addGlobalErrorCodeToTranslation ();
+			addEmptyLineToGlobalTranslation ();
 			createHelperFunctionDeclarations ();
 			addEmptyLineToGlobalTranslation ();
 			createFunctionDeclarations (programNode);
@@ -684,6 +827,12 @@ namespace Compiler
 			addEmptyLineToGlobalTranslation ();
 			createMainFunction (programName, programNode.Scope);
 			addEmptyLineToGlobalTranslation ();
+		}
+
+		private void addGlobalErrorCodeToTranslation ()
+		{
+			addComment ("globally used variable to store error code");
+			addToGlobalTranslation (simpleAssignment (spaced (typeNames [TokenType.INTEGER_VAL], CTranslatorConstants.ERROR_CODE_VAR), CTranslatorConstants.DEFAULT_ERROR_CODE));
 		}
 
 		private void includeLibraries ()
@@ -967,7 +1116,7 @@ namespace Compiler
 
 		private void setNodeLocation(SyntaxTreeNode node, TokenType type, Property property) {
 			if (node.Location == null) {
-				string location = nameFactory.GetTempVarId (node.Scope, type);
+				string location = nameFactory.GetTempVarId (currentScope, type);
 				node.Location = location;
 
 				if (!declaredVariables [currentScope].ContainsKey (location)) {

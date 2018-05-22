@@ -10,6 +10,7 @@ namespace Compiler
 		private int labelCounter;
 		private Dictionary<Scope, CTempVarPool> tempies;
 		private int scopeIdCounter;
+		private int redeclarationIdCounter;
 
 		public CNameFactory ()
 		{
@@ -19,6 +20,7 @@ namespace Compiler
 
 			this.labelCounter = -1;
 			this.scopeIdCounter = -1;
+			this.redeclarationIdCounter = -1;
 		}
 
 		public string GetLabel ()
@@ -30,8 +32,19 @@ namespace Compiler
 		public string GetCName (Scope scope, string id)
 		{
 			createCTempVarPoolIfNeeded (scope);
+			if (scope.GetProperty (id).Redeclaration) {
+				SetRedeclarationIdForScope (scope);
+			}
 
-			return "_" + id;
+			return "_" + scope.RedeclarationId + id;
+		}
+
+		private void SetRedeclarationIdForScope (Scope scope)
+		{
+			if (scope.RedeclarationId.Equals ("")) {
+				redeclarationIdCounter++;
+				scope.RedeclarationId = redeclarationIdCounter.ToString ();
+			}
 		}
 
 		public string GetTempVarId (Scope scope, TokenType type)

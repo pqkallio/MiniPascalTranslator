@@ -7,8 +7,8 @@ namespace Compiler
 	/// </summary>
 	public class StringProperty : Property
 	{
-		public StringProperty(int declarationRow = int.MaxValue, bool assigned = false)
-			: base(declarationRow, assigned, true)
+		public StringProperty(int declarationRow = int.MaxValue, bool assigned = false, bool redeclaration = false)
+			: base(declarationRow, assigned, true, redeclaration: redeclaration)
 		{}
 
 		public override TokenType GetTokenType ()
