@@ -1,12 +1,27 @@
 ﻿<Properties StartupItem="Translator/Translator.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/src/services/analyzers/Parser.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/src/services/CompilerFrontend.cs">
     <Files>
-      <File FileName="CompilerTests/test/services/analyzers/ParserTest.cs" Line="127" Column="9" />
-      <File FileName="Compiler/src/services/analyzers/Parser.cs" Line="1083" Column="1" />
-      <File FileName="Compiler/src/services/NodeBuilder.cs" Line="49" Column="112" />
-      <File FileName="CompilerTests/test/services/analyzers/ParserTestInputs.cs" Line="113" Column="20" NotebookId="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/VariableIdNode.cs" Line="34" Column="45" NotebookId="1" />
+      <File FileName="CompilerTests/test/services/analyzers/SemanticAnalyzerTest.cs" Line="482" Column="19" />
+      <File FileName="Compiler/src/domain/Visitors/StatementCheckVisitor.cs" Line="436" Column="1" />
+      <File FileName="Compiler/src/services/analyzers/Parser.cs" Line="292" Column="4" />
+      <File FileName="Compiler/src/domain/Errors/ParameterMustBeReferenceError.cs" Line="8" Column="85" />
+      <File FileName="Compiler/src/domain/SyntaxTree/ReturnStatement.cs" Line="5" Column="2" />
+      <File FileName="Compiler/src/domain/SyntaxTree/IOReadNode.cs" Line="10" Column="2" />
+      <File FileName="Compiler/src/domain/SyntaxTree/ArrayAccessNode.cs" Line="20" Column="1" />
+      <File FileName="Compiler/src/domain/Visitors/TypeCheckingVisitor.cs" Line="113" Column="1" />
+      <File FileName="Compiler/src/domain/SyntaxTree/ExpressionNode.cs" Line="20" Column="1" />
+      <File FileName="Compiler/src/domain/SyntaxTree/SimpleExpression.cs" Line="23" Column="1" />
+      <File FileName="Compiler/src/domain/SyntaxTree/TermNode.cs" Line="20" Column="1" />
+      <File FileName="Compiler/src/domain/SyntaxTree/Factor.cs" Line="20" Column="1" />
+      <File FileName="Compiler/src/domain/SyntaxTree/FactorMain.cs" Line="18" Column="1" />
+      <File FileName="Compiler/src/domain/SyntaxTree/StringValueNode.cs" Line="32" Column="1" />
+      <File FileName="Compiler/src/domain/SyntaxTree/AssignNode.cs" Line="35" Column="1" />
+      <File FileName="Compiler/src/domain/SyntaxTree/BlockNode.cs" Line="19" Column="1" />
+      <File FileName="Compiler/src/domain/SyntaxTree/ProgramNode.cs" Line="21" Column="1" />
+      <File FileName="Compiler/src/services/analyzers/SemanticAnalyzer.cs" Line="50" Column="1" />
+      <File FileName="Compiler/src/services/CompilerFrontend.cs" Line="49" Column="1" />
+      <File FileName="CompilerTests/test/services/analyzers/SemanticAnalyzerTestInputs.cs" Line="495" Column="28" NotebookId="1" />
     </Files>
     <Pads>
       <Pad Id="MonoDevelop.NUnit.TestPad">
@@ -20,7 +35,9 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/src/services/analyzers/Parser.cs" line="113" column="38" />
+      <Breakpoint file="/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/src/domain/Visitors/StatementCheckVisitor.cs" line="172" column="1" />
+      <Breakpoint file="/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/src/domain/Visitors/StatementCheckVisitor.cs" line="257" column="1" />
+      <Breakpoint file="/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/src/domain/Visitors/TypeCheckingVisitor.cs" line="260" column="19" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />

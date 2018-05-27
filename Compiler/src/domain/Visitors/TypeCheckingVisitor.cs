@@ -257,8 +257,7 @@ namespace Compiler
 				}
 			}
 
-			if (node.AdditiveInverse && 
-				!LegitOperationChecker.IsLegitOperationForEvaluations(TokenType.UNARY_OP_NEGATIVE, termEval)) {
+			if (node.AdditiveInverse && !LegitOperationChecker.IsLegitOperationForEvaluations(TokenType.UNARY_OP_NEGATIVE, termEval)) {
 				termEval = TokenType.ERROR;
 			}
 

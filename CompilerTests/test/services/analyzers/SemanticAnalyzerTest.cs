@@ -21,6 +21,14 @@ namespace CompilerTests
 			}
 		}
 
+		[TearDown ()]
+		public void tearDown ()
+		{
+			this.sc = null;
+			this.parser = null;
+			this.sa = null;
+		}
+
 		private void checkScannerAndParserErrors (int scannerErrorCount, int parserErrorCount)
 		{
 			Assert.AreEqual (sc.getErrors ().Count, scannerErrorCount);
@@ -426,6 +434,152 @@ namespace CompilerTests
 		public void WhileStatementBooleanCheck ()
 		{
 			Init (SemanticAnalyzerTestInputs.whileStatementBooleanCheck);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void StringExpressionConcatValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionConcatValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void StringExpressionSubInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionSubInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 2);
+		}
+
+		[Test ()]
+		public void StringExpressionMultiplicationInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionMultiplicationInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 3);
+		}
+
+		[Test ()]
+		public void StringExpressionDivisionInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionDivisionInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 3);
+		}
+
+		[Test ()]
+		public void StringExpressionModuloInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionModuloInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 3);
+		}
+
+		/*
+		[Test ()]
+		public void StringExpressionSignedInvalid1 ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionSignedInvalid1);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 3);
+		}
+
+		[Test ()]
+		public void StringExpressionSignedInvalid2 ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionSignedInvalid1);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 3);
+		}
+		*/
+
+		[Test ()]
+		public void StringExpressionNegationInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionNegationInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 4);
+		}
+
+		[Test ()]
+		public void StringExpressionBooleanAndInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionBooleanAndInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 3);
+		}
+
+		[Test ()]
+		public void StringExpressionBooleanOrInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionBooleanOrInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 2);
+		}
+
+		[Test ()]
+		public void StringExpressionEqValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionEqValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void StringExpressionNeqValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionNeqValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void StringExpressionLtValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionLtValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void StringExpressionLteValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionLteValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void StringExpressionGtValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionGtValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void StringExpressionGteValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.stringExpressionGteValid);
 
 			checkScannerAndParserErrors (0, 0);
 			Assert.AreEqual (sa.getErrors ().Count, 0);

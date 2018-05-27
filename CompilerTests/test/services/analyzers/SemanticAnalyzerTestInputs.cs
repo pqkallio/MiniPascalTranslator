@@ -460,5 +460,157 @@ namespace CompilerTests
 			"while (a[3]) do a[2] := FaLsE;\n",
 			"end .\n"
 		};
+
+		public static readonly string[] stringExpressionConcatValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"s := \"mamaaaa, \";\n",
+			"s := s + \"oo-o-o-ooooo...\";\n",
+			"end .\n"
+		};
+
+		public static readonly string[] stringExpressionSubInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"s := \"mamaaaa, \";\n",
+			"s := s - \"oo-o-o-ooooo...\";\n",
+			"end .\n"
+		};
+
+		public static readonly string[] stringExpressionMultiplicationInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"s := \"mamaaaa, \";\n",
+			"s := s * \"oo-o-o-ooooo...\";\n",
+			"end .\n"
+		};
+
+		public static readonly string[] stringExpressionDivisionInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"s := \"mamaaaa, \";\n",
+			"s := s / \"oo-o-o-ooooo...\";\n",
+			"end .\n"
+		};
+
+		public static readonly string[] stringExpressionModuloInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"s := \"mamaaaa, \";\n",
+			"s := s % \"oo-o-o-ooooo...\";\n",
+			"end .\n"
+		};
+
+		public static readonly string[] stringExpressionSignedInvalid1 = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"s := \"mamaaaa, \";\n",
+			"s := +s;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] stringExpressionSignedInvalid2 = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"s := -\"mamaaaa, \";\n",
+			"end .\n"
+		};
+
+		public static readonly string[] stringExpressionNegationInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"var b : boolean;\n",
+			"s := \"mamaaaa, \";\n",
+			"b := not s;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] stringExpressionBooleanAndInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"var b : boolean;\n",
+			"s := \"mamaaaa, \";\n",
+			"b := s and s;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] stringExpressionBooleanOrInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"var b : boolean;\n",
+			"s := \"mamaaaa, \";\n",
+			"b := s or s;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] stringExpressionEqValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"var b : boolean;\n",
+			"s := \"mamaaaa, \";\n",
+			"b := s = s;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] stringExpressionNeqValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"var b : boolean;\n",
+			"s := \"mamaaaa, \";\n",
+			"b := s <> s;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] stringExpressionLtValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"var b : boolean;\n",
+			"s := \"mamaaaa, \";\n",
+			"b := s < s;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] stringExpressionLteValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"var b : boolean;\n",
+			"s := \"mamaaaa, \";\n",
+			"b := s <= s;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] stringExpressionGtValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"var b : boolean;\n",
+			"s := \"mamaaaa, \";\n",
+			"b := s > s;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] stringExpressionGteValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var s : string;\n",
+			"var b : boolean;\n",
+			"s := \"mamaaaa, \";\n",
+			"b := s >= s;\n",
+			"end .\n"
+		};
 	}
 }
