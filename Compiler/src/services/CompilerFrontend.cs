@@ -11,7 +11,6 @@ namespace Compiler
 		private Scanner scanner;							// lexical analyzer
 		private Parser parser;								// syntactical analyzer
 		private SemanticAnalyzer semanticAnalyzer;			// semantic analyzer
-		private Dictionary<string, Property> symbolTable;	// global symbol table
 		private string[] sourceLines;						// source code as lines
 
 		public CompilerFrontend ()
@@ -23,7 +22,6 @@ namespace Compiler
 		/// <param name="filePath">File path.</param>
 		private void Init(string filePath) {
 			this.sourceLines = readSource (filePath);
-			this.symbolTable = new Dictionary<string, Property> ();
 			this.scanner = new Scanner (sourceLines);
 			this.parser = new Parser (scanner);
 		}
@@ -43,9 +41,9 @@ namespace Compiler
 			}
 
 			// perform semantic analysis
-			//semanticAnalyzer = new SemanticAnalyzer (syntaxTree, symbolTable);
+			semanticAnalyzer = new SemanticAnalyzer (syntaxTree);
 
-			//semanticAnalyzer.Analyze ();
+			semanticAnalyzer.Analyze ();
 
 			// return the AST
 			return syntaxTree;

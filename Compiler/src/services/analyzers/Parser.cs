@@ -305,6 +305,7 @@ namespace Compiler
 			}
 
 			if (expectDeclared (idNode, scope, false)) {
+				property.Assigned = true;
 				scope.AddProperty (idNode.ID.ToLower(), property);
 			}
 

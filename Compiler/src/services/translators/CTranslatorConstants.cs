@@ -81,6 +81,15 @@ namespace Compiler
 			{TokenType.TYPE_ARRAY, ""}
 		};
 
+		public static readonly Dictionary<TokenType, string> POINTER_PREFIXES = new Dictionary<TokenType, string> ()
+		{
+			{TokenType.INTEGER_VAL, MEM_POINTER},
+			{TokenType.REAL_VAL, MEM_POINTER},
+			{TokenType.BOOLEAN_VAL, MEM_POINTER},
+			{TokenType.STRING_VAL, ""},
+			{TokenType.TYPE_ARRAY, ""}
+		};
+
 		public static readonly Dictionary<TokenType, string> ARRAY_ACCESS_FUNCTION_CALLS = new Dictionary<TokenType, string> ()
 		{
 			{TokenType.BOOLEAN_VAL, "load_from_int_array"},
@@ -120,6 +129,21 @@ namespace Compiler
 			"void print_float(float real)",
 			"void print_string(char* string)",
 			"void print_linebreak()"
+		};
+
+		public static readonly Dictionary<TokenType, string> TEMP_VARIABLES = new Dictionary<TokenType, string> ()
+		{
+			{TokenType.STRING_VAL, "TEMP_STRING_PTR"},
+			{TokenType.INTEGER_VAL, "TEMP_INT_PTR"},
+			{TokenType.REAL_VAL, "TEMP_FLOAT_PTR"},
+		};
+
+		public static readonly string[] GLOBAL_VARIABLE_ASSIGNMENTS = new string[]
+		{
+			"int ERRORCODE = 0",
+			"int* " + TEMP_VARIABLES[TokenType.INTEGER_VAL] + " = (int*)0",
+			"float* " + TEMP_VARIABLES[TokenType.REAL_VAL] + " = (float*)0",
+			"char* " + TEMP_VARIABLES[TokenType.STRING_VAL] + " = (char*)0"
 		};
 
 		public static readonly string[] getStringLengthFunction = new string[]
@@ -370,10 +394,10 @@ namespace Compiler
 
 		public static string[] GetFunctionErrorHandlingCode (TokenType functionReturnType)
 		{
-			return new [] { ERROR_LABEL + ":", ERROR_CODE_VAR + " = 1", "return " + GetDefaultReturnValue (functionReturnType) + ";" };
+			return new [] { ERROR_LABEL + ":", ERROR_CODE_VAR + " = 1;", "return " + GetDefaultReturnValue (functionReturnType) + ";" };
 		}
 
-		private static  string GetDefaultReturnValue (TokenType functionReturnType)
+		private static string GetDefaultReturnValue (TokenType functionReturnType)
 		{
 			switch (functionReturnType) {
 				case TokenType.INTEGER_VAL:
@@ -386,5 +410,12 @@ namespace Compiler
 					return "";
 			}
 		}
+
+		public static Dictionary<TokenType, string> STRING_FORMATTING_SYMBOLS = new Dictionary<TokenType, string> ()
+		{
+			{TokenType.INTEGER_VAL, "%d"},
+			{TokenType.REAL_VAL, "%f"},
+			{TokenType.STRING_VAL, "%s"}
+		};
 	}
 }

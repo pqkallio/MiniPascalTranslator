@@ -25,7 +25,10 @@ namespace Compiler
 
 		public void VisitArraySizeCheckNode(ArraySizeCheckNode node)
 		{
-			
+			node.ArrayIDNode.Accept (this);
+			if (!node.Scope.GetProperty (node.ArrayIDNode.VariableID).Declared) {
+				analyzer.notifyError (new UndeclaredVariableError (node.ArrayIDNode));
+			}
 		}
 
 		/// <summary>
@@ -188,16 +191,13 @@ namespace Compiler
 
 			if (node.IDNode.Scope.GetProperty (node.IDNode.IDNode.ID).GetTokenType () != TokenType.TYPE_ARRAY) {
 				analyzer.notifyError (new IllegalAssignmentError (node));
-				
+			} else {
+				ArrayProperty arrProp = (ArrayProperty) prop;
+
+				if (arrProp.ArrayElementType != node.AssignValueExpression.EvaluationType) {
+					analyzer.notifyError (new IllegalTypeError (node));
+				}
 			}
-
-			ArrayProperty arrProp = (ArrayProperty) prop;
-
-			if (arrProp.ArrayElementType != node.AssignValueExpression.EvaluationType) {
-				analyzer.notifyError (new IllegalTypeError (node));
-			}
-
-			
 		}
 
 		public void VisitArrayAccessNode(ArrayAccessNode node)
@@ -355,14 +355,13 @@ namespace Compiler
 			if (arguments != null) {
 				arguments.Accept (this);
 
-				FunctionNode function = analyzer.SyntaxTree.Root.Functions [idNode.ID];
+				if (!analyzer.SyntaxTree.Root.Functions.ContainsKey (idNode.ID)) {
+					analyzer.notifyError (new NotAValidFunctionError (idNode));
+				} else {
+					FunctionNode function = analyzer.SyntaxTree.Root.Functions [idNode.ID];
 
-				if (function == null) {
-					analyzer.notifyError(new NotAValidFunctionError(idNode));
-					
-				}
-
-				CompareParamsAndArgs (node, function.Parameters.Parameters, arguments.Arguments); 
+					CompareParamsAndArgs (node, function.Parameters.Parameters, arguments.Arguments);
+				} 
 			}
 		}
 
@@ -407,7 +406,10 @@ namespace Compiler
 
 		public void VisitParametersNode(ParametersNode node)
 		{
-			
+			/*
+			 * The checks that involve the parameter's of a function or a procedure
+			 * are handled during the parsing the phase.
+			 */
 		}
 
 		public void VisitArgumentsNode(ArgumentsNode node)
@@ -416,9 +418,13 @@ namespace Compiler
 
 			foreach (ExpressionNode arg in arguments) {
 				arg.Accept (this);
+				if (arg.Variable) {
+					Property p = arg.Scope.GetProperty (arg.VariableID);
+					if (!p.Assigned) {
+						analyzer.notifyError (new UninitializedVariableError (arg));
+					}
+				}
 			}
-
-			
 		}
 
 		public void VisitProgramNode(ProgramNode node)

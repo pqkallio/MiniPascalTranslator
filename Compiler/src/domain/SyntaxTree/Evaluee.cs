@@ -21,7 +21,7 @@ namespace Compiler
 			set { this.evaluationType = value; }
 		}
 
-		public bool Variable
+		public virtual bool Variable
 		{
 			get { return this.isVariable; }
 		}

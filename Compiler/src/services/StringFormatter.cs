@@ -19,7 +19,11 @@ namespace Compiler
 			errorMessage += line (sourceLine);
 
 			for (int i = 0; i < numCol; i++) {
-				errorMessage += ' ';
+				if (sourceLine [i] == '\t') {
+					errorMessage += '\t';
+				} else {
+					errorMessage += ' ';
+				}
 			}
 
 			errorMessage += '^';

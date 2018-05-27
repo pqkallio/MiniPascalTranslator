@@ -8,26 +8,31 @@ namespace Compiler
 	{
 		private string id;
 		private int counter;
-		private Dictionary<TokenType, List<string>> tempIds;
+		private Dictionary<TokenType, List<string>> freeTempIds;
+		private Dictionary<string, Dictionary<SyntaxTreeNode, string>> mappedTempIds;
 
 		public CTempVarPool (string id = null)
 		{
 			this.id = id;
 			this.counter = 0;
-			this.tempIds = new Dictionary<TokenType, List<string>> ();
+			this.freeTempIds = new Dictionary<TokenType, List<string>> ();
+			this.mappedTempIds = new Dictionary<string, Dictionary<SyntaxTreeNode, string>> ();
 		}
 
-		public string GetTempId (TokenType type)
+		public string GetTempId (TokenType type, SyntaxTreeNode node)
 		{
-			createEntryIfNeeded (type);
+			createFreeTempIdEntryIfNeeded (type);
 			string tempId;
 
-			if (tempIds [type].Count == 0) {
+			if (freeTempIds [type].Count == 0) {
 				tempId = getNewId ();
 			} else {
-				tempId = tempIds [type] [0];
-				tempIds [type].RemoveAt (0);
+				tempId = freeTempIds [type] [0];
+				freeTempIds [type].RemoveAt (0);
 			}
+
+			createMappedTempIdEntryIfNeeded (tempId);
+			mappedTempIds [tempId] [node] = null;
 
 			return tempId;
 		}
@@ -37,16 +42,27 @@ namespace Compiler
 			get { return id; }
 		}
 
-		public void ReturnTempId (TokenType type, string id) {
-			createEntryIfNeeded (type);
+		public void ReturnTempId (TokenType type, string id, SyntaxTreeNode node) {
+			createFreeTempIdEntryIfNeeded (type);
+			Dictionary<SyntaxTreeNode, string> mappedIdEntry = mappedTempIds [id];
+			mappedIdEntry.Remove (node);
 
-			tempIds [type].Add (id);
+			if (mappedIdEntry.Count == 0) {
+				freeTempIds [type].Add (id);
+			}
 		}
 
-		private void createEntryIfNeeded (TokenType type)
+		private void createFreeTempIdEntryIfNeeded (TokenType type)
 		{
-			if (!tempIds.ContainsKey (type)) {
-				tempIds [type] = new List<string> ();
+			if (!freeTempIds.ContainsKey (type)) {
+				freeTempIds [type] = new List<string> ();
+			}
+		}
+
+		private void createMappedTempIdEntryIfNeeded (string tempId)
+		{
+			if (!mappedTempIds.ContainsKey (tempId)) {
+				mappedTempIds [tempId] = new Dictionary<SyntaxTreeNode, string> ();
 			}
 		}
 
@@ -54,17 +70,21 @@ namespace Compiler
 		{
 			StringBuilder sb = new StringBuilder ();
 
-			/*
-			if (id != null) {
-				sb.Append (id + "_");
-			}
-			*/
-
 			sb.Append ("r" + counter.ToString ());
 
 			counter++;
 
 			return sb.ToString ();
+		}
+
+		public void UpdateLocationUsage (string location, TokenType type, SyntaxTreeNode node)
+		{
+			createFreeTempIdEntryIfNeeded (type);
+			createMappedTempIdEntryIfNeeded (location);
+
+			if (!mappedTempIds [location].ContainsKey (node)) {
+				mappedTempIds [location] [node] = null;
+			}
 		}
 	}
 }

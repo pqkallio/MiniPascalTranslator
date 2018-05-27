@@ -13,9 +13,14 @@ namespace Translator
 				return;
 			}
 
-			SourceBuffer buf = new SourceBuffer(@args[0]);
-			string[] sourceLines = buf.SourceLines;
+			CompilerFrontend cf = new CompilerFrontend ();
+			cf.Compile (@args [0]);
 
+			ConsolePrinter printer = new ConsolePrinter (cf.SourceLines);
+
+			printer.printErrors (cf.getErrors ());
+
+			/*
 			Scanner sc = new Scanner (sourceLines);
 			Parser parser = new Parser (sc);
 			parser.Parse ();
@@ -44,6 +49,7 @@ namespace Translator
 					Console.WriteLine(StringFormatter.formatError(e, sourceLines));
 				}
 			}
+			*/
 		}
 	}
 }

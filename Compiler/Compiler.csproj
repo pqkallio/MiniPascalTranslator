@@ -153,6 +153,7 @@
     <Compile Include="src\services\translators\CTranslatorConstants.cs" />
     <Compile Include="src\domain\SyntaxTree\VariableEvaluee.cs" />
     <Compile Include="src\services\translators\name_factories\CTempVarPool.cs" />
+    <Compile Include="src\services\translators\TranslatorTempNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\services\translators\" />

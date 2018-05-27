@@ -47,18 +47,18 @@ namespace Compiler
 			}
 		}
 
-		public string GetTempVarId (Scope scope, TokenType type)
+		public string GetTempVarId (Scope scope, TokenType type, SyntaxTreeNode node)
 		{
 			createCTempVarPoolIfNeeded (scope);
 
-			string tempVarId = tempies [scope].GetTempId (type);
+			string tempVarId = tempies [scope].GetTempId (type, node);
 
 			return tempVarId;
 		}
 
-		public void ReturnTempVarId (Scope scope, string tempVarId, TokenType varType)
+		public void ReturnTempVarId (Scope scope, string tempVarId, TokenType varType, SyntaxTreeNode node)
 		{
-			tempies [scope].ReturnTempId (varType, tempVarId);
+			tempies [scope].ReturnTempId (varType, tempVarId, node);
 		}
 
 		private void createCTempVarPoolIfNeeded (Scope scope)
@@ -67,6 +67,11 @@ namespace Compiler
 				scopeIdCounter++;
 				tempies [scope] = new CTempVarPool (scopeBaseString + scopeIdCounter.ToString ());
 			}
+		}
+
+		public void updateLocationUsage (Scope scope, string location, TokenType type, SyntaxTreeNode node)
+		{
+			tempies [scope].UpdateLocationUsage (location, type, node);
 		}
 	}
 }
