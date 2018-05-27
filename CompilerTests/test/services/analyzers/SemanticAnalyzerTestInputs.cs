@@ -385,5 +385,80 @@ namespace CompilerTests
 			"begin\n",
 			"end .\n"
 		};
+			
+		public static readonly string[] readStatementOk = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : integer;\n",
+			"var r : real;\n",
+			"var s : string;\n",
+			"var a : array[6] of integer;\n",
+			"read(i, r, s, a[2]);\n",
+			"end .\n"
+		};
+
+		public static readonly string[] readStatementBooleanArgument = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"read(b);\n",
+			"end .\n"
+		};
+
+		public static readonly string[] readStatementArrayArgument = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var a : array[5] of integer;\n",
+			"read(a);\n",
+			"end .\n"
+		};
+
+		public static readonly string[] assertStatementOk = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var a : array[5] of boolean;\n",
+			"assert (a[0]);\n",
+			"end .\n"
+		};
+
+		public static readonly string[] assertStatementNotBooleanCheck = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var a : array[5] of integer;\n",
+			"assert (a[0]);\n",
+			"end .\n"
+		};
+
+		public static readonly string[] ifStatementNotBooleanCheck = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var a : array[5] of integer;\n",
+			"if (a[3]) then a[2] := 4;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] ifStatementBooleanCheck = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var a : array[5] of BoOlEaN;\n",
+			"if (a[3]) then a[2] := FaLsE;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] whileStatementNotBooleanCheck = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var a : array[5] of integer;\n",
+			"while (a[3]) do a[2] := 4;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] whileStatementBooleanCheck = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var a : array[5] of BoOlEaN;\n",
+			"while (a[3]) do a[2] := FaLsE;\n",
+			"end .\n"
+		};
 	}
 }

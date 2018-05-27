@@ -349,6 +349,87 @@ namespace CompilerTests
 			checkScannerAndParserErrors (0, 0);
 			Assert.AreEqual (sa.getErrors ().Count, 1);
 		}
+
+		[Test ()]
+		public void ReadStatementOk ()
+		{
+			Init (SemanticAnalyzerTestInputs.readStatementOk);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void ReadStatementBooleanArgument ()
+		{
+			Init (SemanticAnalyzerTestInputs.readStatementBooleanArgument);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 1);
+		}
+
+		[Test ()]
+		public void ReadStatementArrayArgument ()
+		{
+			Init (SemanticAnalyzerTestInputs.readStatementArrayArgument);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 1);
+		}
+
+		[Test ()]
+		public void AssertStatementOk ()
+		{
+			Init (SemanticAnalyzerTestInputs.assertStatementOk);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void AssertStatementNotBooleanCheck ()
+		{
+			Init (SemanticAnalyzerTestInputs.assertStatementNotBooleanCheck);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 1);
+		}
+
+		[Test ()]
+		public void IfStatementNotBooleanCheck ()
+		{
+			Init (SemanticAnalyzerTestInputs.ifStatementNotBooleanCheck);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 1);
+		}
+
+		[Test ()]
+		public void IfStatementBooleanCheck ()
+		{
+			Init (SemanticAnalyzerTestInputs.ifStatementBooleanCheck);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void WhileStatementNotBooleanCheck ()
+		{
+			Init (SemanticAnalyzerTestInputs.whileStatementNotBooleanCheck);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 1);
+		}
+
+		[Test ()]
+		public void WhileStatementBooleanCheck ()
+		{
+			Init (SemanticAnalyzerTestInputs.whileStatementBooleanCheck);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
 	}
 }
 

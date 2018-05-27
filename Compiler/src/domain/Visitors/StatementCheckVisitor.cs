@@ -169,9 +169,9 @@ namespace Compiler
 		/// <param name="node">Node.</param>
 		public void VisitIOReadNode(IOReadNode node) 
 		{
-			foreach (VariableIdNode idNode in node.IDNodes) {
+			foreach (Evaluee idNode in node.IDNodes) {
 				idNode.Accept (this);
-				TokenType type = node.Scope.GetProperty (idNode.ID).GetTokenType ();
+				TokenType type = idNode.EvaluationType;
 
 				if (type == TokenType.ERROR) {
 					analyzer.notifyError (new UninitializedVariableError (node));
