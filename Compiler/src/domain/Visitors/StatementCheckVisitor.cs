@@ -330,8 +330,6 @@ namespace Compiler
 				|| !node.Block.Statements[blockStatementCount - 1].Returns) {
 				analyzer.notifyError(new AllCodePathsDontReturnError (node));
 			}
-
-			
 		}
 
 		public void VisitProcedureNode(ProcedureNode node)
@@ -406,10 +404,11 @@ namespace Compiler
 
 		public void VisitParametersNode(ParametersNode node)
 		{
-			/*
-			 * The checks that involve the parameter's of a function or a procedure
-			 * are handled during the parsing the phase.
-			 */
+			foreach (Parameter param in node.Parameters) {
+				if (paramPassedAsReferenceOnly (param.ParameterType) && !param.Reference) {
+					analyzer.notifyError (new ParameterMustBeReferenceError (node, param.ParameterType));
+				}
+			}
 		}
 
 		public void VisitArgumentsNode(ArgumentsNode node)
@@ -434,17 +433,15 @@ namespace Compiler
 			}
 
 			node.MainBlock.Accept (this);
-
-			
 		}
 
 		public void VisitReturnStatement(ReturnStatement node)
 		{
-			node.ReturnValue.Accept (this);
+			if (node.ReturnValue != null) {
+				node.ReturnValue.Accept (this);
+			}
 
 			returnStatements.Add (node);
-
-			
 		}
 
 		public void VisitTermNode(TermNode node)
@@ -519,14 +516,33 @@ namespace Compiler
 			for (int i = 0; i < parameters.Count; i++) {
 				if (parameters [i].Reference && !isAddressable(arguments[i])) {
 					analyzer.notifyError (new InvalidArgumentError (callNode, i + 1));
-				} else { TokenType paramEval = parameters [i].ParameterType;
+				} else {
+					TokenType paramEval = parameters [i].ParameterType;
 					TokenType argEval = arguments [i].EvaluationType;
 
-					if (paramEval != argEval || paramEval == errorType || argEval == errorType) {
+					if (!acceptArgument(paramEval, argEval) || paramEval == errorType || argEval == errorType) {
 						analyzer.notifyError (new InvalidArgumentError (callNode, i + 1, paramEval, argEval));
 					}
 				}
 			}
+		}
+
+		private bool paramPassedAsReferenceOnly (TokenType type)
+		{
+			return type == TokenType.STRING_VAL || type == TokenType.TYPE_ARRAY;
+		}
+
+		private bool acceptArgument (TokenType paramType, TokenType argumentType)
+		{
+			if (paramType == argumentType) {
+				return true;
+			}
+
+			if (paramType == TokenType.REAL_VAL && argumentType == TokenType.INTEGER_VAL) {
+				return true;
+			}
+
+			return false;
 		}
 
 		private bool isAddressable(ExpressionNode expressionNode)

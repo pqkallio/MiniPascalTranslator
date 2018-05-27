@@ -45,6 +45,15 @@ namespace CompilerTests
 		}
 
 		[Test ()]
+		public void ParametersStringParamIsNotReference ()
+		{
+			Init (SemanticAnalyzerTestInputs.parametersStringParamIsNotReference);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 1);
+		}
+
+		[Test ()]
 		public void VariableDeclarationsAreNotUniqueWithinAScope1 ()
 		{
 			Init (SemanticAnalyzerTestInputs.variableDeclarationsAreNotUniqueWithinAScope1);
@@ -210,6 +219,132 @@ namespace CompilerTests
 		public void FunctionCallNotToAFunction ()
 		{
 			Init (SemanticAnalyzerTestInputs.functionCallNotToAFunction);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 1);
+		}
+
+		[Test ()]
+		public void FunctionCallValidArguments ()
+		{
+			Init (SemanticAnalyzerTestInputs.functionCallValidArguments);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void FunctionCallTooFewArguments ()
+		{
+			Init (SemanticAnalyzerTestInputs.functionCallTooFewArguments);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 1);
+		}
+
+		[Test ()]
+		public void FunctionCallTooManyArguments ()
+		{
+			Init (SemanticAnalyzerTestInputs.functionCallTooManyArguments);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 1);
+		}
+
+		[Test ()]
+		public void FunctionCallInvalidArgument ()
+		{
+			Init (SemanticAnalyzerTestInputs.functionCallInvalidArgument);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 1);
+		}
+
+		[Test ()]
+		public void FunctionDoesntReturn1 ()
+		{
+			Init (SemanticAnalyzerTestInputs.functionDoesntReturn1);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 2);
+		}
+
+		[Test ()]
+		public void FunctionDoesntReturn2 ()
+		{
+			Init (SemanticAnalyzerTestInputs.functionDoesntReturn2);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 1);
+		}
+
+		[Test ()]
+		public void FunctionDoesntReturn3 ()
+		{
+			Init (SemanticAnalyzerTestInputs.functionDoesntReturn3);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 1);
+		}
+
+		[Test ()]
+		public void FunctionDoesntReturn4 ()
+		{
+			Init (SemanticAnalyzerTestInputs.functionDoesntReturn4);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 1);
+		}
+
+		[Test ()]
+		public void FunctionReturns1 ()
+		{
+			Init (SemanticAnalyzerTestInputs.functionReturns1);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void FunctionReturns2 ()
+		{
+			Init (SemanticAnalyzerTestInputs.functionReturns2);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void FunctionsReturnTypeIsInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.functionsReturnTypeIsInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 1);
+		}
+
+		[Test ()]
+		public void FunctionsReturnTypesAreInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.functionsReturnTypesAreInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 3);
+		}
+
+		[Test ()]
+		public void ProceduredReturnTypeIsValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.proceduresReturnTypeIsValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void ProceduresReturnTypeIsInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.proceduresReturnTypeIsInvalid);
 
 			checkScannerAndParserErrors (0, 0);
 			Assert.AreEqual (sa.getErrors ().Count, 1);

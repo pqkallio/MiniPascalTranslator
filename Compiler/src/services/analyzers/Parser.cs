@@ -297,11 +297,6 @@ namespace Compiler
 			if (property.GetTokenType () == TokenType.TYPE_ARRAY) {
 				ArrayProperty arrayProp = (ArrayProperty)property;
 				idNode.ArrayElementType = arrayProp.ArrayElementType;
-				reference = true;
-			}
-
-			if (property.GetTokenType () == TokenType.STRING_VAL) {
-				reference = true;
 			}
 
 			if (expectDeclared (idNode, scope, false)) {

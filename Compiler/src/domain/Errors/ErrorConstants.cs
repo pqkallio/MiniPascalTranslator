@@ -17,6 +17,7 @@ namespace Compiler
 		public static readonly string RUNTIME_EXCEPTION_TITLE = "Runtime exception";
 		public static readonly string DIVISION_BY_ZERO_TITLE = "Division by zero";
 		public static readonly string INVALID_RETURN_VALUE_TITLE = "Invalid return value";
+		public static readonly string PARAM_ERROR_TITLE = "Parameter error";
 
 		public static readonly string STRING_LITERAL_ERROR_MESSAGE = "error while scanning string literal";
 		public static readonly string TOKEN_ERROR_MESSAGE = "error while scanning token";
@@ -59,6 +60,10 @@ namespace Compiler
 			}
 
 			return String.Format ("argument {0} is expected to be {1}, but instead a {2} was given", position, TOKEN_TYPE_STRINGS[parameterEvaluation], TOKEN_TYPE_STRINGS[argumentEvaluation]);
+		}
+
+		public static string PARAM_REFERENCE_MSG (TokenType type) {
+			return String.Format ("{0} parameters must always be references (use \"var\" keyword)", TOKEN_TYPE_STRINGS[type]);
 		}
 	}
 }

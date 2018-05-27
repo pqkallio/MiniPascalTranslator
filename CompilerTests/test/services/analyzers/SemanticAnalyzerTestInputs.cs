@@ -24,6 +24,46 @@ namespace CompilerTests
 			"end .\n"
 		};
 
+		public static readonly string[] parametersStringParamIsNotReference = new string[] {
+			"program a;\n",
+			"function b(x : string) : integer;\n",
+			"begin\n",
+			"return 0;\n",
+			"end;\n",
+			"begin\n",
+			"end .\n"
+		};
+
+		public static readonly string[] parametersStringParamIsReference = new string[] {
+			"program a;\n",
+			"function b(var x : string) : integer;\n",
+			"begin\n",
+			"return 0;\n",
+			"end;\n",
+			"begin\n",
+			"end .\n"
+		};
+
+		public static readonly string[] parametersArrayParamIsNotReference = new string[] {
+			"program a;\n",
+			"function b(x : array[] of boolean) : integer;\n",
+			"begin\n",
+			"return 0;\n",
+			"end;\n",
+			"begin\n",
+			"end .\n"
+		};
+
+		public static readonly string[] parametersArrayParamIsReference = new string[] {
+			"program a;\n",
+			"function b(var x : array[] of boolean) : integer;\n",
+			"begin\n",
+			"return 0;\n",
+			"end;\n",
+			"begin\n",
+			"end .\n"
+		};
+
 		public static readonly string[] variableDeclarationsAreNotUniqueWithinAScope1 = new string[] {
 			"program a;\n",
 			"begin\n",
@@ -174,7 +214,7 @@ namespace CompilerTests
 
 		public static readonly string[] functionCallNotToAFunction = new string[] {
 			"program a;\n",
-			"function b(i : integer, r : real, s : string) : integer;\n",
+			"function b(i : integer, r : real, var s : string) : integer;\n",
 			"begin\n",
 			"return 0;\n",
 			"end;\n",
@@ -183,6 +223,167 @@ namespace CompilerTests
 			"x();\n",
 			"end .\n"
 		};
+
+		public static readonly string[] functionCallValidArguments = new string[] {
+			"program a;\n",
+			"function b(i : integer, r : real, var s : string) : integer;\n",
+			"begin\n",
+			"return 0;\n",
+			"end;\n",
+			"begin\n",
+			"var s : string;\n",
+			"s := \"marque\";\n",
+			"b(5, 0, s);\n",
+			"end .\n"
+		};
+
+		public static readonly string[] functionCallTooFewArguments = new string[] {
+			"program a;\n",
+			"function b(i : integer, r : real, var s : string) : integer;\n",
+			"begin\n",
+			"return 0;\n",
+			"end;\n",
+			"begin\n",
+			"var s : string;\n",
+			"s := \"marque\";\n",
+			"b(5, 0);\n",
+			"end .\n"
+		};
+
+		public static readonly string[] functionCallTooManyArguments = new string[] {
+			"program a;\n",
+			"function b(i : integer, r : real, var s : string) : integer;\n",
+			"begin\n",
+			"return 0;\n",
+			"end;\n",
+			"begin\n",
+			"var s : string;\n",
+			"s := \"marque\";\n",
+			"b(5, 0, s, true);\n",
+			"end .\n"
+		};
+
+		public static readonly string[] functionCallInvalidArgument = new string[] {
+			"program a;\n",
+			"function b(i : integer, r : integer) : integer;\n",
+			"begin\n",
+			"return 0;\n",
+			"end;\n",
+			"begin\n",
+			"var s : string;\n",
+			"s := \"marque\";\n",
+			"b(5, 0.5);\n",
+			"end .\n"
+		};
+
+		public static readonly string[] functionDoesntReturn1 = new string[] {
+			"program a;\n",
+			"function b(i : integer, r : integer) : integer;\n",
+			"begin\n",
+			"end;\n",
+			"begin\n",
+			"end .\n"
+		};
+
+		public static readonly string[] functionDoesntReturn2 = new string[] {
+			"program a;\n",
+			"function b(i : integer, r : integer) : integer;\n",
+			"begin\n",
+			"return 0;\n",
+			"b(0, 1);\n",
+			"end;\n",
+			"begin\n",
+			"end .\n"
+		};
+
+		public static readonly string[] functionDoesntReturn3 = new string[] {
+			"program a;\n",
+			"function b(i : integer, r : integer) : integer;\n",
+			"begin\n",
+			"if (true) then\n",
+			"return 0;\n",
+			"end;\n",
+			"begin\n",
+			"end .\n"
+		};
+
+		public static readonly string[] functionDoesntReturn4 = new string[] {
+			"program a;\n",
+			"function b(i : integer, r : integer) : integer;\n",
+			"begin\n",
+			"while (false) do\n",
+			"return 0;\n",
+			"end;\n",
+			"begin\n",
+			"end .\n"
+		};
+
+		public static readonly string[] functionReturns1 = new string[] {
+			"program a;\n",
+			"function b(i : integer, r : integer) : integer;\n",
+			"begin\n",
+			"if (true) then\n",
+			"return 0\n",
+			"else return 5;\n",
+			"end;\n",
+			"begin\n",
+			"end .\n"
+		};
+
+		public static readonly string[] functionReturns2 = new string[] {
+			"program a;\n",
+			"function b(i : integer, r : integer) : integer;\n",
+			"begin\n",
+			"if (true) then\n",
+			"return 0\n",
+			"else if (false) then return 5\n",
+			"else return 57;\n",
+			"end;\n",
+			"begin\n",
+			"end .\n"
+		};
+
+		public static readonly string[] functionsReturnTypeIsInvalid = new string[] {
+			"program a;\n",
+			"function b(i : integer, r : integer) : integer;\n",
+			"begin\n",
+			"return;\n",
+			"end;\n",
+			"begin\n",
+			"end .\n"
+		};
+
+		public static readonly string[] functionsReturnTypesAreInvalid = new string[] {
+			"program a;\n",
+			"function b(i : integer, r : integer) : integer;\n",
+			"begin\n",
+			"if (true) then\n",
+			"return \"bonus\"\n",
+			"else if (false) then return -5.7\n",
+			"else return true;\n",
+			"end;\n",
+			"begin\n",
+			"end .\n"
+		};
+
+		public static readonly string[] proceduresReturnTypeIsValid = new string[] {
+			"program a;\n",
+			"procedure b(i : integer, r : integer);\n",
+			"begin\n",
+			"return;\n",
+			"end;\n",
+			"begin\n",
+			"end .\n"
+		};
+
+		public static readonly string[] proceduresReturnTypeIsInvalid = new string[] {
+			"program a;\n",
+			"procedure b(i : integer, r : integer);\n",
+			"begin\n",
+			"return false;\n",
+			"end;\n",
+			"begin\n",
+			"end .\n"
+		};
 	}
 }
-
