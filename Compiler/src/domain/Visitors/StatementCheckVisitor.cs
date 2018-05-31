@@ -26,9 +26,6 @@ namespace Compiler
 		public void VisitArraySizeCheckNode(ArraySizeCheckNode node)
 		{
 			node.ArrayIDNode.Accept (this);
-			if (!node.Scope.GetProperty (node.ArrayIDNode.VariableID).Declared) {
-				analyzer.notifyError (new UndeclaredVariableError (node.ArrayIDNode));
-			}
 		}
 
 		/// <summary>
@@ -100,12 +97,6 @@ namespace Compiler
 			}
 		}
 
-		/// <summary>
-		/// Checks the static semantic constraints of a BinOpNode.
-		/// </summary>
-		/// 
-		/// <returns>An void.</returns>
-		/// <param name="node">Node.</param>
 		public void VisitDeclarationNode(DeclarationNode node)
 		{
 			foreach (VariableIdNode idNode in node.IDsToDeclare) {

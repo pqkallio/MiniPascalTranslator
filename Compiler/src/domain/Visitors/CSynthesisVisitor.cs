@@ -220,6 +220,7 @@ namespace Compiler
 
 		public void VisitArrayAssignNode(ArrayAssignStatement node)
 		{
+			// first generate code for the index end assign value expressions
 			ExpressionNode index = node.IndexExpression;
 			ExpressionNode value = node.AssignValueExpression;
 
@@ -229,6 +230,7 @@ namespace Compiler
 			string arrayId = nameFactory.GetCName (node.Scope, node.IDNode.VariableID);
 			TokenType type = value.EvaluationType;
 
+			// then add a call to the right helper function to insert the value
 			addToScopeTranslation (
 				statement (
 					CreateFunctionCall (CSynthesizerConstants.ARRAY_INSERTION_FUNCTION_CALLS[type], 
@@ -236,14 +238,17 @@ namespace Compiler
 						index.Location, 
 						value.Location)));
 
+			// check errors and act accordingly if the insertion failed
 			addErrorCheckingToScopeTranslation ();
 
+			// return temporary ids
 			nameFactory.ReturnTempVarId (currentScope, index.Location, index.EvaluationType, index);
 			nameFactory.ReturnTempVarId (currentScope, value.Location, type, value);
 		}
 
 		private void addErrorCheckingToScopeTranslation ()
 		{
+			// adds a conditional jump to current scope's error label
 			string lbl = CSynthesizerConstants.ERROR_LABEL;
 			string errorcodeVar = CSynthesizerConstants.ERROR_CODE_VAR;
 			string noError = CSynthesizerConstants.DEFAULT_ERROR_CODE;
@@ -254,16 +259,20 @@ namespace Compiler
 		public void VisitArrayAccessNode(ArrayAccessNode node)
 		{
 			setNodeLocation (node, node.EvaluationType, new ArrayProperty(node.EvaluationType));
+
+			// evaluate the index expression
 			ExpressionNode index = node.ArrayIndexExpression;
 			index.Accept (this);
 			string arrayId = nameFactory.GetCName (node.Scope, node.VariableID);
+
+			// call the right helper function
 			switch (node.EvaluationType) {
 				case (TokenType.INTEGER_VAL):
 				case (TokenType.BOOLEAN_VAL):
-					addToScopeTranslation (statement (CreateFunctionCall ("load_from_int_array", arrayId, index.Location, node.Location)));
+					addToScopeTranslation (statement (CreateFunctionCall ("load_from_int_array", arrayId, index.Location, "&" + node.Location)));
 					break;
 				case (TokenType.REAL_VAL):
-					addToScopeTranslation (statement (CreateFunctionCall ("load_from_float_array", arrayId, index.Location, node.Location)));
+					addToScopeTranslation (statement (CreateFunctionCall ("load_from_float_array", arrayId, index.Location, "&" + node.Location)));
 					break;
 				case (TokenType.STRING_VAL):
 					addToScopeTranslation (statement (CreateFunctionCall ("load_from_string_array", arrayId, index.Location, node.Location)));
@@ -277,6 +286,7 @@ namespace Compiler
 
 		private string[] neqOperationStrings (string lhs, string rhs)
 		{
+			// we create binary operations for checking whetjer one value is larger or smaller than the other
 			return new [] { createBinaryOperationString(TokenType.BINARY_OP_LOG_LT, lhs, rhs), createBinaryOperationString(TokenType.BINARY_OP_LOG_GT, lhs, rhs) };
 		}
 
@@ -302,24 +312,38 @@ namespace Compiler
 		{
 			Scope scope = node.Scope;
 
+			// if it's an array
 			if (node.DeclarationType.PropertyType == TokenType.TYPE_ARRAY) {
 				foreach (VariableIdNode idNode in node.IDsToDeclare) {
 					string id = nameFactory.GetCName(scope, idNode.ID);
+
+					// create code for size expression evaluation
 					ExpressionNode sizeExpr = node.DeclarationType.ArraySizeExpression;
 					TokenType elemType = node.DeclarationType.ArrayElementType;
 					sizeExpr.Accept (this);
+
+					// we need node's to get temp id's so we create temporary nodes
 					SyntaxTreeNode realSizeTempNode = new SynthesisTempNode ();
 					SyntaxTreeNode indexPointerTempNode = new SynthesisTempNode ();
 					string realSizeTemp = GetTempVarId (TokenType.INTEGER_VAL, new IntegerProperty (), realSizeTempNode);
 					string indexPointer = GetTempVarId (TokenType.INTEGER_VAL, new IntegerProperty (), indexPointerTempNode);
+
+					// the size of the allocation will be the requested size + 1 to save the arrays size as well
 					addToScopeTranslation (simpleAssignment (realSizeTemp, createBinaryOperationString (TokenType.BINARY_OP_ADD, sizeExpr.Location, "1")));
 					addToScopeTranslation (simpleAssignment (indexPointer, "0"));
+
+					// allocate the array
 					addAllocation (elemType, sizeExpr.Location, id);
+
+					// save the size to index zero
 					addToScopeTranslation (simpleAssignment (arrayAccess (id, indexPointer), unspaced (castTo (elemType), sizeExpr.Location)));
+
+					// return temp ids
 					nameFactory.ReturnTempVarId (currentScope, sizeExpr.Location, sizeExpr.EvaluationType, sizeExpr);
 					nameFactory.ReturnTempVarId (currentScope, realSizeTemp, TokenType.INTEGER_VAL, realSizeTempNode);
 					nameFactory.ReturnTempVarId (currentScope, indexPointer, TokenType.INTEGER_VAL, indexPointerTempNode);
 				}
+				// else it's straight forward
 			} else {
 				foreach (VariableIdNode idNode in node.IDsToDeclare) {
 					string id = nameFactory.GetCName(scope, idNode.ID);
@@ -330,44 +354,42 @@ namespace Compiler
 
 		public void VisitIntValueNode(IntValueNode node)
 		{	
-			bool declared = false;
 			setNodeLocation (node, node.EvaluationType, new IntegerProperty());
 			
-			addAssignment (typeNames[node.EvaluationType], node.Location, node.Value, node.Scope, declared: declared);
+			addAssignment (typeNames[node.EvaluationType], node.Location, node.Value, node.Scope);
 		}
 
 		public void VisitRealValueNode(RealValueNode node)
 		{
-			bool declared = false;
 			setNodeLocation (node, node.EvaluationType, new RealProperty());
 
-			addAssignment (typeNames[node.EvaluationType], node.Location, node.Value, node.Scope, declared: declared);
+			addAssignment (typeNames[node.EvaluationType], node.Location, node.Value, node.Scope);
 		}
 
 		public void VisitBoolValueNode(BoolValueNode node)
 		{
-			bool declared = false;
 			setNodeLocation (node, node.EvaluationType, new IntegerProperty());
 
+			// conversion from boolean to int
 			string strVal = node.Value ? "1" : "0";
 
-			addAssignment (typeNames[node.EvaluationType], node.Location, strVal, node.Scope, declared: declared);
+			addAssignment (typeNames[node.EvaluationType], node.Location, strVal, node.Scope);
 		}
 
 		public void VisitStringValueNode(StringValueNode node)
 		{
-			bool declared = false;
 			setNodeLocation (node, node.EvaluationType, new StringProperty());
 
 			string strVal = unspaced (CSynthesizerConstants.STRING_DELIMITER, node.Value, CSynthesizerConstants.STRING_DELIMITER);
 
-			addAssignment (typeNames[node.EvaluationType], node.Location, strVal, node.Scope, declared: declared);
+			addAssignment (typeNames[node.EvaluationType], node.Location, strVal, node.Scope);
 		}
 
 		public void VisitIOPrintNode(IOPrintNode node)
 		{
 			string functionCall = "";
 
+			// we print each value one by one
 			foreach (ExpressionNode expression in node.Arguments.Arguments) {
 				expression.Accept (this);
 
@@ -389,14 +411,19 @@ namespace Compiler
 				nameFactory.ReturnTempVarId (currentScope, expression.Location, expression.EvaluationType, expression);
 			}
 
+			// last, we print linebreak
 			functionCall = CreateFunctionCall ("print_linebreak");
 
 			addToScopeTranslation (statement (functionCall));
 		}
 
+		// todo: messed up when trying to read into an array
 		public void VisitIOReadNode(IOReadNode node)
 		{
 			string[] arguments = new string[node.IDNodes.Count + 1];
+
+			// we read by using scanf which returns the amount of read elements
+			// if it doesn't match with the amount of arguments, go to error
 			SyntaxTreeNode argAmountTempNode = new SynthesisTempNode ();
 			SyntaxTreeNode readAmountTempNode = new SynthesisTempNode ();
 			string argumentAmountTemp = GetTempVarId (TokenType.INTEGER_VAL, new IntegerProperty (), argAmountTempNode);
@@ -472,8 +499,6 @@ namespace Compiler
 			for (; i < upto; i++) {
 				statements[i].Accept (this);
 			}
-
-			createAllocationReleases (currentScope, returnStmnt != null ? returnStmnt.ReturnValue.Location : null);
 
 			if (i < stmntsCount) {
 				statements [i].Accept (this);
@@ -1171,7 +1196,7 @@ namespace Compiler
 			return unspaced (CSynthesizerConstants.SIZE_OF, leftDelimiter, type, rightDelimiter);
 		}
 
-		private void addAssignment(string type, string target, string firstOperand, Scope scope, string operation = null, string secondOperand = null, bool declared = false)
+		private void addAssignment(string type, string target, string firstOperand, Scope scope, string operation = null, string secondOperand = null)
 		{
 			string assignment = CSynthesizerConstants.ASSIGNMENT;
 			bool alreadyDeclared = declaredVariables [currentScope].ContainsKey (target);

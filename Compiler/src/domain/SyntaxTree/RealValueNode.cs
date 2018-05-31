@@ -2,7 +2,7 @@
 
 namespace Compiler
 {
-	public class RealValueNode : Evaluee, ISemanticCheckValue
+	public class RealValueNode : Evaluee
 	{
 		private string value;
 
