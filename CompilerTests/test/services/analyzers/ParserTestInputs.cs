@@ -600,6 +600,62 @@ namespace CompilerTests
 			}
 		}
 
+		public static string[] paramsNotCorrectlyFormatted1
+		{
+			get {
+				return assembleProgramCode (new[] {"procedure fofo (,);\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] paramsNotCorrectlyFormatted2
+		{
+			get {
+				return assembleProgramCode (new[] {"procedure fofo (var i : integer,);\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] paramsNotCorrectlyFormatted3
+		{
+			get {
+				return assembleProgramCode (new[] {"procedure fofo (var i : integer ii : real);\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] paramsNotCorrectlyFormatted4
+		{
+			get {
+				return assembleProgramCode (new[] {"procedure fofo (var i : integer, , ii : real);\n", "begin\n", "end;\n"});
+			}
+		}
+
+		public static string[] argsNotCorrectlyFormatted1
+		{
+			get {
+				return assembleProgramCode (null, new [] {"fofo(,);"});
+			}
+		}
+
+		public static string[] argsNotCorrectlyFormatted2
+		{
+			get {
+				return assembleProgramCode (null, new [] {"fofo(i,);"});
+			}
+		}
+
+		public static string[] argsNotCorrectlyFormatted3
+		{
+			get {
+				return assembleProgramCode (null, new [] {"fofo(i a);"});
+			}
+		}
+
+		public static string[] argsNotCorrectlyFormatted4
+		{
+			get {
+				return assembleProgramCode (null, new [] {"fofo(i, , a);"});
+			}
+		}
+
 		public static string[] procedureParamsMissingSetTypeColonAndType
 		{
 			get {

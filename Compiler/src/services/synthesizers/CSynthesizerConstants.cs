@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Compiler
 {
-	public static class CTranslatorConstants
+	public static class CSynthesizerConstants
 	{
 		public static readonly string PREPROCESSOR_DIRECTIVE = "#";
 		public static readonly string INCLUSION = PREPROCESSOR_DIRECTIVE + "include";

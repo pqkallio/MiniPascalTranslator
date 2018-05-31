@@ -2,9 +2,9 @@
 
 namespace Compiler
 {
-	public class TranslatorTempNode : SyntaxTreeNode
+	public class SynthesisTempNode : SyntaxTreeNode
 	{
-		public TranslatorTempNode ()
+		public SynthesisTempNode ()
 			: base (new Token (0, 0))
 		{}
 

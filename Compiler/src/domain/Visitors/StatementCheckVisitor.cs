@@ -40,6 +40,7 @@ namespace Compiler
 		{
 			node.IDNode.Accept (this);
 			node.AssignValueExpression.Accept (this);
+			bool errored = false;
 
 			TokenType varEval = node.IDNode.EvaluationType;
 			TokenType exprEval = node.AssignValueExpression.EvaluationType;
@@ -50,15 +51,52 @@ namespace Compiler
 			if (varProperty.DeclarationRow > node.Token.Row) {
 				analyzer.notifyError(new UndeclaredVariableError(node.IDNode));
 				assignable = false;
+				errored = true;
 			}
 
-			if (!LegitOperationChecker.isAssignCompatible (varEval, exprEval)) {
+			if (!LegitOperationChecker.isAssignCompatible (varEval, exprEval) && !errored) {
 				analyzer.notifyError(new IllegalAssignmentError(node));
 				assignable = false;
+				errored = true;
+			}
+
+			if (!LegitOperationChecker.CanBeAssignedTo (varEval, exprEval) && !errored) {
+				analyzer.notifyError(new IllegalAssignmentError(node));
+				assignable = false;
+				errored = true;
 			}
 
 			if (assignable) {
 				varProperty.Assigned = true;
+			}
+		}
+
+		public void VisitArrayAssignNode(ArrayAssignStatement node)
+		{
+			node.IndexExpression.Accept (this);
+			node.AssignValueExpression.Accept (this);
+			node.IDNode.Accept (this);
+
+			TokenType exprEval = node.AssignValueExpression.EvaluationType;
+
+			Property prop = node.IDNode.Scope.GetProperty (node.IDNode.IDNode.ID);
+
+			if (node.IDNode.Scope.GetProperty (node.IDNode.IDNode.ID).GetTokenType () != TokenType.TYPE_ARRAY) {
+				analyzer.notifyError (new IllegalAssignmentError (node));
+			} else {
+				ArrayProperty arrProp = (ArrayProperty) prop;
+
+				if (prop.DeclarationRow > node.Token.Row) {
+					analyzer.notifyError(new UndeclaredVariableError(node.IDNode));
+				}
+
+				if (!LegitOperationChecker.isAssignCompatible (arrProp.ArrayElementType, exprEval)) {
+					analyzer.notifyError(new IllegalTypeError(node));
+				}
+
+				if (!LegitOperationChecker.CanBeAssignedTo (arrProp.ArrayElementType, exprEval)) {
+					analyzer.notifyError(new IllegalAssignmentError(node));
+				}
 			}
 		}
 
@@ -178,25 +216,8 @@ namespace Compiler
 				} else if (type == TokenType.TYPE_ARRAY || type == TokenType.BOOLEAN_VAL) {
 					analyzer.notifyError (new IllegalTypeError (idNode));
 				}
-			}
-		}
 
-		public void VisitArrayAssignNode(ArrayAssignStatement node)
-		{
-			node.IndexExpression.Accept (this);
-			node.AssignValueExpression.Accept (this);
-			node.IDNode.Accept (this);
-
-			Property prop = node.IDNode.Scope.GetProperty (node.IDNode.IDNode.ID);
-
-			if (node.IDNode.Scope.GetProperty (node.IDNode.IDNode.ID).GetTokenType () != TokenType.TYPE_ARRAY) {
-				analyzer.notifyError (new IllegalAssignmentError (node));
-			} else {
-				ArrayProperty arrProp = (ArrayProperty) prop;
-
-				if (arrProp.ArrayElementType != node.AssignValueExpression.EvaluationType) {
-					analyzer.notifyError (new IllegalTypeError (node));
-				}
+				idNode.Scope.GetProperty (idNode.VariableID).Assigned = true;
 			}
 		}
 

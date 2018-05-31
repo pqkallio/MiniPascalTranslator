@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 namespace Compiler
 {
-	public class SimplifiedCTranslator : ITargetCodeTranslator
+	public class SimplifiedCSynthesizer : ITargetCodeSynthesizer
 	{
 		private CNameFactory nameFactory;
 		private SyntaxTree syntaxTree;
-		private CTranslationVisitor translationVisitor;
+		private CSynthesisVisitor translationVisitor;
 
-		public SimplifiedCTranslator (SyntaxTree syntaxTree = null)
+		public SimplifiedCSynthesizer (SyntaxTree syntaxTree = null)
 		{
 			this.nameFactory = new CNameFactory ();
 			this.syntaxTree = syntaxTree;
-			this.translationVisitor = new CTranslationVisitor (syntaxTree.ProgramName, nameFactory);
+			this.translationVisitor = new CSynthesisVisitor (syntaxTree.ProgramName, nameFactory);
 		}
 
 		public List<string> Translate (SyntaxTree syntaxTree = null)

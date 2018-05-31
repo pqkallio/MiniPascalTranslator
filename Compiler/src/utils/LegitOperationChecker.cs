@@ -161,6 +161,19 @@ namespace Compiler
 
 			return false;
 		}
+
+		public static bool CanBeAssignedTo (TokenType variableType, TokenType valueType)
+		{
+			if (variableType == valueType) {
+				return true;
+			}
+
+			if (variableType == TokenType.REAL_VAL && valueType == TokenType.INTEGER_VAL) {
+				return true;
+			}
+
+			return false;
+		}
 	}
 }
 

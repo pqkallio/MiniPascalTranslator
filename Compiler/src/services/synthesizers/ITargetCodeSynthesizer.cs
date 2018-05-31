@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Compiler
 {
-	public interface ITargetCodeTranslator
+	public interface ITargetCodeSynthesizer
 	{
 		List<string> Translate (SyntaxTree syntaxTree = null);
 	}

@@ -612,5 +612,677 @@ namespace CompilerTests
 			"b := s >= s;\n",
 			"end .\n"
 		};
+
+		/////////////
+		/// ////////
+		/// //////////
+		/// ////////////////
+		/// 
+		/// 
+
+		public static readonly string[] integerExpressionAddValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"i := i + a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerExpressionSubValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"i := i - a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerExpressionMultiplicationValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"i := i * a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerExpressionDivisionValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"i := i / a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerExpressionModuloValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"i := i % a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerExpressionSignedValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"i := -i + a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerExpressionSignedValid2 = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"i := +i + a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerExpressionNegationInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"i := i + a[7];\n",
+			"b := not i;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerExpressionBooleanAndInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"b := i and a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerExpressionBooleanOrInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"b := i or a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerExpressionEqValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"b := i = a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerExpressionNeqValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"b := i <> a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerExpressionLtValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"b := i < a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerExpressionLteValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"b := i <= a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerExpressionGtValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"b := i > a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerExpressionGteValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : integer;\n",
+			"var a : array[3] of integer;\n",
+			"i := 15;\n",
+			"b := i >= a[1];\n",
+			"end .\n"
+		};
+
+		/////////////
+		/// ////////
+		/// //////////
+		/// ////////////////
+		/// 
+		/// 
+
+		public static readonly string[] realExpressionAddValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"i := i + a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] realExpressionSubValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"i := i - a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] realExpressionMultiplicationValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"i := i * a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] realExpressionDivisionValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"i := i / a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] realExpressionModuloInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"i := i % a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] realExpressionSignedValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"i := -i + a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] realExpressionSignedValid2 = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"i := +i + a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] realExpressionNegationInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"i := i + a[7];\n",
+			"b := not i;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] realExpressionBooleanAndInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"b := i and a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] realExpressionBooleanOrInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"b := i or a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] realExpressionEqValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"b := i = a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] realExpressionNeqValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"b := i <> a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] realExpressionLtValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"b := i < a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] realExpressionLteValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"b := i <= a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] realExpressionGtValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"b := i > a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] realExpressionGteValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : real;\n",
+			"var a : array[3] of real;\n",
+			"i := 15.7;\n",
+			"b := i >= a[1];\n",
+			"end .\n"
+		};
+
+		/////////////
+		/// ////////
+		/// //////////
+		/// ////////////////
+		/// 
+		/// 
+
+		public static readonly string[] booleanExpressionAddInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"i := i + a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] booleanExpressionSubInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"i := i - a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] booleanExpressionMultiplicationInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"i := i * a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] booleanExpressionDivisionInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"i := i / a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] booleanExpressionModuloInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"i := i % a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] booleanExpressionSignedInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"i := -i;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] booleanExpressionSignedInvalid2 = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"i := +i;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] booleanExpressionNegationValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"b := not i;\n",
+			"end .\n"
+		};
+
+		public static readonly string[] booleanExpressionBooleanAndValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"b := i and a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] booleanExpressionBooleanOrValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"b := i or a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] booleanExpressionEqValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"b := i = a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] booleanExpressionNeqValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"b := i <> a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] booleanExpressionLtValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"b := i < a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] booleanExpressionLteValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"b := i <= a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] booleanExpressionGtValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"b := i > a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] booleanExpressionGteValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : boolean;\n",
+			"var a : array[3] of boolean;\n",
+			"i := true;\n",
+			"b := i >= a[1];\n",
+			"end .\n"
+		};
+
+		/////////////
+		/// ////////
+		/// //////////
+		/// ////////////////
+		/// 
+		/// 
+
+		public static readonly string[] integerAndRealExpressionAddValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : integer;\n",
+			"var a : array[3] of real;\n",
+			"i := 15;\n",
+			"a[2] := i + a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerAndRealExpressionSubValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : integer;\n",
+			"var a : array[3] of real;\n",
+			"i := 15;\n",
+			"a[2] := i - a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerAndRealExpressionMultiplicationValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : integer;\n",
+			"var a : array[3] of real;\n",
+			"i := 15;\n",
+			"a[2] := i * a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerAndRealExpressionDivisionValid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : integer;\n",
+			"var a : array[3] of real;\n",
+			"i := 15;\n",
+			"a[2] := i / a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerAndRealExpressionModuloInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : integer;\n",
+			"var a : array[3] of real;\n",
+			"i := 15;\n",
+			"a[2] := i % a[7];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerAndRealExpressionEqInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : integer;\n",
+			"var a : array[3] of real;\n",
+			"i := 15;\n",
+			"b := i = a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerAndRealExpressionNeqInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : integer;\n",
+			"var a : array[3] of real;\n",
+			"i := 15;\n",
+			"b := i <> a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerAndRealExpressionLtInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : integer;\n",
+			"var a : array[3] of real;\n",
+			"i := 15;\n",
+			"b := i < a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerAndRealExpressionLteInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : integer;\n",
+			"var a : array[3] of real;\n",
+			"i := 15;\n",
+			"b := i <= a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerAndRealExpressionGtInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : integer;\n",
+			"var a : array[3] of real;\n",
+			"i := 15;\n",
+			"b := i > a[1];\n",
+			"end .\n"
+		};
+
+		public static readonly string[] integerAndRealExpressionGteInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var b : boolean;\n",
+			"var i : integer;\n",
+			"var a : array[3] of real;\n",
+			"i := 15;\n",
+			"b := i >= a[1];\n",
+			"end .\n"
+		};
+
+		/////////////
+		/// ////////
+		/// //////////
+		/// ////////////////
+		/// 
+		/// 
+
+		public static readonly string[] assignIntegerAndRealExpressionToIntegerVarInvalid = new string[] {
+			"program a;\n",
+			"begin\n",
+			"var i : integer;\n",
+			"var a : array[3] of real;\n",
+			"var x : integer;\n",
+			"i := 15;\n",
+			"a[2] := -5.7;\n",
+			"x := i + a[2];\n",
+			"end .\n"
+		};
 	}
 }

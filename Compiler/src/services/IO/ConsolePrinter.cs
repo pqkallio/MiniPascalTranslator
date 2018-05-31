@@ -21,6 +21,17 @@ namespace Compiler
 			set { this.sourceLines = value; }
 		}
 
+		public void printSourceLines ()
+		{
+			if (sourceLines == null) {
+				return;
+			}
+
+			foreach (string line in sourceLines) {
+				print (line);
+			}
+		}
+
 		public void printErrors (List<Error> errors)
 		{
 			foreach (Error error in errors) {

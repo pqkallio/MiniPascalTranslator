@@ -175,7 +175,7 @@ namespace CompilerTests
 			Init (SemanticAnalyzerTestInputs.assignmentVariableNotDeclared);
 
 			checkScannerAndParserErrors (0, 0);
-			Assert.AreEqual (sa.getErrors ().Count, 3);
+			Assert.AreEqual (sa.getErrors ().Count, 2);
 		}
 
 		[Test ()]
@@ -580,6 +580,573 @@ namespace CompilerTests
 		public void StringExpressionGteValid ()
 		{
 			Init (SemanticAnalyzerTestInputs.stringExpressionGteValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		///////////////
+		/// 
+		/// 7////
+		/// 
+
+		[Test ()]
+		public void IntegerExpressionAddValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionAddValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void IntegerExpressionSubValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionSubValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void IntegerExpressionMultiplicationValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionMultiplicationValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void IntegerExpressionDivisionValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionDivisionValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void IntegerExpressionModuloValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionModuloValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+
+		[Test ()]
+		public void IntegerExpressionSignedValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionSignedValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void IntegerExpressionSignedValid2 ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionSignedValid2);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void IntegerExpressionNegationInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionNegationInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 4);
+		}
+
+		[Test ()]
+		public void IntegerExpressionBooleanAndInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionBooleanAndInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 3);
+		}
+
+		[Test ()]
+		public void IntegerExpressionBooleanOrInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionBooleanOrInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 2);
+		}
+
+		[Test ()]
+		public void IntegerExpressionEqValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionEqValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void IntegerExpressionNeqValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionNeqValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void IntegerExpressionLtValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionLtValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void IntegerExpressionLteValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionLteValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void IntegerExpressionGtValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionGtValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void IntegerExpressionGteValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerExpressionGteValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		///////////////
+		/// 
+		/// 7////
+		/// 
+
+		[Test ()]
+		public void RealExpressionAddValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionAddValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void RealExpressionSubValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionSubValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void RealExpressionMultiplicationValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionMultiplicationValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void RealExpressionDivisionValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionDivisionValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void RealExpressionModuloInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionModuloInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 3);
+		}
+
+
+		[Test ()]
+		public void RealExpressionSignedValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionSignedValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void RealExpressionSignedValid2 ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionSignedValid2);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void RealExpressionNegationInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionNegationInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 4);
+		}
+
+		[Test ()]
+		public void RealExpressionBooleanAndInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionBooleanAndInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 3);
+		}
+
+		[Test ()]
+		public void RealExpressionBooleanOrInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionBooleanOrInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 2);
+		}
+
+		[Test ()]
+		public void RealExpressionEqValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionEqValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void RealExpressionNeqValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionNeqValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void RealExpressionLtValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionLtValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void RealExpressionLteValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionLteValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void RealExpressionGtValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionGtValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void RealExpressionGteValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.realExpressionGteValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		///////////////
+		/// 
+		/// 7////
+		/// 
+
+		[Test ()]
+		public void BooleanExpressionAddInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionAddInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 2);
+		}
+
+		[Test ()]
+		public void BooleanExpressionSubInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionSubInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 2);
+		}
+
+		[Test ()]
+		public void BooleanExpressionMultiplicationInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionMultiplicationInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 3);
+		}
+
+		[Test ()]
+		public void BooleanExpressionDivisionInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionDivisionInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 3);
+		}
+
+		[Test ()]
+		public void BooleanExpressionModuloInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionModuloInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 3);
+		}
+
+		[Test ()]
+		public void BooleanExpressionSignedInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionSignedInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 3);
+		}
+
+		[Test ()]
+		public void BooleanExpressionSignedInvalid2 ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionSignedInvalid2);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void BooleanExpressionNegationValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionNegationValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void BooleanExpressionBooleanAndValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionBooleanAndValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void BooleanExpressionBooleanOrValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionBooleanOrValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void BooleanExpressionEqValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionEqValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void BooleanExpressionNeqValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionNeqValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void BooleanExpressionLtValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionLtValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void BooleanExpressionLteValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionLteValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void BooleanExpressionGtValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionGtValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void BooleanExpressionGteValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.booleanExpressionGteValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		///////////////
+		/// 
+		/// 7////
+		/// 
+
+		[Test ()]
+		public void IntegerAndRealExpressionAddValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerAndRealExpressionAddValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void IntegerAndRealExpressionSubValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerAndRealExpressionSubValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void IntegerAndRealExpressionMultiplicationValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerAndRealExpressionMultiplicationValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void IntegerAndRealExpressionDivisionValid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerAndRealExpressionDivisionValid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 0);
+		}
+
+		[Test ()]
+		public void IntegerAndRealExpressionModuloInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerAndRealExpressionModuloInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 4);
+		}
+
+		[Test ()]
+		public void IntegerAndRealExpressionEqInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerAndRealExpressionEqInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 2);
+		}
+
+		[Test ()]
+		public void IntegerAndRealExpressionNeqInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerAndRealExpressionNeqInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 2);
+		}
+
+		[Test ()]
+		public void IntegerAndRealExpressionLtInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerAndRealExpressionLtInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 2);
+		}
+
+		[Test ()]
+		public void IntegerAndRealExpressionLteInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerAndRealExpressionLteInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 2);
+		}
+
+		[Test ()]
+		public void IntegerAndRealExpressionGtInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerAndRealExpressionGtInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 2);
+		}
+
+		[Test ()]
+		public void IntegerAndRealExpressionGteInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.integerAndRealExpressionGteInvalid);
+
+			checkScannerAndParserErrors (0, 0);
+			Assert.AreEqual (sa.getErrors ().Count, 2);
+		}
+
+		/////77
+		/// //
+		/// ///7
+		/// 
+
+		[Test ()]
+		public void AssignIntegerAndRealExpressionToIntegerVarInvalid ()
+		{
+			Init (SemanticAnalyzerTestInputs.assignIntegerAndRealExpressionToIntegerVarInvalid);
 
 			checkScannerAndParserErrors (0, 0);
 			Assert.AreEqual (sa.getErrors ().Count, 0);

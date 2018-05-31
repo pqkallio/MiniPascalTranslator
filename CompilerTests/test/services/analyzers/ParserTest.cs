@@ -566,7 +566,7 @@ namespace CompilerTests
 		public void TestWhileStatement ()
 		{
 			InitParser (ParserTestInputs.whileStatement);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
@@ -575,7 +575,7 @@ namespace CompilerTests
 		public void TestAccessArraySize ()
 		{
 			InitParser (ParserTestInputs.accessArraySize);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
@@ -584,7 +584,7 @@ namespace CompilerTests
 		public void TestProcedureCall1 ()
 		{
 			InitParser (ParserTestInputs.procedureCall1);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
@@ -593,7 +593,7 @@ namespace CompilerTests
 		public void TestProcedureCall2 ()
 		{
 			InitParser (ParserTestInputs.procedureCall2);
-			SyntaxTree tree = parser.Parse ();
+			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 0);
 		}
@@ -1155,6 +1155,78 @@ namespace CompilerTests
 		public void assigneeMissingArrayAccessorExpression ()
 		{
 			InitParser (ParserTestInputs.assigneeMissingArrayAccessorExpression);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void paramsNotCorrectlyFormatted1 ()
+		{
+			InitParser (ParserTestInputs.paramsNotCorrectlyFormatted1);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void paramsNotCorrectlyFormatted2 ()
+		{
+			InitParser (ParserTestInputs.paramsNotCorrectlyFormatted2);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void paramsNotCorrectlyFormatted3 ()
+		{
+			InitParser (ParserTestInputs.paramsNotCorrectlyFormatted3);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void paramsNotCorrectlyFormatted4 ()
+		{
+			InitParser (ParserTestInputs.paramsNotCorrectlyFormatted4);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void argsNotCorrectlyFormatted1 ()
+		{
+			InitParser (ParserTestInputs.argsNotCorrectlyFormatted1);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void argsNotCorrectlyFormatted2 ()
+		{
+			InitParser (ParserTestInputs.argsNotCorrectlyFormatted2);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void argsNotCorrectlyFormatted3 ()
+		{
+			InitParser (ParserTestInputs.argsNotCorrectlyFormatted3);
+			parser.Parse ();
+			Assert.AreEqual (scanner.getErrors ().Count, 0);
+			Assert.AreEqual (parser.getErrors ().Count, 1);
+		}
+
+		[Test]
+		public void argsNotCorrectlyFormatted4 ()
+		{
+			InitParser (ParserTestInputs.argsNotCorrectlyFormatted4);
 			parser.Parse ();
 			Assert.AreEqual (scanner.getErrors ().Count, 0);
 			Assert.AreEqual (parser.getErrors ().Count, 1);

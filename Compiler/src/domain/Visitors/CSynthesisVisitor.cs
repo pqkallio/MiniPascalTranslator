@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Compiler
 {
-	public class CTranslationVisitor : INodeVisitor
+	public class CSynthesisVisitor : INodeVisitor
 	{
 		// the code lines of a global scale translation
 		private List<string> globalTranslation;
@@ -27,9 +27,9 @@ namespace Compiler
 		// used to determine the amount of tabs to place before a translated code line
 		private int blockDepth;
 
-		private static Dictionary<TokenType, string> typeNames = CTranslatorConstants.SIMPLE_TYPE_NAMES;
-		private static Dictionary<TokenType, string> paramTypeNames = CTranslatorConstants.PARAM_SIMPLE_TYPE_NAMES;
-		private static Dictionary<TokenType, string> opStrings = CTranslatorConstants.OPERATION_STRINGS;
+		private static Dictionary<TokenType, string> typeNames = CSynthesizerConstants.SIMPLE_TYPE_NAMES;
+		private static Dictionary<TokenType, string> paramTypeNames = CSynthesizerConstants.PARAM_SIMPLE_TYPE_NAMES;
+		private static Dictionary<TokenType, string> opStrings = CSynthesizerConstants.OPERATION_STRINGS;
 
 		/*
 		 * a dictionary to hold all the malloc'd identifiers so that they can be
@@ -63,7 +63,7 @@ namespace Compiler
 		/// </summary>
 		/// <param name="programName">The name of the program</param>
 		/// <param name="nameFactory">Name factory.</param>
-		public CTranslationVisitor (string programName, CNameFactory nameFactory)
+		public CSynthesisVisitor (string programName, CNameFactory nameFactory)
 		{
 			this.globalTranslation = new List<string> ();
 			this.scopeTranslation = null;
@@ -113,7 +113,7 @@ namespace Compiler
 
 			addEmptyLineToScopeTranslation ();
 			// add a conditional jump to code in case of success
-			addToScopeTranslation (statement (CTranslatorConstants.IF, parenthesized (loc), CTranslatorConstants.GOTO, successLabel));
+			addToScopeTranslation (statement (CSynthesizerConstants.IF, parenthesized (loc), CSynthesizerConstants.GOTO, successLabel));
 
 			addEmptyLineToScopeTranslation ();
 			// create code for the case of failure
@@ -136,12 +136,12 @@ namespace Compiler
 
 		private void addErrorHandlingCodeToScopeTranslation ()
 		{
-			addToScopeTranslation (statement (CTranslatorConstants.GOTO, CTranslatorConstants.ERROR_LABEL));
+			addToScopeTranslation (statement (CSynthesizerConstants.GOTO, CSynthesizerConstants.ERROR_LABEL));
 		}
 
 		private string CreateFailedAssertionPrintCall()
 		{
-			return statement (CreateFunctionCall (CTranslatorConstants.PRINTING_FUNCTION_CALLS [TokenType.STRING_VAL], CTranslatorConstants.ASSERTION_FAILED_MESSAGE));
+			return statement (CreateFunctionCall (CSynthesizerConstants.PRINTING_FUNCTION_CALLS [TokenType.STRING_VAL], CSynthesizerConstants.ASSERTION_FAILED_MESSAGE));
 		}
 
 		public void VisitArraySizeCheckNode(ArraySizeCheckNode node)
@@ -155,9 +155,9 @@ namespace Compiler
 			 * The index that points to the cell that holds the array's size is
 			 * defined in the CTranslatorConstants.cs file.
 			 */
-			SyntaxTreeNode tempVarNode = new TranslatorTempNode ();
+			SyntaxTreeNode tempVarNode = new SynthesisTempNode ();
 			string tempVar = GetTempVarId (TokenType.INTEGER_VAL, new IntegerProperty (), tempVarNode);
-			addToScopeTranslation (simpleAssignment (tempVar, CTranslatorConstants.ARRAY_SIZE_INDEX));
+			addToScopeTranslation (simpleAssignment (tempVar, CSynthesizerConstants.ARRAY_SIZE_INDEX));
 
 			string sizeCast = castToInt () + arrayAccess (arrayId, tempVar);
 
@@ -169,7 +169,7 @@ namespace Compiler
 
 		private string simpleAssignment (string target, string assignee)
 		{
-			return statement (spaced (target, CTranslatorConstants.ASSIGNMENT, assignee));
+			return statement (spaced (target, CSynthesizerConstants.ASSIGNMENT, assignee));
 		}
 
 		private string arrayAccess (string arrayId, string index)
@@ -180,8 +180,8 @@ namespace Compiler
 
 		private string indexDelimited(string index)
 		{
-			string indexDelimiterLeft = CTranslatorConstants.ARRAY_INDEX_DELIMITERS.Item1;
-			string indexDelimiterRight = CTranslatorConstants.ARRAY_INDEX_DELIMITERS.Item2;
+			string indexDelimiterLeft = CSynthesizerConstants.ARRAY_INDEX_DELIMITERS.Item1;
+			string indexDelimiterRight = CSynthesizerConstants.ARRAY_INDEX_DELIMITERS.Item2;
 
 			return indexDelimiterLeft + index + indexDelimiterRight;
 		}
@@ -215,7 +215,7 @@ namespace Compiler
 
 		public string GetPointerToVariable (string id, TokenType type)
 		{
-			return CTranslatorConstants.POINTER_PREFIXES[type] + id;
+			return CSynthesizerConstants.POINTER_PREFIXES[type] + id;
 		}
 
 		public void VisitArrayAssignNode(ArrayAssignStatement node)
@@ -231,7 +231,7 @@ namespace Compiler
 
 			addToScopeTranslation (
 				statement (
-					CreateFunctionCall (CTranslatorConstants.ARRAY_INSERTION_FUNCTION_CALLS[type], 
+					CreateFunctionCall (CSynthesizerConstants.ARRAY_INSERTION_FUNCTION_CALLS[type], 
 						arrayId,
 						index.Location, 
 						value.Location)));
@@ -244,9 +244,9 @@ namespace Compiler
 
 		private void addErrorCheckingToScopeTranslation ()
 		{
-			string lbl = CTranslatorConstants.ERROR_LABEL;
-			string errorcodeVar = CTranslatorConstants.ERROR_CODE_VAR;
-			string noError = CTranslatorConstants.DEFAULT_ERROR_CODE;
+			string lbl = CSynthesizerConstants.ERROR_LABEL;
+			string errorcodeVar = CSynthesizerConstants.ERROR_CODE_VAR;
+			string noError = CSynthesizerConstants.DEFAULT_ERROR_CODE;
 
 			addConditionalJumpsToScopeTranslation (lbl, neqOperationStrings (errorcodeVar, noError));
 		}
@@ -260,10 +260,10 @@ namespace Compiler
 			switch (node.EvaluationType) {
 				case (TokenType.INTEGER_VAL):
 				case (TokenType.BOOLEAN_VAL):
-					addToScopeTranslation (statement (CreateFunctionCall ("load_from_int_array", arrayId, index.Location, CTranslatorConstants.MEM_ADDRESS + node.Location)));
+					addToScopeTranslation (statement (CreateFunctionCall ("load_from_int_array", arrayId, index.Location, node.Location)));
 					break;
 				case (TokenType.REAL_VAL):
-					addToScopeTranslation (statement (CreateFunctionCall ("load_from_float_array", arrayId, index.Location, CTranslatorConstants.MEM_ADDRESS + node.Location)));
+					addToScopeTranslation (statement (CreateFunctionCall ("load_from_float_array", arrayId, index.Location, node.Location)));
 					break;
 				case (TokenType.STRING_VAL):
 					addToScopeTranslation (statement (CreateFunctionCall ("load_from_string_array", arrayId, index.Location, node.Location)));
@@ -308,8 +308,8 @@ namespace Compiler
 					ExpressionNode sizeExpr = node.DeclarationType.ArraySizeExpression;
 					TokenType elemType = node.DeclarationType.ArrayElementType;
 					sizeExpr.Accept (this);
-					SyntaxTreeNode realSizeTempNode = new TranslatorTempNode ();
-					SyntaxTreeNode indexPointerTempNode = new TranslatorTempNode ();
+					SyntaxTreeNode realSizeTempNode = new SynthesisTempNode ();
+					SyntaxTreeNode indexPointerTempNode = new SynthesisTempNode ();
 					string realSizeTemp = GetTempVarId (TokenType.INTEGER_VAL, new IntegerProperty (), realSizeTempNode);
 					string indexPointer = GetTempVarId (TokenType.INTEGER_VAL, new IntegerProperty (), indexPointerTempNode);
 					addToScopeTranslation (simpleAssignment (realSizeTemp, createBinaryOperationString (TokenType.BINARY_OP_ADD, sizeExpr.Location, "1")));
@@ -359,7 +359,7 @@ namespace Compiler
 			bool declared = false;
 			setNodeLocation (node, node.EvaluationType, new StringProperty());
 
-			string strVal = unspaced (CTranslatorConstants.STRING_DELIMITER, node.Value, CTranslatorConstants.STRING_DELIMITER);
+			string strVal = unspaced (CSynthesizerConstants.STRING_DELIMITER, node.Value, CSynthesizerConstants.STRING_DELIMITER);
 
 			addAssignment (typeNames[node.EvaluationType], node.Location, strVal, node.Scope, declared: declared);
 		}
@@ -397,8 +397,8 @@ namespace Compiler
 		public void VisitIOReadNode(IOReadNode node)
 		{
 			string[] arguments = new string[node.IDNodes.Count + 1];
-			SyntaxTreeNode argAmountTempNode = new TranslatorTempNode ();
-			SyntaxTreeNode readAmountTempNode = new TranslatorTempNode ();
+			SyntaxTreeNode argAmountTempNode = new SynthesisTempNode ();
+			SyntaxTreeNode readAmountTempNode = new SynthesisTempNode ();
 			string argumentAmountTemp = GetTempVarId (TokenType.INTEGER_VAL, new IntegerProperty (), argAmountTempNode);
 			string readAmountTemp = GetTempVarId (TokenType.INTEGER_VAL, new IntegerProperty (), readAmountTempNode);
 
@@ -408,10 +408,12 @@ namespace Compiler
 			for (int i = 0, j = 1; i < node.IDNodes.Count; i++, j++) {
 				Evaluee idNode = node.IDNodes [i];
 				string id = nameFactory.GetCName (node.Scope, idNode.VariableID);
-				if (currentScope.GetProperty (idNode.VariableID).Reference) {
+				if (currentScope.GetProperty (idNode.VariableID).GetTokenType() == TokenType.TYPE_ARRAY) {
+					
+				} else if (currentScope.GetProperty (idNode.VariableID).Reference) {
 					arguments [j] = id;
 				} else {
-					arguments [j] = CTranslatorConstants.ADDRESS_PREFIXES [idNode.EvaluationType] + id;
+					arguments [j] = CSynthesizerConstants.ADDRESS_PREFIXES [idNode.EvaluationType] + id;
 				}
 			}
 
@@ -421,7 +423,7 @@ namespace Compiler
 			addToScopeTranslation (simpleAssignment (readAmountTemp, functionCall));
 			addEmptyLineToScopeTranslation ();
 
-			addConditionalJumpsToScopeTranslation (CTranslatorConstants.ERROR_LABEL, neqOperationStrings(argumentAmountTemp, readAmountTemp));
+			addConditionalJumpsToScopeTranslation (CSynthesizerConstants.ERROR_LABEL, neqOperationStrings(argumentAmountTemp, readAmountTemp));
 
 			nameFactory.ReturnTempVarId (currentScope, argumentAmountTemp, TokenType.INTEGER_VAL, argAmountTempNode);
 			nameFactory.ReturnTempVarId (currentScope, readAmountTemp, TokenType.INTEGER_VAL, readAmountTempNode);
@@ -433,24 +435,24 @@ namespace Compiler
 			int i = 0;
 
 			for (; i < idNodes.Count - 1; i++) {
-				sb.Append (CTranslatorConstants.STRING_FORMATTING_SYMBOLS [idNodes [i].EvaluationType] + ' ');
+				sb.Append (CSynthesizerConstants.STRING_FORMATTING_SYMBOLS [idNodes [i].EvaluationType] + ' ');
 			}
 
-			sb.Append (CTranslatorConstants.STRING_FORMATTING_SYMBOLS [idNodes [i].EvaluationType] + '\"');
+			sb.Append (CSynthesizerConstants.STRING_FORMATTING_SYMBOLS [idNodes [i].EvaluationType] + '\"');
 
 			return sb.ToString ();
 		}
 
 		public string createBinaryOperationString (TokenType operation, string lhs, string rhs)
 		{
-			return spaced (lhs, CTranslatorConstants.OPERATION_STRINGS [operation], rhs);
+			return spaced (lhs, CSynthesizerConstants.OPERATION_STRINGS [operation], rhs);
 		}
 
 
 		public void addConditionalJumpsToScopeTranslation (string label, params string[] conditions)
 		{
-			string ifStr = CTranslatorConstants.IF;
-			string gotoStr = CTranslatorConstants.GOTO;
+			string ifStr = CSynthesizerConstants.IF;
+			string gotoStr = CSynthesizerConstants.GOTO;
 
 			foreach (string condition in conditions) {
 				addToScopeTranslation (statement (ifStr, parenthesized (condition), gotoStr, label));
@@ -498,6 +500,8 @@ namespace Compiler
 			} else {
 				node.Location = node.SimpleExpression.Location;
 			}
+
+			nameFactory.ReturnTempVarId(currentScope, node.SimpleExpression.Location, node.SimpleExpression.EvaluationType, node.SimpleExpression);
 		}
 
 		public Property getProperty(TokenType type, TokenType arrayElementType = TokenType.UNDEFINED, ExpressionNode arraySizeExpression = null)
@@ -550,7 +554,7 @@ namespace Compiler
 		public void addRelationalGotoOperations (ExpressionNode node, string label, params TokenType[] operations)
 		{
 			foreach (TokenType operation in operations) {
-				addToScopeTranslation (statement (spaced ("if", "(" + node.SimpleExpression.Location, CTranslatorConstants.OPERATION_STRINGS[operation], node.ExpressionTail.Location + ")", "goto", label)));
+				addToScopeTranslation (statement (spaced ("if", "(" + node.SimpleExpression.Location, CSynthesizerConstants.OPERATION_STRINGS[operation], node.ExpressionTail.Location + ")", "goto", label)));
 			}
 		}
 
@@ -620,7 +624,7 @@ namespace Compiler
 		public void VisitFunctionNode(FunctionNode node)
 		{
 			string head = createFunctionStart(nameFactory.GetCName(node.Scope, node.IDNode.ID), node.IDNode, nameFactory, node.Parameters.Parameters);
-			this.errorHandlingCode = CTranslatorConstants.GetFunctionErrorHandlingCode (node.ReturnType);
+			this.errorHandlingCode = CSynthesizerConstants.GetFunctionErrorHandlingCode (node.ReturnType);
 
 			node.Parameters.Accept (this);
 
@@ -630,20 +634,21 @@ namespace Compiler
 			this.blockDepth--;
 
 			addToGlobalTranslation (head);
-			addToGlobalTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item1);
+			addToGlobalTranslation (CSynthesizerConstants.BLOCK_DELIMITERS.Item1);
 
 			this.blockDepth++;
 			addVariableDeclarationsToScopeTranslation (currentScope, declaredVariables [currentScope]);
 			globalTranslation = globalTranslation.Concat (scopeTranslation).ToList ();
 			this.blockDepth--;
 
-			addToGlobalTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item2);
+			addToGlobalTranslation (CSynthesizerConstants.BLOCK_DELIMITERS.Item2);
 
 			addEmptyLineToGlobalTranslation ();
 		}
 
 		public void VisitProcedureNode(ProcedureNode node)
 		{
+			node.Block.Statements.Add (new ReturnStatement (new Token (0, 0)));
 			VisitFunctionNode (node);
 		}
 
@@ -659,7 +664,7 @@ namespace Compiler
 				if (parameters [i].Reference) {
 					VariableEvaluee varEvaluee = (VariableEvaluee)arguments [i].SimpleExpression.Term.Factor.FactorMain.Evaluee;
 					string id = nameFactory.GetCName (node.Scope, varEvaluee.IDNode.ID);
-					argumentStrings [i] = CTranslatorConstants.ADDRESS_PREFIXES [arguments [i].EvaluationType] + id;
+					argumentStrings [i] = CSynthesizerConstants.ADDRESS_PREFIXES [arguments [i].EvaluationType] + id;
 				} else {
 					arguments [i].Accept (this);
 					argumentStrings [i] = arguments [i].Location;
@@ -693,7 +698,7 @@ namespace Compiler
 			node.IfBranch.Label = nameFactory.GetLabel ();
 
 			node.Condition.Accept (this);
-			addToScopeTranslation (statement (spaced (node.Condition.Location, CTranslatorConstants.ASSIGNMENT, "!" + node.Condition.Location)));
+			addToScopeTranslation (statement (spaced (node.Condition.Location, CSynthesizerConstants.ASSIGNMENT, "!" + node.Condition.Location)));
 			addEmptyLineToScopeTranslation ();
 			addToScopeTranslation (statement (spaced ("if", "(" + node.Condition.Location + ")", "goto", node.IfBranch.Label)));
 			addEmptyLineToScopeTranslation ();
@@ -782,7 +787,7 @@ namespace Compiler
 		private void createProgramFunction(ProgramNode node) {
 			Scope scope = node.Scope;
 			string head = "int " + nameFactory.GetCName (scope, programName) + "()";
-			this.errorHandlingCode = CTranslatorConstants.GetProgramFunctionErrorHandlingCode ();
+			this.errorHandlingCode = CSynthesizerConstants.GetProgramFunctionErrorHandlingCode ();
 			changeScope (scope);
 			blockDepth++;
 
@@ -793,19 +798,23 @@ namespace Compiler
 			addErrorLabelAndCodeToScopeTranslation ();
 			this.blockDepth--;
 			addToGlobalTranslation (head);
-			addToGlobalTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item1);
+			addToGlobalTranslation (CSynthesizerConstants.BLOCK_DELIMITERS.Item1);
 			this.blockDepth++;
 			addVariableDeclarationsToScopeTranslation (currentScope, declaredVariables [currentScope]);
 			globalTranslation = globalTranslation.Concat (scopeTranslation).ToList ();
 			blockDepth--;
-			addToGlobalTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item2);
+			addToGlobalTranslation (CSynthesizerConstants.BLOCK_DELIMITERS.Item2);
 		}
 
 		public void VisitReturnStatement(ReturnStatement node)
 		{
-			node.ReturnValue.Accept (this);
-			addToScopeTranslation (statement ("return", node.ReturnValue.Location));
-			nameFactory.ReturnTempVarId (currentScope, node.ReturnValue.Location, node.ReturnValue.EvaluationType, node.ReturnValue);
+			if (node.ReturnValue == null) {
+				addToScopeTranslation (statement ("return"));
+			} else {
+				node.ReturnValue.Accept (this);
+				addToScopeTranslation (statement ("return", node.ReturnValue.Location));
+				nameFactory.ReturnTempVarId (currentScope, node.ReturnValue.Location, node.ReturnValue.EvaluationType, node.ReturnValue);
+			}
 		}
 
 		public void VisitTermNode(TermNode node)
@@ -893,14 +902,14 @@ namespace Compiler
 		{
 			addComment ("globally used variables");
 
-			foreach (string str in CTranslatorConstants.GLOBAL_VARIABLE_ASSIGNMENTS) {
+			foreach (string str in CSynthesizerConstants.GLOBAL_VARIABLE_ASSIGNMENTS) {
 				addToGlobalTranslation (statement (str));
 			}
 		}
 
 		private void includeLibraries ()
 		{
-			foreach (string library in CTranslatorConstants.LIBRARIES) {
+			foreach (string library in CSynthesizerConstants.LIBRARIES) {
 				addToGlobalTranslation (LibraryInclusion (library));
 			}
 		}
@@ -921,19 +930,19 @@ namespace Compiler
 		{
 			addComment("helper functions");
 
-			foreach (string str in CTranslatorConstants.HELPER_FUNCTION_DECLARATIONS) {
+			foreach (string str in CSynthesizerConstants.HELPER_FUNCTION_DECLARATIONS) {
 				addToGlobalTranslation (statement (str));
 			}
 		}
 
 		private void addComment(string line)
 		{
-			addToGlobalTranslation (spaced (CTranslatorConstants.COMMENT_DELIMITERS.Item1, line, CTranslatorConstants.COMMENT_DELIMITERS.Item2));
+			addToGlobalTranslation (spaced (CSynthesizerConstants.COMMENT_DELIMITERS.Item1, line, CSynthesizerConstants.COMMENT_DELIMITERS.Item2));
 		}
 
 		private void createHelperFunctions ()
 		{
-			foreach (string[] helperFunction in CTranslatorConstants.HELPER_FUNCTIONS) {
+			foreach (string[] helperFunction in CSynthesizerConstants.HELPER_FUNCTIONS) {
 				foreach (string str in helperFunction) {
 					addToGlobalTranslation (str);
 				}
@@ -955,11 +964,11 @@ namespace Compiler
 		private void createMainFunction (string programName, Scope scope)
 		{
 			addToGlobalTranslation ("int main()");
-			addToGlobalTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item1);
+			addToGlobalTranslation (CSynthesizerConstants.BLOCK_DELIMITERS.Item1);
 			this.blockDepth++;
 			addToGlobalTranslation ("return " + nameFactory.GetCName (scope, programName) + "();");
 			this.blockDepth--;
-			addToGlobalTranslation (CTranslatorConstants.BLOCK_DELIMITERS.Item2);
+			addToGlobalTranslation (CSynthesizerConstants.BLOCK_DELIMITERS.Item2);
 		}
 
 		private void addEmptyLineToGlobalTranslation () {
@@ -998,13 +1007,13 @@ namespace Compiler
 
 		public static string LibraryInclusion (string library)
 		{
-			return spaced (CTranslatorConstants.INCLUSION, LibraryDelimit(library));
+			return spaced (CSynthesizerConstants.INCLUSION, LibraryDelimit(library));
 		}
 
 		private static string LibraryDelimit (string library)
 		{
-			string leftDelimiter = CTranslatorConstants.LIBRARY_INCLUSION_DELIMITERS.Item1;
-			string rightDelimiter = CTranslatorConstants.LIBRARY_INCLUSION_DELIMITERS.Item2;
+			string leftDelimiter = CSynthesizerConstants.LIBRARY_INCLUSION_DELIMITERS.Item1;
+			string rightDelimiter = CSynthesizerConstants.LIBRARY_INCLUSION_DELIMITERS.Item2;
 
 			return unspaced(leftDelimiter, library, rightDelimiter);
 		}
@@ -1037,13 +1046,13 @@ namespace Compiler
 
 		public static string GetDeclarationType (TypeNode typeNode)
 		{
-			return CTranslatorConstants.SIMPLE_TYPE_NAMES [typeNode.PropertyType];
+			return CSynthesizerConstants.SIMPLE_TYPE_NAMES [typeNode.PropertyType];
 		}
 
 		public static string createFunctionDeclaration (string functionName, VariableIdNode idNode, CNameFactory nameFactory, List<Parameter> parameters = null)
 		{
 			string returnType = null;
-			Dictionary<TokenType, string> types = CTranslatorConstants.SIMPLE_TYPE_NAMES;
+			Dictionary<TokenType, string> types = CSynthesizerConstants.SIMPLE_TYPE_NAMES;
 
 			if (types.ContainsKey(idNode.VariableType)) {
 				returnType = typeNames [idNode.VariableType];
@@ -1073,7 +1082,7 @@ namespace Compiler
 
 		private static string createParameters (CNameFactory nameFactory, Scope scope, List<Parameter> parameters = null)
 		{
-			StringBuilder sb = new StringBuilder (CTranslatorConstants.CALL_TAIL_DELIMITERS.Item1);
+			StringBuilder sb = new StringBuilder (CSynthesizerConstants.CALL_TAIL_DELIMITERS.Item1);
 
 			if (parameters != null && parameters.Count > 0) {
 				for (int i = 0; i < parameters.Count - 1; i++) {
@@ -1083,7 +1092,7 @@ namespace Compiler
 				sb.Append (parameterToString (nameFactory, parameters [parameters.Count - 1], scope));
 			}
 
-			sb.Append (CTranslatorConstants.CALL_TAIL_DELIMITERS.Item2);
+			sb.Append (CSynthesizerConstants.CALL_TAIL_DELIMITERS.Item2);
 
 			return sb.ToString ();
 		}
@@ -1124,13 +1133,13 @@ namespace Compiler
 
 			this.allocations[currentScope].Add (id);
 
-			SyntaxTreeNode tempNode = new TranslatorTempNode ();
+			SyntaxTreeNode tempNode = new SynthesisTempNode ();
 			string tempLoc = GetTempVarId (TokenType.INTEGER_VAL, new IntegerProperty (), tempNode);
-			addToScopeTranslation(statement (spaced (tempLoc, CTranslatorConstants.ASSIGNMENT, times, opStrings[TokenType.BINARY_OP_MUL], sizeOfString(typeNames[type]))));
+			addToScopeTranslation(statement (spaced (tempLoc, CSynthesizerConstants.ASSIGNMENT, times, opStrings[TokenType.BINARY_OP_MUL], sizeOfString(typeNames[type]))));
 
-			string typePointer = unspaced(typeNames[type], CTranslatorConstants.MEM_POINTER);
-			string malloc = unspaced (CTranslatorConstants.MEM_ALLOCATION, CTranslatorConstants.CALL_TAIL_DELIMITERS.Item1, tempLoc, CTranslatorConstants.CALL_TAIL_DELIMITERS.Item2);
-			string mallocCall = statement(spaced(typePointer, id, CTranslatorConstants.ASSIGNMENT, malloc));
+			string typePointer = unspaced(typeNames[type], CSynthesizerConstants.MEM_POINTER);
+			string malloc = unspaced (CSynthesizerConstants.MEM_ALLOCATION, CSynthesizerConstants.CALL_TAIL_DELIMITERS.Item1, tempLoc, CSynthesizerConstants.CALL_TAIL_DELIMITERS.Item2);
+			string mallocCall = statement(spaced(typePointer, id, CSynthesizerConstants.ASSIGNMENT, malloc));
 			addToScopeTranslation (mallocCall);
 
 			nameFactory.ReturnTempVarId (currentScope, tempLoc, type, tempNode);
@@ -1151,20 +1160,20 @@ namespace Compiler
 
 		private void addAllocationRelease (string id)
 		{
-			addToScopeTranslation(statement (unspaced (CTranslatorConstants.MEM_RELEASE, CTranslatorConstants.CALL_TAIL_DELIMITERS.Item1, id, CTranslatorConstants.CALL_TAIL_DELIMITERS.Item2)));
+			addToScopeTranslation(statement (unspaced (CSynthesizerConstants.MEM_RELEASE, CSynthesizerConstants.CALL_TAIL_DELIMITERS.Item1, id, CSynthesizerConstants.CALL_TAIL_DELIMITERS.Item2)));
 		}
 
 		private string sizeOfString(string type)
 		{
-			string leftDelimiter = CTranslatorConstants.CALL_TAIL_DELIMITERS.Item1;
-			string rightDelimiter = CTranslatorConstants.CALL_TAIL_DELIMITERS.Item2;
+			string leftDelimiter = CSynthesizerConstants.CALL_TAIL_DELIMITERS.Item1;
+			string rightDelimiter = CSynthesizerConstants.CALL_TAIL_DELIMITERS.Item2;
 
-			return unspaced (CTranslatorConstants.SIZE_OF, leftDelimiter, type, rightDelimiter);
+			return unspaced (CSynthesizerConstants.SIZE_OF, leftDelimiter, type, rightDelimiter);
 		}
 
 		private void addAssignment(string type, string target, string firstOperand, Scope scope, string operation = null, string secondOperand = null, bool declared = false)
 		{
-			string assignment = CTranslatorConstants.ASSIGNMENT;
+			string assignment = CSynthesizerConstants.ASSIGNMENT;
 			bool alreadyDeclared = declaredVariables [currentScope].ContainsKey (target);
 			string typeAndTarget = target;
 
@@ -1220,10 +1229,10 @@ namespace Compiler
 					case TokenType.TYPE_ARRAY:
 						ArrayProperty aProp = (ArrayProperty)prop;
 						TokenType elementType = aProp.ArrayElementType;
-						addToTranslation (scopeDeclarations, simpleAssignment(spaced (typeNames [elementType] + CTranslatorConstants.MEM_POINTER, key), CTranslatorConstants.TEMP_VARIABLES[elementType]));
+						addToTranslation (scopeDeclarations, simpleAssignment(spaced (typeNames [elementType] + CSynthesizerConstants.MEM_POINTER, key), CSynthesizerConstants.TEMP_VARIABLES[elementType]));
 						break;
 					case TokenType.STRING_VAL:
-						addToTranslation (scopeDeclarations, simpleAssignment (spaced (typeNames [type] + CTranslatorConstants.MEM_POINTER, key), CTranslatorConstants.TEMP_VARIABLES[type]));
+						addToTranslation (scopeDeclarations, simpleAssignment (spaced (typeNames [type] + CSynthesizerConstants.MEM_POINTER, key), CSynthesizerConstants.TEMP_VARIABLES[type]));
 						break;
 					default:
 						addToTranslation (scopeDeclarations, simpleAssignment (spaced (typeNames [type], key), "0"));

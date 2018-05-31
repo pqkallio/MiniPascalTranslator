@@ -1,33 +1,28 @@
 ﻿<Properties StartupItem="Translator/Translator.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/src/services/CompilerFrontend.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Translator/Program.cs">
     <Files>
-      <File FileName="CompilerTests/test/services/analyzers/SemanticAnalyzerTest.cs" Line="482" Column="19" />
-      <File FileName="Compiler/src/domain/Visitors/StatementCheckVisitor.cs" Line="436" Column="1" />
-      <File FileName="Compiler/src/services/analyzers/Parser.cs" Line="292" Column="4" />
-      <File FileName="Compiler/src/domain/Errors/ParameterMustBeReferenceError.cs" Line="8" Column="85" />
-      <File FileName="Compiler/src/domain/SyntaxTree/ReturnStatement.cs" Line="5" Column="2" />
-      <File FileName="Compiler/src/domain/SyntaxTree/IOReadNode.cs" Line="10" Column="2" />
-      <File FileName="Compiler/src/domain/SyntaxTree/ArrayAccessNode.cs" Line="20" Column="1" />
-      <File FileName="Compiler/src/domain/Visitors/TypeCheckingVisitor.cs" Line="113" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/ExpressionNode.cs" Line="20" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/SimpleExpression.cs" Line="23" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/TermNode.cs" Line="20" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/Factor.cs" Line="20" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/FactorMain.cs" Line="18" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/StringValueNode.cs" Line="32" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/AssignNode.cs" Line="35" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/BlockNode.cs" Line="19" Column="1" />
-      <File FileName="Compiler/src/domain/SyntaxTree/ProgramNode.cs" Line="21" Column="1" />
-      <File FileName="Compiler/src/services/analyzers/SemanticAnalyzer.cs" Line="50" Column="1" />
-      <File FileName="Compiler/src/services/CompilerFrontend.cs" Line="49" Column="1" />
-      <File FileName="CompilerTests/test/services/analyzers/SemanticAnalyzerTestInputs.cs" Line="495" Column="28" NotebookId="1" />
+      <File FileName="CompilerTests/test/services/analyzers/ParserTest.cs" Line="1026" Column="18" />
+      <File FileName="Compiler/src/services/analyzers/Parser.cs" Line="615" Column="70" />
+      <File FileName="CompilerTests/test/services/analyzers/SemanticAnalyzerTest.cs" Line="28" Column="14" />
+      <File FileName="Compiler/src/services/IO/SourceBuffer.cs" Line="1" Column="1" />
+      <File FileName="Compiler/src/services/IO/FileWriter.cs" Line="12" Column="47" />
+      <File FileName="Compiler/src/services/synthesizers/SimplifiedCSynthesizer.cs" Line="10" Column="28" />
+      <File FileName="Compiler/src/domain/Visitors/CSynthesisVisitor.cs" Line="501" Column="4" />
+      <File FileName="Compiler/src/services/synthesizers/SynthesisTempNode.cs" Line="6" Column="3" />
+      <File FileName="Translator/Program.cs" Line="24" Column="9" />
+      <File FileName="Compiler/src/services/IO/IPrinter.cs" Line="8" Column="3" />
+      <File FileName="Compiler/src/services/CompilerFrontend.cs" Line="50" Column="3" />
+      <File FileName="Compiler/src/services/IO/ConsolePrinter.cs" Line="39" Column="5" />
+      <File FileName="Compiler/src/services/synthesizers/name_factories/CNameFactory.cs" Line="75" Column="4" />
+      <File FileName="Compiler/src/services/analyzers/ParserConstants.cs" Line="226" Column="4" />
+      <File FileName="CompilerTests/test/services/analyzers/ParserTestInputs.cs" Line="771" Column="3" NotebookId="1" />
     </Files>
     <Pads>
       <Pad Id="MonoDevelop.NUnit.TestPad">
         <State name="__root__">
           <Node name="MiniPascalTranslator" expanded="True">
-            <Node name="CompilerTests" expanded="True" selected="True" />
+            <Node name="CompilerTests" selected="True" />
           </Node>
         </State>
       </Pad>
@@ -35,9 +30,9 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/src/domain/Visitors/StatementCheckVisitor.cs" line="172" column="1" />
-      <Breakpoint file="/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/src/domain/Visitors/StatementCheckVisitor.cs" line="257" column="1" />
-      <Breakpoint file="/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/src/domain/Visitors/TypeCheckingVisitor.cs" line="260" column="19" />
+      <Breakpoint file="/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/src/domain/Visitors/StatementCheckVisitor.cs" line="45" column="1" />
+      <Breakpoint file="/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/src/services/analyzers/Parser.cs" line="283" column="1" />
+      <Breakpoint file="/home/pqkallio/MonoDevelopProjects/MiniPascalCompiler/Compiler/src/services/analyzers/Parser.cs" line="599" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
@@ -47,6 +42,18 @@
         <CommandData>
           <Item Key="MonoDevelop.Ide.Execution.CustomArgsCustomizer">
             <Value Arguments="test.txt" WorkingDirectory="/home/pqkallio" ctype="CustomArgsExecutionModeData">
+              <EnvironmentVariables />
+            </Value>
+          </Item>
+          <Item Key="MonoDevelop.Ide.Execution.MonoExecutionCustomizer">
+            <Value ctype="MonoExecutionParameters" />
+          </Item>
+        </CommandData>
+      </Data>
+      <Data Name="test.txt test_target.c" Id="ccfd19c0-93aa-45dd-a67c-2aa5685878e1" ModeId="Default">
+        <CommandData>
+          <Item Key="MonoDevelop.Ide.Execution.CustomArgsCustomizer">
+            <Value Arguments="test.txt test_target.c" WorkingDirectory="/home/pqkallio" ctype="CustomArgsExecutionModeData">
               <EnvironmentVariables />
             </Value>
           </Item>

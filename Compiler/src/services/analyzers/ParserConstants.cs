@@ -126,6 +126,12 @@ namespace Compiler
 			TOKEN_TYPE_STRINGS[TokenType.PARENTHESIS_RIGHT]
 		};
 
+		public static readonly string[] EXPECTATION_SET_STATEMENT_END = new string[]
+		{
+			TOKEN_TYPE_STRINGS[TokenType.END_STATEMENT],
+			TOKEN_TYPE_STRINGS[TokenType.END]
+		};
+
 		public static readonly string[] EXPECTATION_SET_STATEMENTS = new string[] 
 		{
 			TOKEN_TYPE_STRINGS[TokenType.VAR],
@@ -223,6 +229,14 @@ namespace Compiler
 			TOKEN_TYPE_STRINGS[TokenType.TYPE_REAL],
 			TOKEN_TYPE_STRINGS[TokenType.TYPE_BOOLEAN],
 			TOKEN_TYPE_STRINGS[TokenType.TYPE_ARRAY]
+		};
+
+		public static readonly string[] EXPECTATION_SET_SIMPLE_TYPES = new string[]
+		{
+			TOKEN_TYPE_STRINGS[TokenType.TYPE_BOOLEAN],
+			TOKEN_TYPE_STRINGS[TokenType.TYPE_INTEGER],
+			TOKEN_TYPE_STRINGS[TokenType.TYPE_REAL],
+			TOKEN_TYPE_STRINGS[TokenType.TYPE_STRING]
 		};
 	}
 }

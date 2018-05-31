@@ -237,6 +237,7 @@ namespace Compiler
 			// in the source code
 			List<Parameter> parameters = new List<Parameter> ();
 			Token token = null;
+			bool commaHit = false;
 
 			while (true) {
 				token = GetNextToken ();
@@ -247,6 +248,9 @@ namespace Compiler
 						parameters.Add (ParseParameter(token, scope));
 						break;
 					case TokenType.PARENTHESIS_RIGHT:
+						if (commaHit) {
+							throw new UnexpectedTokenException(token, ParserConstants.EXPECTATION_SET_PARAMETERS);
+						}
 						goto END_WHILE;
 					default:
 						throw new UnexpectedTokenException(token, ParserConstants.EXPECTATION_SET_PARAMETERS);
@@ -258,6 +262,7 @@ namespace Compiler
 					case TokenType.PARENTHESIS_RIGHT:
 						goto END_WHILE;
 					case TokenType.COMMA:
+						commaHit = true;
 						break;
 					default:
 						throw new UnexpectedTokenException(token, ParserConstants.EXPECTATION_SET_PARAMETER_TAIL);
@@ -266,6 +271,58 @@ namespace Compiler
 
 			END_WHILE:
 			return nodeBuilder.CreateParametersNode(token, parameters, scope);
+		}
+
+		private ArgumentsNode ParseArguments (Scope scope)
+		{
+			List<ExpressionNode> arguments = new List<ExpressionNode> ();
+			Token token = null;
+			bool commaHit = false;
+
+			while (true) {
+				token = GetNextToken ();
+
+				switch (token.Type) {
+					case TokenType.SIGN_MINUS:
+					case TokenType.SIGN_PLUS:
+					case TokenType.ID:
+					case TokenType.STRING_VAL:
+					case TokenType.INTEGER_VAL:
+					case TokenType.REAL_VAL:
+					case TokenType.BOOLEAN_VAL_FALSE:
+					case TokenType.BOOLEAN_VAL_TRUE:
+					case TokenType.PARENTHESIS_LEFT:
+					case TokenType.UNARY_OP_LOG_NEG:
+						bufferedToken = token;
+						ExpressionNode argument = ParseExpression (scope);
+						arguments.Add (argument);
+						break;
+					case TokenType.PARENTHESIS_RIGHT:
+						bufferedToken = token;
+						if (commaHit) {
+							throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_ARGUMENTS);
+						}
+						goto END_WHILE;
+					default:
+						throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_ARGUMENTS);
+				}
+
+				token = GetNextToken ();
+
+				switch (token.Type) {
+					case TokenType.PARENTHESIS_RIGHT:
+						bufferedToken = token;
+						goto END_WHILE;
+					case TokenType.COMMA:
+						commaHit = true;
+						break;
+					default:
+						throw new UnexpectedTokenException(token, ParserConstants.EXPECTATION_SET_ARGUMENTS);
+				}
+			}
+
+			END_WHILE:
+			return nodeBuilder.CreateArgumentsNode (scope, arguments, token);
 		}
 
 		private Parameter ParseParameter (Token token, Scope scope)
@@ -421,7 +478,8 @@ namespace Compiler
 
 					break;
 				default:
-					ParseStatements (nextToken, scope, statements);
+					notifyError (new SyntaxError (nextToken, expectationSet: ParserConstants.EXPECTATION_SET_STATEMENT_END));
+					FastForwardToStatementEnd (nextToken);
 					break;
 			}
 		}
@@ -550,7 +608,12 @@ namespace Compiler
 					ExpressionNode arraySizeExpression = ParseExpression (scope);
 					match (GetNextToken (), TokenType.BRACKET_RIGHT);
 					match (GetNextToken (), TokenType.OF);
+					Token elemTypeToken = GetNextToken ();
+					bufferedToken = elemTypeToken;
 					TokenType elementType = ParseType ();
+					if (!ParserConstants.SIMPLE_TYPES.ContainsKey (elementType)) {
+					throw new UnexpectedTokenException (elemTypeToken, ParserConstants.EXPECTATION_SET_SIMPLE_TYPES);
+					}
 					return new ArrayTypeNode (token, token.Type, elementType, arraySizeExpression);
 				default:
 					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_TYPE);
@@ -718,8 +781,7 @@ namespace Compiler
 		private StatementNode ParseWriteStatement (Scope scope, Token token)
 		{
 			match (GetNextToken (), TokenType.PARENTHESIS_LEFT);
-			List<ExpressionNode> arguments = new List<ExpressionNode> ();
-			ArgumentsNode argumentsNode = ParseArguments (scope, arguments);
+			ArgumentsNode argumentsNode = ParseArguments (scope);
 			match (GetNextToken (), TokenType.PARENTHESIS_RIGHT);
 
 			return new IOPrintNode (token, argumentsNode, scope);
@@ -1070,37 +1132,7 @@ namespace Compiler
 
 		private ArgumentsNode ParseFunctionArguments (Scope scope)
 		{
-			List<ExpressionNode> arguments = new List<ExpressionNode> ();
-			return ParseArguments (scope, arguments);
-		}
-
-		private ArgumentsNode ParseArguments (Scope scope, List<ExpressionNode> arguments)
-		{
-			Token token = GetNextToken ();
-
-			switch (token.Type) {
-				case TokenType.SIGN_MINUS:
-				case TokenType.SIGN_PLUS:
-				case TokenType.ID:
-				case TokenType.STRING_VAL:
-				case TokenType.INTEGER_VAL:
-				case TokenType.REAL_VAL:
-				case TokenType.BOOLEAN_VAL_FALSE:
-				case TokenType.BOOLEAN_VAL_TRUE:
-				case TokenType.PARENTHESIS_LEFT:
-				case TokenType.UNARY_OP_LOG_NEG:
-					bufferedToken = token;
-					ExpressionNode argument = ParseExpression (scope);
-					arguments.Add (argument);
-					return ParseArguments (scope, arguments);
-				case TokenType.COMMA:
-					return ParseArguments (scope, arguments);
-				case TokenType.PARENTHESIS_RIGHT:
-					bufferedToken = token;
-					return nodeBuilder.CreateArgumentsNode (scope, arguments, token);
-				default:
-					throw new UnexpectedTokenException (token, ParserConstants.EXPECTATION_SET_ARGUMENTS);
-			}
+			return ParseArguments (scope);
 		}
 
 		private VariableIdNode ParseVarId(Scope scope, Token idToken=null) {

@@ -145,19 +145,20 @@
     <Compile Include="src\domain\Errors\InvalidArgumentCountError.cs" />
     <Compile Include="src\domain\Errors\InvalidArgumentError.cs" />
     <Compile Include="src\domain\Errors\UndeclaredVariableError.cs" />
-    <Compile Include="src\domain\Visitors\CTranslationVisitor.cs" />
-    <Compile Include="src\services\translators\ITargetCodeTranslator.cs" />
-    <Compile Include="src\services\translators\SimplifiedCTranslator.cs" />
-    <Compile Include="src\services\translators\name_factories\CNameFactory.cs" />
-    <Compile Include="src\services\translators\name_factories\INameFactory.cs" />
-    <Compile Include="src\services\translators\CTranslatorConstants.cs" />
     <Compile Include="src\domain\SyntaxTree\VariableEvaluee.cs" />
-    <Compile Include="src\services\translators\name_factories\CTempVarPool.cs" />
-    <Compile Include="src\services\translators\TranslatorTempNode.cs" />
     <Compile Include="src\domain\Errors\ParameterMustBeReferenceError.cs" />
+    <Compile Include="src\services\IO\FileWriter.cs" />
+    <Compile Include="src\services\synthesizers\name_factories\CNameFactory.cs" />
+    <Compile Include="src\services\synthesizers\name_factories\INameFactory.cs" />
+    <Compile Include="src\services\synthesizers\name_factories\CTempVarPool.cs" />
+    <Compile Include="src\services\synthesizers\CSynthesizerConstants.cs" />
+    <Compile Include="src\services\synthesizers\ITargetCodeSynthesizer.cs" />
+    <Compile Include="src\services\synthesizers\SimplifiedCSynthesizer.cs" />
+    <Compile Include="src\domain\Visitors\CSynthesisVisitor.cs" />
+    <Compile Include="src\services\synthesizers\SynthesisTempNode.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="src\services\translators\" />
-    <Folder Include="src\services\translators\name_factories\" />
+    <Folder Include="src\services\synthesizers\" />
+    <Folder Include="src\services\synthesizers\name_factories\" />
   </ItemGroup>
 </Project>
